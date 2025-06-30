@@ -5,13 +5,17 @@ import Notification from '../models/Notification';
 
 export const initCheckBudgetAlert = () => {
     cron.schedule('0 8 * * *', async () => {
+    // cron.schedule('*/1 * * * *', async () => {
+
+        console.log(`[Cron] Check budget alert running at ${new Date().toLocaleString()}`);
+
         const budgets = await Budget.find();
 
         for (const budget of budgets){
             const { user, month, year, amount, alertLevel } = budget;
 
             const start = new Date(year, month - 1, 1);
-            const end = new Date(year, month -1 );
+            const end = new Date(year, month, 1); 
 
             const totalExpense = await Transaction.aggregate([
                 {
@@ -22,12 +26,14 @@ export const initCheckBudgetAlert = () => {
                     }
                 },
                 {
-                    $group: {_id: null, total: { $sum: amount }},
+                    $group: { _id: null, total: { $sum: "$amount" } },
                 },
             ]);
 
             const spent = totalExpense[0].total || 0;
             const percentUsed = Math.round((spent / amount) * 100);
+
+            console.log(`[Budget Alert DEBUG] user=${user}, spent=${spent}, used=${percentUsed}%, alertLevel=${alertLevel}`);
 
             const thresholds = [80, 90, 100];
 

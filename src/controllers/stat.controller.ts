@@ -22,6 +22,10 @@ export const getCategoryExpenseStats = async ( req: AuthRequest, res: Response )
                     user:  new Types.ObjectId(req.userId),
                     type: 'expense',
                     date: { $gte: start, $lt: end },
+                    $or: [
+                        { isRecurring: { $ne: true } },
+                        { isRecurring: true, date: { $ne: null } }
+                    ]
                 }
             },
             {

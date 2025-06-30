@@ -1,43 +1,83 @@
 import Transaction from "../models/Transaction";
 import { Request, Response } from "express";
 import { AuthRequest } from "../middlewares/requireAuth";
+import { getLastDayOfMonth } from "../utils/getLastDayOfMonth";
 
 // CREATE
-export const createTransaction = async (req: AuthRequest, res: Response): Promise<void> => {
-    try {
-        const { type, amount, category, note, date, receiptImage, isRecurring, recurringDay } = req.body;
+export const createTransaction = async (req: AuthRequest, res: Response) => {
+  try {
+    const { amount, type, category, note, receiptImage, date, isRecurring, recurringDay } = req.body;
 
-        // Kiểm tra bắt buộc cho các giao dịch không định kỳ
-        if (!isRecurring && !date) {
-        res.status(400).json({ message: "Giao dịch thông thường yêu cầu ngày (date)" });
-        return;
-        }
+    // Trường hợp GIAO DỊCH ĐỊNH KỲ
+    if (isRecurring) {
+      // Validate
+      if (!recurringDay || recurringDay < 1 || recurringDay > 31) {
+        return res.status(400).json({ message: "Ngày định kỳ (recurringDay) không hợp lệ" });
+      }
 
-        // Nếu là định kỳ nhưng không có recurringDay thì báo lỗi
-        if (isRecurring && (!recurringDay || recurringDay < 1 || recurringDay > 31)) {
-        res.status(400).json({ message: "Giao dịch định kỳ cần recurringDay hợp lệ (1–31)" });
-        return;
-        }
+      // Tạo bản mẫu (không có date)
+      const templateTx = await Transaction.create({
+        user: req.userId,
+        amount,
+        type,
+        category,
+        note,
+        receiptImage,
+        isRecurring: true,
+        recurringDay,
+        date: undefined,
+      });
 
-        const newTx = await Transaction.create({
-            type,
-            amount,
-            category,
-            note,
-            date: isRecurring ? undefined : date,
-            receiptImage,
-            isRecurring,
-            recurringDay,
-            user: req.userId
-        });
+      // Tạo bản đầu tiên có date
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = today.getMonth();
+      const day = Math.min(recurringDay, getLastDayOfMonth(year, month));
 
-        res.status(201).json(newTx);
-    } catch (err) {
-        res.status(500).json({ message: "Không thể tạo giao dịch", error: err });
-        console.log(err);
-        
+      const firstTx = await Transaction.create({
+        user: req.userId,
+        amount,
+        type,
+        category,
+        note,
+        receiptImage,
+        isRecurring: true,
+        recurringDay,
+        date: new Date(year, month, day),
+      });
+
+      return res.status(201).json({
+        message: "Đã tạo giao dịch định kỳ và bản đầu tiên thành công",
+        template: templateTx,
+        firstTransaction: firstTx,
+      });
     }
-}
+
+    // Trường hợp GIAO DỊCH THÔNG THƯỜNG
+    if (!date) {
+      return res.status(400).json({ message: "Giao dịch thường cần trường `date`" });
+    }
+
+    const tx = await Transaction.create({
+      user: req.userId,
+      amount,
+      type,
+      category,
+      note,
+      receiptImage,
+      isRecurring: false,
+      date,
+    });
+
+    res.status(201).json({
+      message: "Đã tạo giao dịch thành công",
+      transaction: tx,
+    });
+  } catch (error) {
+    console.error("Lỗi khi tạo giao dịch:", error);
+    res.status(500).json({ message: "Không thể tạo giao dịch", error });
+  }
+};
 
 // GET ALL
 export const getTransactions = async (req: AuthRequest, res: Response) => {
