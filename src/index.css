@@ -1,0 +1,7 @@
+@import "tailwindcss";
+/* Thêm font nếu muốn */
+
+
+body {
+  font-family: 'Roboto Mono', monospace;
+}
