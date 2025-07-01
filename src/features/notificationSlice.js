@@ -109,7 +109,7 @@ const notificationSlice = createSlice({
                 state.loading = false;
                 state.notifications = state.notifications.filter(notification => notification.id !== action.payload.id);
             })
-            .addCase(deleteNotification, (state, action) => {
+            .addCase(deleteNotification.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             })
