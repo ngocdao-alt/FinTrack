@@ -4,7 +4,7 @@ import { AuthRequest } from "../middlewares/requireAuth";
 import { getLastDayOfMonth } from "../utils/getLastDayOfMonth";
 
 // CREATE
-export const createTransaction = async (req: AuthRequest, res: Response) => {
+export const createTransaction = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const { amount, type, category, note, receiptImage, date, isRecurring, recurringDay } = req.body;
 
@@ -12,7 +12,8 @@ export const createTransaction = async (req: AuthRequest, res: Response) => {
     if (isRecurring) {
       // Validate
       if (!recurringDay || recurringDay < 1 || recurringDay > 31) {
-        return res.status(400).json({ message: "Ngày định kỳ (recurringDay) không hợp lệ" });
+        res.status(400).json({ message: "Ngày định kỳ (recurringDay) không hợp lệ" });
+        return;
       }
 
       // Tạo bản mẫu (không có date)
@@ -46,7 +47,7 @@ export const createTransaction = async (req: AuthRequest, res: Response) => {
         date: new Date(year, month, day),
       });
 
-      return res.status(201).json({
+      res.status(201).json({
         message: "Đã tạo giao dịch định kỳ và bản đầu tiên thành công",
         template: templateTx,
         firstTransaction: firstTx,
@@ -55,7 +56,8 @@ export const createTransaction = async (req: AuthRequest, res: Response) => {
 
     // Trường hợp GIAO DỊCH THÔNG THƯỜNG
     if (!date) {
-      return res.status(400).json({ message: "Giao dịch thường cần trường `date`" });
+      res.status(400).json({ message: "Giao dịch thường cần trường `date`" });
+      return;
     }
 
     const tx = await Transaction.create({
