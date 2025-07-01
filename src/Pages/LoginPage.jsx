@@ -10,9 +10,9 @@ export default function Login() {
     return (
         <div 
             className="
-                min-h-screen flex flex-col items-center justify-start bg-gradient-to-b from-white via-indigo-200 to-indigo-600
+                min-h-screen py-5 flex flex-col items-center justify-start bg-gradient-to-b from-white via-indigo-200 to-indigo-600
                 sm:text-xl 
-                lg:text-2xl
+                lg:text-2xl lg:py-0
                 
         ">
             {/* Logo */}
@@ -25,23 +25,28 @@ export default function Login() {
                     <h1 className="text-lg font-semibold text-gray-900">Track</h1>
                 </div>
             </header>
-
+            
             {/* Phone illustration */}
             <img
                 src={phoneImg} // đổi path tới hình bạn lưu
                 alt="Phone mockup"
                 className="
-                    w-60 mt-4 select-none pointer-events-none
+                    w-60 mt-4 select-none pointer-events-none self-center
                     sm:w-70
-                    md:w-90
-                    lg:w-100
+                    md:w-80
+                    lg:mt-0
                 "
             />
 
             {/* Form */}
             <form
                 onSubmit={(e) => e.preventDefault()}
-                className="w-full max-w-sm flex flex-col gap-4 mt-8 px-4"
+                className="
+                    w-full max-w-sm flex flex-col gap-4 mt-8 px-4
+                    lg:max-w-[60%] lg:mt-4
+                    xl:max-w-[50%]
+                    2xl:max-w-[40%]
+                "
             >
                 {/* Email */}
                 <input
