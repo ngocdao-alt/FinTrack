@@ -57,7 +57,7 @@ export const deleteNotification = async (req: AuthRequest, res: Response):Promis
             return;
         }
 
-        res.json({ message: "Đã xóa thông báo thành công"});
+        res.json({ id: notificationId, message: "Đã xóa thông báo thành công"});
     } catch (error) {
         res.status(500).json({ message: 'Không thể xóa thông báo', error});
     }
