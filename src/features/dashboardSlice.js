@@ -11,7 +11,7 @@ const initialState = {
     error: null,
 }
 
-const getDashboard = createAsyncThunk('dashboard/getDashboard', async (date, { getState, rejectWithValue }) => {
+export const getDashboard = createAsyncThunk('dashboard/getDashboard', async (date, { getState, rejectWithValue }) => {
     try {
         const { month, year } = date;
         const { token } = getState().auth;

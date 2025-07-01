@@ -10,7 +10,7 @@ const initialState = {
     error: null
 }
 
-const registerUser = createAsyncThunk('auth/registerUser', async (credentials, { rejectWithValue }) => {
+export const registerUser = createAsyncThunk('auth/registerUser', async (credentials, { rejectWithValue }) => {
     try {
         const res = await axios.post(`${BACK_END_URL}/api/auth/register`, credentials);
         return res.data;
@@ -20,7 +20,8 @@ const registerUser = createAsyncThunk('auth/registerUser', async (credentials, {
     }
 })
 
-const loginUser = createAsyncThunk('auth/loginUser', async (credentials, { rejectWithValue }) => {
+export const loginUser = createAsyncThunk('auth/loginUser', async (credentials, { rejectWithValue }) => {
+        console.log(BACK_END_URL);
     try {
         const res = await axios.post(`${BACK_END_URL}/api/auth/login`, credentials);
         return res.data;
@@ -30,7 +31,7 @@ const loginUser = createAsyncThunk('auth/loginUser', async (credentials, { rejec
     }
 })
 
-const updateUser = createAsyncThunk('auth/updateProfile', async (formData, { getState, rejectWithValue }) => {
+export const updateUser = createAsyncThunk('auth/updateProfile', async (formData, { getState, rejectWithValue }) => {
     const { token } = getState().auth;
 
     try {

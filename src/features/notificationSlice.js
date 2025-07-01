@@ -9,7 +9,7 @@ const initialState = {
     error: null,
 }
 
-const getNotifications = createAsyncThunk('notification/getNotification', async (__, { getState, rejectWithValue }) => {
+export const getNotifications = createAsyncThunk('notification/getNotification', async (__, { getState, rejectWithValue }) => {
     try {
         const { token } = getState().auth;
         
@@ -29,7 +29,7 @@ const getNotifications = createAsyncThunk('notification/getNotification', async 
     }
 });
 
-const markNotificationAsRead = createAsyncThunk('notificaiton/markNotificationAsRead', async (id, { getState, rejectWithValue }) => {
+export const markNotificationAsRead = createAsyncThunk('notificaiton/markNotificationAsRead', async (id, { getState, rejectWithValue }) => {
     try {
         const { token } = getState().auth;
 
@@ -49,7 +49,7 @@ const markNotificationAsRead = createAsyncThunk('notificaiton/markNotificationAs
     }
 })
 
-const deleteNotification = createAsyncThunk('notification/deleteNotification', async (id, { getState, rejectWithValue }) => {
+export const deleteNotification = createAsyncThunk('notification/deleteNotification', async (id, { getState, rejectWithValue }) => {
     try {
         const { token } = getState().auth;
 

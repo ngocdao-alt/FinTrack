@@ -1,11 +1,51 @@
 // src/pages/Login.jsx
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import phoneImg from '../assets/img/phoneImg.png';
-
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser, registerUser } from '../features/authSlice';
+import toast from "react-hot-toast";
 
 export default function Login() {
-    const [showPwd, setShowPwd] = useState(false);
+    const dispatch = useDispatch();
+    const auth = useSelector(state => state.auth);
     const [isRegister, setIsRegister] = useState(false);
+
+    const [email, setEmail] = useState("");
+    const [name, setName] = useState("");
+    const [password, setPassword] = useState("");
+
+    useEffect(() => {
+        console.log(auth);
+        
+    }, [dispatch, auth])
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        try {
+            if(isRegister){
+                await dispatch(registerUser({
+                    email,
+                    name,
+                    password
+                }))
+                toast.success("Đăng kí thành công!")
+            } else {
+                await dispatch(loginUser({
+                    email,
+                    password
+                }));
+                toast.success("Đăng nhập thành công!")
+            }
+            
+            setEmail("")
+            setName("")
+            setPassword("")
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     return (
         <div 
@@ -40,7 +80,7 @@ export default function Login() {
 
             {/* Form */}
             <form
-                onSubmit={(e) => e.preventDefault()}
+                onSubmit={handleSubmit}
                 className="
                     w-full max-w-sm flex flex-col gap-4 mt-8 px-4
                     lg:max-w-[60%] lg:mt-4
@@ -51,6 +91,8 @@ export default function Login() {
                 {/* Email */}
                 <input
                     type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     placeholder="Email"
                     className="w-full rounded-lg px-4 py-3 bg-white outline-none ring-1 ring-gray-200 focus:ring-2 focus:ring-indigo-400 placeholder-gray-500"
                 />
@@ -59,7 +101,9 @@ export default function Login() {
                     {
                         isRegister && (
                             <input
-                                type={showPwd ? "text" : "password"}
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                type="text"
                                 placeholder="Name"
                                 className="w-full rounded-lg px-4 py-3 pr-12 bg-white outline-none ring-1 ring-gray-200 focus:ring-2 focus:ring-indigo-400 placeholder-gray-500"
                             />
@@ -67,19 +111,25 @@ export default function Login() {
                     }
 
                     <input
-                        type={showPwd ? "text" : "password"}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        type="password"
                         placeholder="Password"
                         className="w-full rounded-lg px-4 py-3 pr-12 bg-white outline-none ring-1 ring-gray-200 focus:ring-2 focus:ring-indigo-400 placeholder-gray-500"
                     />
 
                 {/* Register link */}
                 <p className="text-sm text-gray-700">
-                    You do not have an account yet ?{" "}
+                    {
+                        isRegister ? "Already have an account? " : "Don't have an account yet ? "
+                    }
                     <span
                         onClick={() => setIsRegister(prev => !prev)}
                         className="font-semibold text-indigo-600 cursor-pointer hover:underline"
                     >
-                        Register
+                        {
+                            isRegister? "Login" : "Register"
+                        }
                     </span>
                 </p>
 

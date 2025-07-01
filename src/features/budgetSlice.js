@@ -12,7 +12,7 @@ const initialState = {
     error: null,
 }
 
-const addBudget = createAsyncThunk('budget/addBudget', async (fields, { getState, rejectWithValue }) => {
+export const addBudget = createAsyncThunk('budget/addBudget', async (fields, { getState, rejectWithValue }) => {
     try {
         const { token } = getState().auth;
         const { month, year, amount } = fields;
@@ -38,7 +38,7 @@ const addBudget = createAsyncThunk('budget/addBudget', async (fields, { getState
     }
 })
 
-const getBudget = createAsyncThunk('budget/getBudget', async (fields, { getState, rejectWithValue }) => {
+export const getBudget = createAsyncThunk('budget/getBudget', async (fields, { getState, rejectWithValue }) => {
     try {
         const { token } = getState().auth;
         const { month, year } = fields;

@@ -12,7 +12,7 @@ const initialState = {
     error: null
 }
 
-const getTransactions = createAsyncThunk('transaction/getTransactions', async (filter, { getState, rejectWithValue }) => {
+export const getTransactions = createAsyncThunk('transaction/getTransactions', async (filter, { getState, rejectWithValue }) => {
     const { token } = getState().auth;
     try {
         const { type, category, keyword, month, year} = filter;
@@ -32,7 +32,7 @@ const getTransactions = createAsyncThunk('transaction/getTransactions', async (f
     }
 });
 
-const createTransaction = createAsyncThunk('transaction/createTransaction', async (fields, { getState, rejectWithValue }) => {
+export const createTransaction = createAsyncThunk('transaction/createTransaction', async (fields, { getState, rejectWithValue }) => {
     try {
         const { token }= getState().auth;
         const { type, amount, category, note, date, receiptImages, isRecurring } = fields;
@@ -66,7 +66,7 @@ const createTransaction = createAsyncThunk('transaction/createTransaction', asyn
     }
 });
 
-const updateTransaction = createAsyncThunk('transaction/updateTransaction', async ({ id ,fields } , { getState, rejectWithValue}) => {
+export const updateTransaction = createAsyncThunk('transaction/updateTransaction', async ({ id ,fields } , { getState, rejectWithValue}) => {
     try {
         const { token }= getState().auth;
         const { type, amount, category, note, date, receiptImages, isRecurring } = fields;
@@ -100,7 +100,7 @@ const updateTransaction = createAsyncThunk('transaction/updateTransaction', asyn
     }
 })
 
-const deleteTransaction = createAsyncThunk('transaction/deleteTransaction', async (id, { getState, rejectWithValue}) => {
+export const deleteTransaction = createAsyncThunk('transaction/deleteTransaction', async (id, { getState, rejectWithValue}) => {
     try {
         const { token } = getState().auth;
         await axios.delete(

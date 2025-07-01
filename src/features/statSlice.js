@@ -9,7 +9,7 @@ const initialState = {
     stats:[]
 }
 
-const getExpenseStat = createAsyncThunk('stat/getExpenseStat', async (dates, { getState, rejectWithValue }) => {
+export const getExpenseStat = createAsyncThunk('stat/getExpenseStat', async (dates, { getState, rejectWithValue }) => {
     const { token } = getState().auth;
 
     try {
