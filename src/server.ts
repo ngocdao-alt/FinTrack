@@ -7,7 +7,7 @@ import app from './app'
 import { initRecurringTransactionJob } from './cron/recurringJob';
 import { initCheckBudgetAlert } from './cron/checkBudgetAlert';
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 
 initRecurringTransactionJob();
 initCheckBudgetAlert();
