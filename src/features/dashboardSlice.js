@@ -16,7 +16,7 @@ export const getDashboard = createAsyncThunk('dashboard/getDashboard', async (da
         const { month, year } = date;
         const { token } = getState().auth;
         const res = await axios.get(
-            `${BACK_END_URL}/dashboard?month=${month}&year=${year}`,
+            `${BACK_END_URL}/api/dashboard?month=${month}&year=${year}`,
             {
                 headers: {
                     Authorization: `Bearer ${token}`
