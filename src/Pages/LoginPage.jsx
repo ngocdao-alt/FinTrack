@@ -1,7 +1,7 @@
 // src/pages/Login.jsx
 import { useState } from "react";
 import phoneImg from '../assets/img/phoneImg.png';
-
+import LogoF from '../assets/img/LogoF.png';
 
 export default function Login() {
     const [showPwd, setShowPwd] = useState(false);
@@ -17,13 +17,16 @@ export default function Login() {
         ">
             {/* Logo */}
             <header className="w-full flex items-center gap-2 px-4 py-3">
-                <div className="w-10 h-10 rounded-full bg-indigo-400 flex items-center justify-center">
-                    <span className="text-white font-extrabold text-xl">F</span>
-                </div>
-                <div className="leading-4">
-                    <h1 className="text-lg font-semibold text-gray-900">Fin</h1>
-                    <h1 className="text-lg font-semibold text-gray-900">Track</h1>
-                </div>
+                    <a href="#" className="flex items-start group">
+                  <div className="flex items-center">
+                    <img src={LogoF} alt="Landingpage logo" className="h-20 w-12 rounded-full mr-1" />
+                    <div className="leading-tight">
+                      <span className="text-xl font-semibold">Fin</span>
+                      <br />
+                      <span className="text-xl font-semibold">Track</span>
+                    </div>
+                  </div>
+                </a>
             </header>
             
             {/* Phone illustration */}
