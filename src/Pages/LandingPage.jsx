@@ -1,11 +1,11 @@
-import { useNavigate } from 'react-router-dom'  // 
+import { useNavigate } from "react-router-dom"; //
 
 function LandingPage() {
-  const navigate = useNavigate(); // 
+  const navigate = useNavigate(); //
 
   return (
     <div className="flex flex-col items-center justify-center h-screen gap-4">
-      <h1 className="text-3xl font-bold">Đây là trang Landing</h1>
+      {/* <h1 className="text-3xl font-bold">Đây là trang Landing</h1>
       <div className="flex gap-4">
         <button
           onClick={() => navigate('/login')} // 
@@ -19,9 +19,9 @@ function LandingPage() {
         >
           Register
         </button>
-      </div>
+      </div> */}
     </div>
-  )
+  );
 }
 
-export default LandingPage
+export default LandingPage;
