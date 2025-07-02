@@ -5,7 +5,7 @@ import LoginPage from "./Pages/LoginPage";
 import LandingPage from "./Pages/LandingPage";
 import Sidebar from "./components/SideBarComponent";
 import DashboardPage from "./pages/DashboardPage";
-import Header from "./components/header";
+import Header from "./components/Header";
 
 function App() {
   const [count, setCount] = useState(0);
