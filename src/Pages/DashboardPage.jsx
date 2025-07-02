@@ -6,7 +6,7 @@ import DashboardRecentTransactions from "../components/DashboardRecentTransactio
 const DashboardPage = () => {
   return (
     <div className="w-full min-h-screen">
-      <Header />
+      {/* <Header />  */}
 
       {/* Balance information */}
       <section

@@ -4,11 +4,11 @@ import axios from "axios";
 const BACK_END_URL = import.meta.env.VITE_BACK_END_URL;
 
 const initialState = {
-    user: null,
-    token: null,
-    loading: false,
-    error: null
-}
+  user: JSON.parse(localStorage.getItem("user")) || null,
+  token: localStorage.getItem("token") || null,
+  loading: false,
+  error: null,
+};
 
 export const registerUser = createAsyncThunk('auth/registerUser', async (credentials, { rejectWithValue }) => {
     try {
@@ -55,11 +55,15 @@ const authSlice = createSlice({
     name: "auth",
     initialState,
     reducers: {
-        logout: state => {
+        logout: (state) => {
             state.user = null;
             state.token = null;
             state.loading = false;
             state.error = null;
+
+            // ✅ Xoá khỏi localStorage
+            localStorage.removeItem("user");
+            localStorage.removeItem("token");
         }
     },
     extraReducers: builder => {
@@ -84,6 +88,10 @@ const authSlice = createSlice({
                 state.loading = false;
                 state.user = action.payload.user;
                 state.token = action.payload.token;
+
+                // ✅ Lưu vào localStorage
+                localStorage.setItem("user", JSON.stringify(action.payload.user));
+                localStorage.setItem("token", action.payload.token);
             })
             .addCase(loginUser.rejected, (state, action) => {
                 state.loading = false;

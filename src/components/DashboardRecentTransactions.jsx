@@ -72,7 +72,7 @@ const DashboardRecentTransactions = () => {
             </div>
           ))}
         </div>
-        <div className="absolute bottom-0 left-0 w-full h-10 bg-gradient-to-t from-white to-transparent" />
+        <div className="absolute z-50 bottom-0 left-0 w-full h-10 bg-gradient-to-t from-white to-transparent" />
       </div>
     </div>
   );
