@@ -5,6 +5,7 @@ import LoginPage from './Pages/LoginPage'
 import LandingPage from './Pages/LandingPage'
 import Sidebar from './components/SideBarComponent'
 import { Routes, Route, useLocation } from 'react-router-dom'
+import DashboardPage from './pages/DashboardPage'
 
 function App() {
   const [count, setCount] = useState(0)      
@@ -19,7 +20,7 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
-          {/* <Route path="/register" element={<RegisterPage />} /> */}
+          <Route path='dashboard' element={<DashboardPage/>}/>
         </Routes>
       </div>
     </div>

@@ -15,6 +15,7 @@ export default function Login() {
     const [password, setPassword] = useState("");
 
     useEffect(() => {
+        
         console.log(auth);
         
     }, [dispatch, auth])
@@ -38,7 +39,7 @@ export default function Login() {
                 }));
                 toast.success("Đăng nhập thành công!")
             }
-            
+
             setEmail("")
             setName("")
             setPassword("")
@@ -68,7 +69,7 @@ export default function Login() {
             
             {/* Phone illustration */}
             <img
-                src={phoneImg} // đổi path tới hình bạn lưu
+                src={phoneImg} 
                 alt="Phone mockup"
                 className="
                     w-60 mt-4 select-none pointer-events-none self-center
