@@ -1,11 +1,11 @@
 // src/App.jsx
 import { useState } from 'react'
-import './App.css'
-import LoginPage from './Pages/LoginPage'
-import LandingPage from './Pages/LandingPage'
+// import './App.css'
+// import LoginPage from './Pages/LoginPage'
+// import LandingPage from './Pages/LandingPage'
 import Sidebar from './components/SideBarComponent'
 import { Routes, Route, useLocation } from 'react-router-dom'
-import DashboardPage from './pages/DashboardPage'
+// import DashboardPage from './pages/DashboardPage'
 
 function App() {
   const [count, setCount] = useState(0)      
@@ -17,11 +17,11 @@ function App() {
     <div className="flex">
       {!hideSidebar && <Sidebar />}
       <div className="flex-1">
-        <Routes>
+        {/* <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path='dashboard' element={<DashboardPage/>}/>
-        </Routes>
+        </Routes> */}
       </div>
     </div>
   )
