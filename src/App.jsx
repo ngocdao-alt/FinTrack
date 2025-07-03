@@ -29,7 +29,7 @@ function App() {
           <Route path="/budget" element={<BudgetPage />} />
           <Route path="/transactions" element={<TransactionPage />} />
           <Route path="/stat" element={<StatPage />} />
-          <Route path="/setting" element={<SettingPage />} />
+          <Route path="/settings" element={<SettingPage />} />
         </Routes>
       </div>
     </div>
