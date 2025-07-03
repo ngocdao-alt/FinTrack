@@ -21,8 +21,6 @@ const DashboardPage = () => {
         <DashboardRecentTransactions />
 
         <DashboardBudgetInfo />
-
-        <DashboardStat />
       </section>
     </div>
   );

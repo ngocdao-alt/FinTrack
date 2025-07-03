@@ -26,7 +26,7 @@ const SettingPage = () => {
 
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
-    if (file) setAvatar(URL.createObjectURL(file));   // xem trước ảnh
+    if (file) setAvatar(URL.createObjectURL(file)); // xem trước ảnh
   };
 
   const saveUserName = () => {
@@ -39,47 +39,45 @@ const SettingPage = () => {
     <div className="min-h-screen bg-[#f3f4f6] px-6 py-4 flex flex-col items-center">
       {/* ---------- HEADER ---------- */}
 
-
       {/* ---------- CARD ---------- */}
       <div className="w-full max-w-md bg-white rounded-xl shadow-md px-6 py-6">
         {/* TITLE */}
-        <h2 className="text-xl font-semibold mb-4">Cài đặt</h2> 
+        <h2 className="text-xl font-semibold mb-4">Cài đặt</h2>
 
         {/* Avatar + icon sửa */}
-{/* ---------- Thông tin người dùng ---------- */}
-<div className="flex flex-col items-center">
-  <h3 className="text-md font-semibold mb-2 text-center">
-    Thông tin người dùng
-  </h3>
+        {/* ---------- Thông tin người dùng ---------- */}
+        <div className="flex flex-col items-center">
+          <h3 className="text-md font-semibold mb-2 text-center">
+            Thông tin người dùng
+          </h3>
 
-  {/* Avatar + icon bút chì */}
-  <div className="relative inline-block mb-4">
-    {avatar ? (
-      <img
-        src={avatar}
-        alt="avatar"
-        className="h-20 w-20 rounded-full object-cover"
-      />
-    ) : (
-      <FaUserCircle className="h-20 w-20 text-indigo-400" />
-    )}
-    <button
-      onClick={handleAvatarClick}
-      className="absolute -bottom-1 -right-1 translate-x-1/4 translate-y-1/4 bg-white p-1 rounded-full shadow hover:bg-gray-100"
-      title="Đổi ảnh"
-    >
-      <FaPencilAlt className="text-sm text-gray-600" />
-    </button>
-    <input
-      ref={fileInputRef}
-      type="file"
-      accept="image/*"
-      className="hidden"
-      onChange={handleAvatarChange}
-    />
-  </div>
-</div>
-
+          {/* Avatar + icon bút chì */}
+          <div className="relative inline-block mb-4">
+            {avatar ? (
+              <img
+                src={avatar}
+                alt="avatar"
+                className="h-20 w-20 rounded-full object-cover"
+              />
+            ) : (
+              <FaUserCircle className="h-20 w-20 text-indigo-400" />
+            )}
+            <button
+              onClick={handleAvatarClick}
+              className="absolute -bottom-1 -right-1 translate-x-1/4 translate-y-1/4 bg-white p-1 rounded-full shadow hover:bg-gray-100"
+              title="Đổi ảnh"
+            >
+              <FaPencilAlt className="text-sm text-gray-600" />
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleAvatarChange}
+            />
+          </div>
+        </div>
 
         {/* Name / Email / Password */}
         <div className="space-y-3">
@@ -149,7 +147,11 @@ const SettingPage = () => {
                     onChange={() => setTheme(opt)}
                   />
                   <span>
-                    {opt === "light" ? "Sáng" : opt === "dark" ? "Tối" : "Hệ thống"}
+                    {opt === "light"
+                      ? "Sáng"
+                      : opt === "dark"
+                      ? "Tối"
+                      : "Hệ thống"}
                   </span>
                 </label>
               ))}
@@ -169,14 +171,13 @@ const SettingPage = () => {
             </select>
           </div>
         </div>
-              
-       <Link
-  to="/login"
-  className="block text-center w-full mt-4 bg-indigo-500 text-white py-2 rounded-md hover:bg-indigo-600"
->
-  Đăng xuất
-</Link>
 
+        <Link
+          to="/login"
+          className="block text-center w-full mt-4 bg-indigo-500 text-white py-2 rounded-md hover:bg-indigo-600"
+        >
+          Đăng xuất
+        </Link>
       </div>
     </div>
   );
