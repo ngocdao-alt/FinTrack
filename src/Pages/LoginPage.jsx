@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { loginUser, registerUser } from "../features/authSlice";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
+import LogoF from "../assets/img/LogoF.png";
 
 export default function Login() {
   const dispatch = useDispatch();
@@ -66,18 +67,25 @@ export default function Login() {
     >
       {/* Logo */}
       <header className="w-full flex items-center gap-2 px-4 py-3">
-        <div className="w-10 h-10 rounded-full bg-indigo-400 flex items-center justify-center">
-          <span className="text-white font-extrabold text-xl">F</span>
-        </div>
-        <div className="leading-4">
-          <h1 className="text-lg font-semibold text-gray-900">Fin</h1>
-          <h1 className="text-lg font-semibold text-gray-900">Track</h1>
-        </div>
+        <a href="#" className="flex items-start group">
+          <div className="flex items-center">
+            <img
+              src={LogoF}
+              alt="Landingpage logo"
+              className="h-20 w-12 rounded-full mr-1"
+            />
+            <div className="leading-tight">
+              <span className="text-xl font-semibold">Fin</span>
+              <br />
+              <span className="text-xl font-semibold">Track</span>
+            </div>
+          </div>
+        </a>
       </header>
 
       {/* Phone illustration */}
       <img
-        src={phoneImg}
+        src={phoneImg} // đổi path tới hình bạn lưu
         alt="Phone mockup"
         className="
                     w-60 mt-4 select-none pointer-events-none self-center
