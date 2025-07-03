@@ -2,6 +2,7 @@ import React from "react";
 import Header from "../components/Header";
 import DashboardBalanceInfo from "../components/DashboardBalanceInfo";
 import DashboardRecentTransactions from "../components/DashboardRecentTransactions";
+import DashboardBudgetInfo from "../components/DashboardBudgetInfo";
 
 const DashboardPage = () => {
   return (
@@ -17,6 +18,8 @@ const DashboardPage = () => {
         <DashboardBalanceInfo />
 
         <DashboardRecentTransactions />
+
+        <DashboardBudgetInfo />
       </section>
     </div>
   );
