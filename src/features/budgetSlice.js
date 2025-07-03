@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
 
 const BACK_END_URL = import.meta.env.VITE_BACK_END_URL;
 
