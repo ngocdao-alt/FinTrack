@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getTransactions } from "../features/transactionSlice";
-import { getDashboard } from "../features/dashboardSlice";
-import formatDateToString from "../utils/formatDateToString";
-import formatCurrencyVN from "../utils/formatCurrency";
+import { getTransactions } from "../../features/transactionSlice";
+import { getDashboard } from "../../features/dashboardSlice";
+import formatDateToString from "../../utils/formatDateToString";
+import formatCurrencyVN from "../../utils/formatCurrency";
 
 const DashboardRecentTransactions = () => {
   const transactions = useSelector((state) => state.transaction.transactions);
