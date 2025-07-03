@@ -1,6 +1,8 @@
 import { FiArrowUpRight } from "react-icons/fi";
+import { Link } from "react-router-dom";
 import LogoF from "../assets/img/LogoF.png";
 import Laptop from "../assets/img/Laptop.png";
+
 
 export default function LandingPages() {
   return (
@@ -29,19 +31,22 @@ export default function LandingPages() {
           </a>
 
           {/* Nút đăng nhập/đăng ký */}
-          <div className="flex space-x-2">
-            <button
+         <div className="flex space-x-2">
+            <Link
+              to="/login"
               className="px-5 py-2 rounded-md text-dark text-sm font-medium transition"
               style={{ backgroundColor: "#dad7ff" }}
             >
               Sign in
-            </button>
-            <button
+            </Link>
+            <Link
+              to="/login?mode=register
+"
               className="px-5 py-2 rounded-md text-dark text-sm font-medium transition"
               style={{ backgroundColor: "#dad7ff" }}
             >
               Register
-            </button>
+            </Link>
           </div>
         </header>
 
@@ -75,14 +80,14 @@ export default function LandingPages() {
           <div className="w-full md:w-1/2 flex justify-center md:justify-end md:items-center mt-9 md:mt-7 relative">
             {/* Gradient phía sau hình – chỉ hiển thị ở md trở lên */}
             <div
-              className="hidden md:block absolute rounded-[2.5rem] bg-gradient-to-b from-[#8f88ff] to-white"
+              className="hidden md:block absolute rounded-[2rem] bg-gradient-to-b from-[#8f88ff] to-white"
               style={{
-                width: "290px",
-                height: "360px",
+                width: "330px",
+                height: "440px",
                 zIndex: 0,
                 top: "55%",
-                left: "45%",
-                transform: "translate(-30%, -55%)",
+                left: "55%",
+                transform: "translate(-30%, -47%)",
               }}
             />
 
