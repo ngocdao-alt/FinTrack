@@ -58,21 +58,22 @@ const DashboardRecentTransactions = () => {
 
       <div className="relative max-h-64 overflow-hidden">
         <div className="flex flex-col gap-3">
-          {recentTransactions.map((item) => (
-            <>
-              <div
-                key={item._id}
-                className="grid grid-cols-3 justify-between items-start text-sm"
+          {recentTransactions.map((item, index) => (
+            <div
+              key={item._id}
+              className="grid grid-cols-3 justify-between items-start text-sm"
+            >
+              <span>{item.category}</span>
+              <span>{formatDateToString(item.date)}</span>
+              <span
+                className={`${
+                  item.type === "expense" ? "text-[#00C951]" : "text-[#FB2C36]"
+                }`}
               >
-                <span>{item.category}</span>
-                <span>{formatDateToString(item.date)}</span>
-                <span>
-                  {item.type === "expense" ? "-" : "+"}
-                  {formatCurrencyVN(item.amount)}
-                </span>
-              </div>
-              {/* <hr className="w-full mb-1 h-[1px] bg-[#A0A0A0] border-none" /> */}
-            </>
+                {item.type === "expense" ? "-" : "+"}
+                {formatCurrencyVN(item.amount)}
+              </span>
+            </div>
           ))}
         </div>
         <div className="absolute z-50 bottom-0 left-0 w-full h-10 bg-gradient-to-t from-white to-transparent" />

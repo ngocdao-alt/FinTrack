@@ -1,18 +1,47 @@
-const LineChart = ({ labels = [], dataValues = [] }) => {
+import React from "react";
+import { Line } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  LineElement,
+  PointElement,
+  CategoryScale,
+  LinearScale,
+  Tooltip,
+  Legend,
+  Filler,
+} from "chart.js";
+
+ChartJS.register(
+  LineElement,
+  PointElement,
+  CategoryScale,
+  LinearScale,
+  Tooltip,
+  Legend,
+  Filler
+);
+
+const LineChart = ({ labels = [], dataIncome = [], dataExpense = [] }) => {
   const data = {
-    labels: labels.length ? labels : ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+    labels,
     datasets: [
       {
         label: "Income",
-        data: dataValues.length
-          ? dataValues
-          : [5000000, 6000000, 5500000, 7000000, 6500000, 8000000],
-        borderColor: "#5D43DB",
-        backgroundColor: "rgba(93, 67, 219, 0.2)",
+        data: dataIncome,
+        borderColor: "#4ade80",
+        backgroundColor: "rgba(74, 222, 128, 0.2)",
         fill: true,
-        tension: 0.4, // đường cong mượt
-        pointRadius: 5,
-        pointBackgroundColor: "#5D43DB",
+        tension: 0.4,
+        pointRadius: 4,
+      },
+      {
+        label: "Expense",
+        data: dataExpense,
+        borderColor: "#f87171",
+        backgroundColor: "rgba(248, 113, 113, 0.2)",
+        fill: true,
+        tension: 0.4,
+        pointRadius: 4,
       },
     ],
   };
@@ -20,14 +49,18 @@ const LineChart = ({ labels = [], dataValues = [] }) => {
   const options = {
     responsive: true,
     plugins: {
-      legend: {
-        position: "top",
+      legend: { position: "bottom" },
+      labels: {
+        padding: 20,
+        font: {
+          size: 14,
+        },
       },
       tooltip: {
         callbacks: {
-          label: function (context) {
+          label: (context) => {
             const value = context.raw || 0;
-            return `${value.toLocaleString()} đ`;
+            return `${context.dataset.label}: ${value.toLocaleString()} đ`;
           },
         },
       },
@@ -36,8 +69,14 @@ const LineChart = ({ labels = [], dataValues = [] }) => {
       y: {
         beginAtZero: true,
         ticks: {
-          callback: function (value) {
-            return value.toLocaleString() + " đ";
+          callback: (value) => {
+            if (value >= 1_000_000) return (value / 1_000_000).toFixed(1) + "M";
+            if (value >= 1_000) return (value / 1_000).toFixed(1) + "K";
+            return value;
+          },
+          maxTicksLimit: window.innerWidth < 640 ? 3 : 6,
+          font: {
+            size: window.innerWidth < 640 ? 10 : 14,
           },
         },
       },

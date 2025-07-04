@@ -63,6 +63,9 @@ const PieChart = () => {
     },
   };
 
+  if (stats.length == 0)
+    return <div className="my-7 text-lg">No data to display</div>;
+
   return <Pie data={data} options={options} />;
 };
 

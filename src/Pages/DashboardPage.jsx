@@ -4,6 +4,7 @@ import DashboardBalanceInfo from "../components/DashboardPageComponent/Dashboard
 import DashboardRecentTransactions from "../components/DashboardPageComponent/DashboardRecentTransactions";
 import DashboardBudgetInfo from "../components/DashboardPageComponent/DashboardBudgetInfo";
 import DashboardStat from "../components/DashboardPageComponent/DashboardStat";
+import DashboardOverview from "../components/DashboardPageComponent/DashboardOverview";
 
 const DashboardPage = () => {
   return (
@@ -23,6 +24,8 @@ const DashboardPage = () => {
         <DashboardBudgetInfo />
 
         <DashboardStat />
+
+        <DashboardOverview />
       </section>
     </div>
   );
