@@ -6,21 +6,36 @@ import {
   deleteTransaction,
 } from "../features/transactionSlice"; // đường dẫn tuỳ dự án
 import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
+import getUsedCategories from "../thunks/getUsedCategories";
 
 const TransactionPage = () => {
   const dispatch = useDispatch();
   const { transactions, loading, total, totalPage, page } = useSelector(
     (s) => s.transaction
   );
+  const [categoryOptions, setCategoryOptions] = useState([]);
 
   /* -------- bộ lọc ---------- */
+  const today = new Date();
+
   const [filters, setFilters] = useState({
     type: "",
     category: "",
-    month: "",
-    year: "",
+    month: String(today.getMonth() + 1),
+    year: String(today.getFullYear()),
     keyword: "",
   });
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const res = await dispatch(getUsedCategories());
+      console.log(res.payload);
+
+      setCategoryOptions(["Tất cả", ...res.payload]);
+    };
+
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     dispatch(getTransactions(filters));
@@ -46,15 +61,6 @@ const TransactionPage = () => {
 
   /* -------- option select ---------- */
   const typeOptions = ["Tất cả", "income", "expense"];
-  const categoryOptions = [
-    "Tất cả",
-    "Du lịch",
-    "Nhà cửa",
-    "Quần áo",
-    "Tiền lương",
-    "Ăn uống",
-    "Đầu tư",
-  ];
   const years = Array.from({ length: 8 }, (_, i) => 2018 + i);
 
   /* -------- render ---------- */
@@ -94,7 +100,7 @@ const TransactionPage = () => {
           label="Năm"
           name="year"
           value={filters.year}
-          options={["Tất cả", ...years]}
+          options={years}
           onChange={handleFilterChange}
         />
       </div>
@@ -126,7 +132,7 @@ const TransactionPage = () => {
         {/* Số lượng giao dịch */}
         <div className="flex-1 p-4 sm:text-right">
           <p className="text-gray-500">Số lượng giao dịch:</p>
-          <p className="text-blue-600 font-bold text-xl">{count}</p>
+          <p className="text-blue-600 font-bold text-xl">{total}</p>
         </div>
       </div>
 
@@ -237,16 +243,6 @@ const Select = ({ label, name, value, options, onChange, render }) => (
         </option>
       ))}
     </select>
-  </div>
-);
-
-const StatCard = ({ label, value, prefix = "", color }) => (
-  <div>
-    <p className="text-gray-500">{label}:</p>
-    <p className={`font-bold text-xl text-${color}-500`}>
-      {prefix}
-      {value.toLocaleString("vi-VN")}
-    </p>
   </div>
 );
 

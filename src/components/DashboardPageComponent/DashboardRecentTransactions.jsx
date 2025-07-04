@@ -67,7 +67,7 @@ const DashboardRecentTransactions = () => {
               <span>{formatDateToString(item.date)}</span>
               <span
                 className={`${
-                  item.type === "expense" ? "text-[#00C951]" : "text-[#FB2C36]"
+                  item.type === "expense" ? "text-[#FB2C36]" : "text-[#00C951]"
                 }`}
               >
                 {item.type === "expense" ? "-" : "+"}
