@@ -13,7 +13,7 @@ export default function LandingPages() {
         style={{ minHeight: "100vh" }}
       >
         {/* Header */}
-        <header className="flex items-center justify-between px-6 py-4">
+        <header className="px-32 md:px-44 flex items-center justify-between px-6 py-4">
           {/* Logo */}
           <a href="#" className="flex items-start group">
             <div className="flex items-center">
@@ -31,27 +31,30 @@ export default function LandingPages() {
           </a>
 
           {/* Nút đăng nhập/đăng ký */}
-         <div className="flex space-x-2">
-            <Link
-              to="/login"
-              className="px-5 py-2 rounded-md text-dark text-sm font-medium transition"
-              style={{ backgroundColor: "#dad7ff" }}
-            >
-              Sign in
-            </Link>
-            <Link
-              to="/login?mode=register
-"
-              className="px-5 py-2 rounded-md text-dark text-sm font-medium transition"
-              style={{ backgroundColor: "#dad7ff" }}
-            >
-              Register
-            </Link>
-          </div>
+<div className="flex space-x-2">
+  <Link
+    to="/login"
+    className="px-5 py-2 rounded-md text-dark text-sm font-bold
+               bg-[#dad7ff] hover:bg-[#8f87ff]
+               transition-colors duration-200"
+  >
+    Sign in
+  </Link>
+
+  <Link
+    to="/login?mode=register"
+    className="px-5 py-2 rounded-md text-dark text-sm font-bold
+               bg-[#dad7ff] hover:bg-[#8f87ff ]
+               transition-colors duration-200"
+  >
+    Register
+  </Link>
+</div>
+
         </header>
 
         {/* Phần chính */}
-        <section className="px-12 md:px-24 flex flex-col md:flex-row gap-12 md:gap-36">
+        <section className="px-32 md:px-44 flex flex-col md:flex-row gap-22 md:gap-26">
           {/* Text */}
           <div className="w-full md:w-1/2">
             <h1 className="font-notosans font-bold leading-tight text-3xl sm:text-4xl md:text-6xl lg:text-7xl">
