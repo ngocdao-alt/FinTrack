@@ -1,6 +1,4 @@
 import { Routes, Route, useLocation } from "react-router-dom";
-import { useState } from "react";
-import "./App.css";
 import LoginPage from "./pages/LoginPage";
 import LandingPage from "./Pages/LandingPage";
 import Sidebar from "./components/SideBarComponent";
@@ -10,29 +8,32 @@ import BudgetPage from "./pages/BudgetPage";
 import TransactionPage from "./pages/TransactionPage";
 import StatPage from "./pages/StatPage";
 import SettingPage from "./pages/SettingPage";
+import MainLayout from "./layout/MainLayout";
+import Component from "./components/Component";
+import BigSideBar from "./components/BigSideBar";
 
 function App() {
-  const [count, setCount] = useState(0);
   const location = useLocation();
-
   const hideHeader =
     location.pathname === "/login" || location.pathname === "/";
 
   return (
-    <div className="flex flex-col">
-      {!hideHeader && <Header />}
-      <div className="flex-1">
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/budget" element={<BudgetPage />} />
-          <Route path="/transactions" element={<TransactionPage />} />
-          <Route path="/stat" element={<StatPage />} />
-          <Route path="/settings" element={<SettingPage />} />
-        </Routes>
-      </div>
-    </div>
+    <Routes>
+      {/* Routes không cần layout */}
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/login" element={<LoginPage />} />
+
+      <Route
+        element={<MainLayout header={<Header />} sidebar={<BigSideBar />} />}
+      >
+        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/budget" element={<BudgetPage />} />
+        <Route path="/transactions" element={<TransactionPage />} />
+        <Route path="/stat" element={<StatPage />} />
+        <Route path="/settings" element={<SettingPage />} />
+      </Route>
+    </Routes>
   );
 }
+
 export default App;

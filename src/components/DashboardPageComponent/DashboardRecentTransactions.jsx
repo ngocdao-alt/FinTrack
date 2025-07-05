@@ -4,10 +4,12 @@ import { getTransactions } from "../../features/transactionSlice";
 import { getDashboard } from "../../features/dashboardSlice";
 import formatDateToString from "../../utils/formatDateToString";
 import formatCurrencyVN from "../../utils/formatCurrency";
+import { useNavigate } from "react-router";
 
 const DashboardRecentTransactions = () => {
   const transactions = useSelector((state) => state.transaction.transactions);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(
@@ -46,6 +48,7 @@ const DashboardRecentTransactions = () => {
           Recent Transactions
         </h2>
         <span
+          onClick={() => navigate("/transactions")}
           className="
                 text-slate-500 underline text-sm cursor-pointer hover:text-slate-600
             "
@@ -76,7 +79,7 @@ const DashboardRecentTransactions = () => {
             </div>
           ))}
         </div>
-        <div className="absolute z-50 bottom-0 left-0 w-full h-10 bg-gradient-to-t from-white to-transparent" />
+        <div className="absolute z-0 bottom-0 left-0 w-full h-10 bg-gradient-to-t from-white to-transparent" />
       </div>
     </div>
   );
