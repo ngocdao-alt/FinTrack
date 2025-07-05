@@ -1,4 +1,3 @@
-// src/pages/Login.jsx
 import { useEffect, useState } from "react";
 import phoneImg from "../assets/img/phoneImg.png";
 import { useDispatch, useSelector } from "react-redux";
@@ -19,141 +18,115 @@ export default function Login() {
 
   useEffect(() => {
     console.log(auth);
-  }, [dispatch, auth]);
+  }, [auth]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    e.stopPropagation();
 
     try {
       if (isRegister) {
-        await dispatch(
-          registerUser({
-            email,
-            name,
-            password,
-          })
-        );
+        await dispatch(registerUser({ email, name, password })).unwrap();
         toast.success("Đăng kí thành công!");
         setIsRegister(false);
       } else {
-        await dispatch(
-          loginUser({
-            email,
-            password,
-          })
-        );
+        await dispatch(loginUser({ email, password })).unwrap();
         toast.success("Đăng nhập thành công!");
+        navigate("/dashboard");
       }
 
       setEmail("");
       setName("");
       setPassword("");
-
-      navigate("/dashboard");
     } catch (error) {
-      console.log(error);
+      toast.error("Đăng nhập/Đăng ký thất bại");
     }
   };
 
   return (
-    <div
-      className="
-                min-h-screen py-5 flex flex-col items-center justify-start bg-gradient-to-b from-white via-indigo-200 to-indigo-600
-                sm:text-xl 
-                lg:text-2xl lg:py-0
-                
-        "
-    >
-      {/* Logo */}
-      <header className="w-full flex items-center gap-2 px-4 py-3">
-        <a href="#" className="flex items-start group">
-          <div className="flex items-center">
-            <img
-              src={LogoF}
-              alt="Landingpage logo"
-              className="h-20 w-12 rounded-full mr-1"
-            />
-            <div className="leading-tight">
-              <span className="text-xl font-semibold">Fin</span>
-              <br />
-              <span className="text-xl font-semibold">Track</span>
+    <>
+      {/* ================= MOBILE (<768px) ================= */}
+      <div className="md:hidden min-h-screen py-5 flex flex-col items-center justify-start bg-gradient-to-b from-white via-indigo-200 to-indigo-600">
+        {/* Logo */}
+        <header className="w-full flex items-center gap-2 px-4 py-3">
+          <a href="#" className="flex items-start group">
+            <div className="flex items-center">
+              <img src={LogoF} alt="Logo" className="h-20 w-12 rounded-full mr-1" />
+              <div className="leading-tight">
+                <span className="text-xl font-semibold">Fin</span>
+                <br />
+                <span className="text-xl font-semibold">Track</span>
+              </div>
             </div>
+          </a>
+        </header>
+
+        {/* Phone illustration */}
+        <img src={phoneImg} alt="Phone" className="w-60 mt-4 select-none pointer-events-none" />
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="w-full max-w-sm flex flex-col gap-4 mt-8 px-4">
+          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" className="w-full rounded-lg px-4 py-3 bg-white outline-none ring-1 ring-gray-200 focus:ring-2 focus:ring-indigo-400 placeholder-gray-500" required />
+
+          {isRegister && (
+            <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" className="w-full rounded-lg px-4 py-3 bg-white outline-none ring-1 ring-gray-200 focus:ring-2 focus:ring-indigo-400 placeholder-gray-500" required />
+          )}
+
+          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" className="w-full rounded-lg px-4 py-3 bg-white outline-none ring-1 ring-gray-200 focus:ring-2 focus:ring-indigo-400 placeholder-gray-500" required />
+
+          <p className="text-sm text-gray-700 text-center">
+            {isRegister ? "Already have an account? " : "Don't have an account yet ? "}
+            <span onClick={() => setIsRegister((prev) => !prev)} className="font-semibold text-indigo-600 cursor-pointer hover:underline">
+              {isRegister ? "Login" : "Register"}
+            </span>
+          </p>
+
+          <button type="submit" className="mt-2 w-full rounded-full bg-indigo-200 hover:bg-indigo-300 active:bg-indigo-400 py-3 text-gray-800 font-medium transition">
+            {isRegister ? "Register" : "Login"}
+          </button>
+        </form>
+      </div>
+
+      {/* ================= DESKTOP (>=768px) ================= */}
+      <div className="hidden md:flex min-h-screen w-full relative">
+        {/* Fixed logo top‑left */}
+        <div className="absolute top-6 left-6 flex items-center z-20">
+          <img src={LogoF} alt="Logo" className="h-16 w-12 rounded-full mr-2" />
+          <div className="leading-tight text-black">
+            <span className="text-2xl font-bold">Fin</span>
+            <br />
+            <span className="text-2xl font-bold">Track</span>
           </div>
-        </a>
-      </header>
+        </div>
 
-      {/* Phone illustration */}
-      <img
-        src={phoneImg} // đổi path tới hình bạn lưu
-        alt="Phone mockup"
-        className="
-                    w-60 mt-4 select-none pointer-events-none self-center
-                    sm:w-70
-                    md:w-80
-                    lg:mt-0
-                "
-      />
+        {/* Left column: form */}
+        <div className="w-1/2 flex flex-col items-center justify-center px-20">
+          <form onSubmit={handleSubmit} className="w-full max-w-sm flex flex-col gap-4 pt-12">
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" className="w-full rounded-lg px-4 py-3 bg-white outline-none ring-1 ring-gray-200 focus:ring-2 focus:ring-indigo-400 placeholder-gray-500" required />
 
-      {/* Form */}
-      <form
-        onSubmit={handleSubmit}
-        className="
-                    w-full max-w-sm flex flex-col gap-4 mt-8 px-4
-                    lg:max-w-[60%] lg:mt-4
-                    xl:max-w-[50%]
-                    2xl:max-w-[40%]
-                "
-      >
-        {/* Email */}
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Email"
-          className="w-full rounded-lg px-4 py-3 bg-white outline-none ring-1 ring-gray-200 focus:ring-2 focus:ring-indigo-400 placeholder-gray-500"
-        />
+            {isRegister && (
+              <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" className="w-full rounded-lg px-4 py-3 bg-white outline-none ring-1 ring-gray-200 focus:ring-2 focus:ring-indigo-400 placeholder-gray-500" required />
+            )}
 
-        {/* Password + eye icon */}
-        {isRegister && (
-          <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            type="text"
-            placeholder="Name"
-            className="w-full rounded-lg px-4 py-3 pr-12 bg-white outline-none ring-1 ring-gray-200 focus:ring-2 focus:ring-indigo-400 placeholder-gray-500"
-          />
-        )}
+            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" className="w-full rounded-lg px-4 py-3 bg-white outline-none ring-1 ring-gray-200 focus:ring-2 focus:ring-indigo-400 placeholder-gray-500" required />
 
-        <input
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          type="password"
-          placeholder="Password"
-          className="w-full rounded-lg px-4 py-3 pr-12 bg-white outline-none ring-1 ring-gray-200 focus:ring-2 focus:ring-indigo-400 placeholder-gray-500"
-        />
+            <p className="text-sm text-gray-700">
+              {isRegister ? "Already have an account? " : "Don't have an account yet ? "}
+              <span onClick={() => setIsRegister((prev) => !prev)} className="font-semibold text-indigo-600 cursor-pointer hover:underline">
+                {isRegister ? "Login" : "Register"}
+              </span>
+            </p>
 
-        {/* Register link */}
-        <p className="text-sm text-gray-700">
-          {isRegister
-            ? "Already have an account? "
-            : "Don't have an account yet ? "}
-          <span
-            onClick={() => setIsRegister((prev) => !prev)}
-            className="font-semibold text-indigo-600 cursor-pointer hover:underline"
-          >
-            {isRegister ? "Login" : "Register"}
-          </span>
-        </p>
+            <button type="submit" className="mt-2 w-full rounded-full bg-indigo-200 hover:bg-indigo-300 active:bg-indigo-400 py-3 text-gray-800 font-medium transition">
+              {isRegister ? "Register" : "Login"}
+            </button>
+          </form>
+        </div>
 
-        {/* Login button */}
-        <button
-          type="submit"
-          className="mt-2 w-full rounded-full bg-indigo-200 hover:bg-indigo-300 active:bg-indigo-400 py-3 text-gray-800 font-medium transition"
-        >
-          {isRegister ? "Register" : "Login"}
-        </button>
-      </form>
-    </div>
+        {/* Right column: phone image on gradient */}
+        <div className="w-1/2 bg-gradient-to-b from-indigo-600 via-indigo-200 to-white flex items-center justify-center">
+          <img src={phoneImg} alt="Phone" className="w-[320px] lg:w-[380px] drop-shadow-2xl" />
+        </div>
+      </div>
+    </>
   );
 }

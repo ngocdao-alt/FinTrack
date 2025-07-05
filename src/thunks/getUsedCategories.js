@@ -8,7 +8,7 @@ export const getUsedCategories = createAsyncThunk('category/getUsedCategories', 
         const { token } = getState().auth;
 
         const res = await axios.get(
-            `${BACK_END_URL}/categories/used`,
+            `${BACK_END_URL}/api/transaction/categories/used`,
             {
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -22,3 +22,5 @@ export const getUsedCategories = createAsyncThunk('category/getUsedCategories', 
         return rejectWithValue(error.response?.data?.message || error.message);
     }
 })
+
+export default getUsedCategories;
