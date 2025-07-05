@@ -67,6 +67,7 @@ function SidebarComponent({ setToggleSidebar }) {
     bg-[linear-gradient(90deg,_#363B9D,_#5f6ee6,_#8e9bff,_#5f6ee6,_#363B9D)]
     bg-[length:400%_100%]
     animate-none
+    lg:hidden
   "
     >
       {/* Nút Đóng */}

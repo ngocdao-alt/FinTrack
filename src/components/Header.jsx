@@ -17,8 +17,6 @@ const Header = () => {
           sm:h-25 sm:px-10
           md:px-15
           lg:px-5 lg:pb-3
-          xl:px-10 xl:py-2 xl:pb-5
-          2xl:px-11 2xl:py-4 2xl:pb-6
     "
     >
       <img
@@ -27,7 +25,6 @@ const Header = () => {
           max-w-20
           sm:max-w-25
           md:max-w-27
-          lg:max-w-30
         "
       />
       <TfiMenuAlt
