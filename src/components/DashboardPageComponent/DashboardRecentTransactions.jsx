@@ -1,13 +1,15 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getTransactions } from "../features/transactionSlice";
-import { getDashboard } from "../features/dashboardSlice";
-import formatDateToString from "../utils/formatDateToString";
-import formatCurrencyVN from "../utils/formatCurrency";
+import { getTransactions } from "../../features/transactionSlice";
+import { getDashboard } from "../../features/dashboardSlice";
+import formatDateToString from "../../utils/formatDateToString";
+import formatCurrencyVN from "../../utils/formatCurrency";
+import { useNavigate } from "react-router";
 
 const DashboardRecentTransactions = () => {
   const transactions = useSelector((state) => state.transaction.transactions);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(
@@ -46,6 +48,7 @@ const DashboardRecentTransactions = () => {
           Recent Transactions
         </h2>
         <span
+          onClick={() => navigate("/transactions")}
           className="
                 text-slate-500 underline text-sm cursor-pointer hover:text-slate-600
             "
@@ -58,24 +61,25 @@ const DashboardRecentTransactions = () => {
 
       <div className="relative max-h-64 overflow-hidden">
         <div className="flex flex-col gap-3">
-          {recentTransactions.map((item) => (
-            <>
-              <div
-                key={item._id}
-                className="grid grid-cols-3 justify-between items-start text-sm"
+          {recentTransactions.map((item, index) => (
+            <div
+              key={item._id}
+              className="grid grid-cols-3 justify-between items-start text-sm"
+            >
+              <span>{item.category}</span>
+              <span>{formatDateToString(item.date)}</span>
+              <span
+                className={`${
+                  item.type === "expense" ? "text-[#FB2C36]" : "text-[#00C951]"
+                }`}
               >
-                <span>{item.category}</span>
-                <span>{formatDateToString(item.date)}</span>
-                <span>
-                  {item.type === "expense" ? "-" : "+"}
-                  {formatCurrencyVN(item.amount)}
-                </span>
-              </div>
-              {/* <hr className="w-full mb-1 h-[1px] bg-[#A0A0A0] border-none" /> */}
-            </>
+                {item.type === "expense" ? "-" : "+"}
+                {formatCurrencyVN(item.amount)}
+              </span>
+            </div>
           ))}
         </div>
-        <div className="absolute z-50 bottom-0 left-0 w-full h-10 bg-gradient-to-t from-white to-transparent" />
+        <div className="absolute z-0 bottom-0 left-0 w-full h-10 bg-gradient-to-t from-white to-transparent" />
       </div>
     </div>
   );

@@ -20,6 +20,24 @@ function SidebarComponent({ setToggleSidebar }) {
   const sidebarRef = useRef(); // tham chiếu tới div Sidebar
 
   useEffect(() => {
+    // Slide in
+    gsap.fromTo(
+      sidebarRef.current,
+      { x: "100%" },
+      { x: "0%", duration: 0.5, ease: "power2.out" }
+    );
+
+    // Gradient chạy ngang ping-pong
+    gsap.to(sidebarRef.current, {
+      backgroundPosition: "400% 0%", // CHỈ ngang
+      duration: 20,
+      ease: "linear",
+      repeat: -1,
+      yoyo: true,
+    });
+  }, []);
+
+  useEffect(() => {
     // Slide vào khi render
     gsap.fromTo(
       sidebarRef.current,
@@ -44,10 +62,13 @@ function SidebarComponent({ setToggleSidebar }) {
     <div
       ref={sidebarRef}
       className="
-      absolute z-100 top-0 right-0 w-full h-screen bg-gradient-to-b from-[#363B9D] to-indigo-300 text-white px-6 py-4 flex flex-col 
-      sm:w-[20%] sm:px-0
-    
-    "
+    fixed top-0 right-0 z-100 w-full h-screen text-white px-6 py-4 flex flex-col 
+    sm:w-[30%] sm:px-0
+    bg-[linear-gradient(90deg,_#363B9D,_#5f6ee6,_#8e9bff,_#5f6ee6,_#363B9D)]
+    bg-[length:400%_100%]
+    animate-none
+    lg:hidden
+  "
     >
       {/* Nút Đóng */}
       <div

@@ -3,8 +3,8 @@ import { TfiWallet } from "react-icons/tfi";
 import { FaLongArrowAltUp } from "react-icons/fa";
 import { FaLongArrowAltDown } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
-import { getDashboard } from "../features/dashboardSlice";
-import formatCurrencyVN from "../utils/formatCurrency";
+import { getDashboard } from "../../features/dashboardSlice";
+import formatCurrencyVN from "../../utils/formatCurrency";
 
 const DashboardBalanceInfo = () => {
   const dashboard = useSelector((state) => state.dashboard);
@@ -29,13 +29,13 @@ const DashboardBalanceInfo = () => {
     >
       <div
         className="
-            flex-1 p-3 flex items-center justify-center gap-5 bg-[#767CFF] text-white rounded-lg border border-slate-200
+            flex-1 p-3 flex items-center justify-center gap-5 bg-[#767CFF] text-white rounded-lg border border-slate-200 shadow
         "
       >
         <TfiWallet className="text-[40px]" />
         <div className="flex flex-col font-semibold text-lg">
           <span>Balance</span>
-          <span>{formatCurrencyVN(dashboard.balance)} đ</span>
+          <span>{formatCurrencyVN(dashboard?.balance)} đ</span>
         </div>
       </div>
 
@@ -50,9 +50,9 @@ const DashboardBalanceInfo = () => {
         "
         >
           <FaLongArrowAltUp className="text-3xl text-green-500" />
-          <div className="flex flex-col  font-semibold">
+          <div className="flex flex-col font-semibold text-sm">
             <span>Gross Income</span>
-            <span>{formatCurrencyVN(dashboard.totalIncome)} đ</span>
+            <span>{formatCurrencyVN(dashboard?.totalIncome)} đ</span>
           </div>
         </div>
 
@@ -62,9 +62,9 @@ const DashboardBalanceInfo = () => {
         "
         >
           <FaLongArrowAltDown className="text-3xl text-red-500" />
-          <div className="flex flex-col font-semibold">
+          <div className="flex flex-col font-semibold text-sm">
             <span>Total Expense</span>
-            <span>{formatCurrencyVN(dashboard.totalExpense)} đ</span>
+            <span>{formatCurrencyVN(dashboard?.totalExpense)} đ</span>
           </div>
         </div>
       </div>

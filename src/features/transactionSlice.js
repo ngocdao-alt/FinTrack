@@ -8,23 +8,25 @@ const initialState = {
     transactions: [],
     total: 0,
     page: 1,
-    totalPage: 1,
+    totalPages: 1,
     error: null
 }
 
 export const getTransactions = createAsyncThunk('transaction/getTransactions', async (filter, { getState, rejectWithValue }) => {
     const { token } = getState().auth;
     try {
-        const { type, category, keyword, month, year} = filter;
+        const { type, category, keyword, month, year, page = 1} = filter;
 
         const res = await axios.get(
-            `${BACK_END_URL}/api/transaction?type=${type}&category=${category}&keyword=${keyword}&month=${month}&year=${year}`,
+            `${BACK_END_URL}/api/transaction?type=${type}&category=${category}&keyword=${keyword}&month=${month}&year=${year}&page=${page}`,
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 }
             }, 
         );
+        console.log(res.data);
+        
         return res.data;
     } catch (error) {
         console.log(error);
@@ -129,11 +131,24 @@ const transactionSlice = createSlice({
                 state.error = null;
             })
             .addCase(getTransactions.fulfilled, (state, action) => {
+                
                 state.loading = false;
-                state.transactions = action.payload.data;
-                state.total = action.payload.total;
-                state.page = action.payload.page;
-                state.totalPage = action.payload.totalPage;
+
+                const { data, total, page, totalPages } = action.payload;
+
+                console.log(page);
+                
+
+                if (page === 1) {
+                    state.transactions = data;
+                } else {
+                    state.transactions = [...state.transactions, ...data];
+                }
+
+                state.total = total;
+                state.page = page || 1;
+                state.totalPages = totalPages;
+                state.error = null;
             })
             .addCase(getTransactions.rejected, (state, action) => {
                 state.loading = false;
@@ -145,7 +160,7 @@ const transactionSlice = createSlice({
             })
             .addCase(createTransaction.fulfilled, (state, action) => {
                 state.loading = false;
-                if(state.page === state.totalPage){
+                if(state.page === state.totalPages){
                     state.transactions.push(action.payload);
                 } 
             })

@@ -1,8 +1,10 @@
 import React from "react";
 import Header from "../components/Header";
-import DashboardBalanceInfo from "../components/DashboardBalanceInfo";
-import DashboardRecentTransactions from "../components/DashboardRecentTransactions";
-import DashboardBudgetInfo from "../components/DashboardBudgetInfo";
+import DashboardBalanceInfo from "../components/DashboardPageComponent/DashboardBalanceInfo";
+import DashboardRecentTransactions from "../components/DashboardPageComponent/DashboardRecentTransactions";
+import DashboardBudgetInfo from "../components/DashboardPageComponent/DashboardBudgetInfo";
+import DashboardStat from "../components/DashboardPageComponent/DashboardStat";
+import DashboardOverview from "../components/DashboardPageComponent/DashboardOverview";
 
 const DashboardPage = () => {
   return (
@@ -20,6 +22,10 @@ const DashboardPage = () => {
         <DashboardRecentTransactions />
 
         <DashboardBudgetInfo />
+
+        <DashboardStat />
+
+        <DashboardOverview />
       </section>
     </div>
   );

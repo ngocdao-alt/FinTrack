@@ -16,7 +16,7 @@ export const getExpenseStat = createAsyncThunk('stat/getExpenseStat', async (dat
         const { startDate, endDate } = dates;
 
         const res = await axios.get(
-            `${BACK_END_URL}/api/category-expense?startDate=${startDate}&endDate=${endDate}`,
+            `${BACK_END_URL}/api/stats/category-expense?startDate=${startDate}&endDate=${endDate}`,
             {
                 headers: {
                     Authorization: `Bearer ${token}`
