@@ -72,7 +72,7 @@ const SettingPage = () => {
                   {/* Icon chỉnh sửa */}
                   <button
                     onClick={handleAvatarClick}
-className="absolute -bottom-2 -right-2 bg-white p-1 rounded-full shadow hover:bg-gray-100"
+                    className="absolute -bottom-2 -right-2 bg-white p-1 rounded-full shadow hover:bg-gray-100"
                     title="Đổi ảnh"
                   >
                     <FaPencilAlt className="text-sm text-gray-600" />
@@ -145,7 +145,7 @@ className="absolute -bottom-2 -right-2 bg-white p-1 rounded-full shadow hover:bg
             {/* === Cài đặt giao diện === */}
             <section className="flex-1 mt-10 md:mt-0">
               <h3 className="text-lg font-semibold mb-4">Giao diện</h3>
-<label className="block mb-2 font-medium">Chủ đề</label>
+              <label className="block mb-2 font-medium">Chủ đề</label>
               <div className="flex space-x-6 mb-6">
                 {["light", "dark", "system"].map((opt) => (
                   <label
