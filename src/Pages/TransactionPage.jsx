@@ -127,7 +127,7 @@ value={year}
           <FaPlus /> Thêm giao dịch
         </button>
       </div>
-
+      <div className="bg-white">
       <table className="w-full text-left text-sm mt-4 md:text-base">
         <thead>
           <tr className="text-gray-600 border-b">
@@ -183,6 +183,7 @@ value={year}
           )}
         </tbody>
       </table>
+      </div>
 
       {totalPages > 1 && page < totalPages && (
         <div className="w-full flex justify-center">
