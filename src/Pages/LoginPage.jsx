@@ -221,7 +221,7 @@ export default function Login() {
         {/* Right column: phone image on gradient - Match the design */}
         <div
           className="
-            relative mt-[5%] mr-[10%] ml-[20%] rounded-4xl border-gray-300 bg-gradient-to-b from-indigo-600 via-indigo-200 to-white flex items-center justify-center
+            relative mt-[5%] mr-[5%] ml-[20%] rounded-4xl border-gray-300 bg-gradient-to-b from-indigo-600 via-indigo-200 to-white flex items-center justify-center
             lg:w-1/2
         ">
           <img src={phoneImg} alt="Phone" className=" w-[320px] lg:w-[420px] drop-shadow-2xl md:absolute md:-left-35 md:z-100" />
