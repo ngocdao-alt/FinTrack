@@ -6,7 +6,7 @@ import formatDateToString from "../../utils/formatDateToString";
 import formatCurrencyVN from "../../utils/formatCurrency";
 import { useNavigate } from "react-router";
 
-const DashboardRecentTransactions = () => {
+const DashboardRecentTransactions = ({ className = "" }) => {
   const transactions = useSelector((state) => state.transaction.transactions);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -31,9 +31,10 @@ const DashboardRecentTransactions = () => {
 
   return (
     <div
-      className="
-            w-full mt-5 p-4 bg-white rounded-lg border border-slate-200
-    "
+      className={`
+            w-full ${className} mt-5 p-4 bg-white rounded-lg border border-slate-200
+            md:p-5
+    `}
     >
       <div
         className="
@@ -51,6 +52,7 @@ const DashboardRecentTransactions = () => {
           onClick={() => navigate("/transactions")}
           className="
                 text-slate-500 underline text-sm cursor-pointer hover:text-slate-600
+                md:text-base
             "
         >
           See all
@@ -60,11 +62,11 @@ const DashboardRecentTransactions = () => {
       <hr className="w-full my-1 h-[1.5px] bg-[#A0A0A0] border-none" />
 
       <div className="relative max-h-64 overflow-hidden">
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 md:gap-4">
           {recentTransactions.map((item, index) => (
             <div
               key={item._id}
-              className="grid grid-cols-3 justify-between items-start text-sm"
+              className="grid grid-cols-3 justify-between items-start text-sm md:px-5"
             >
               <span>{item.category}</span>
               <span>{formatDateToString(item.date)}</span>

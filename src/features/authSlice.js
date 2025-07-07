@@ -61,7 +61,6 @@ const authSlice = createSlice({
             state.loading = false;
             state.error = null;
 
-            // ✅ Xoá khỏi localStorage
             localStorage.removeItem("user");
             localStorage.removeItem("token");
         }

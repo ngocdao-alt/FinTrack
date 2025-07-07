@@ -3,7 +3,7 @@ import LineChart from "../Chart/LineChart";
 import { useSelector } from "react-redux";
 import axios from "axios";
 
-const DashboardOverview = () => {
+const DashboardOverview = ({ className = "" }) => {
   const BACK_END_URL = import.meta.env.VITE_BACK_END_URL;
   const token = useSelector((state) => state.auth.token);
 
@@ -70,15 +70,19 @@ const DashboardOverview = () => {
   }, [token]);
 
   return (
-    <div className="w-full flex flex-col my-3 mb-3 bg-white rounded-lg border border-slate-200 shadow p-4">
+    <div
+      className={`w-full ${className} flex flex-col my-3 mb-3 bg-white rounded-lg border border-slate-200 shadow p-4`}
+    >
       <h2 className="mb-2 text-xl font-bold">Overview</h2>
 
-      <div className="my-1 self-center">
-        <LineChart
-          labels={labels}
-          dataIncome={incomeData}
-          dataExpense={expenseData}
-        />
+      <div className="w-full p-5 flex justify-center items-center sm:p-0">
+        <div className="h-[250px] w-[80%] sm:w-[70%]  md:h-[200px] lg:h-[220px] lg:p-3">
+          <LineChart
+            labels={labels}
+            dataIncome={incomeData}
+            dataExpense={expenseData}
+          />
+        </div>
       </div>
     </div>
   );

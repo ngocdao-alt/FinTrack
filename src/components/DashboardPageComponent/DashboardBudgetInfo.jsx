@@ -4,7 +4,7 @@ import { useNavigate } from "react-router";
 import { getBudget } from "../../features/budgetSlice";
 import formatCurrencyVN from "../../utils/formatCurrency";
 
-const DashboardBudgetInfo = () => {
+const DashboardBudgetInfo = ({ className = "" }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -24,9 +24,9 @@ const DashboardBudgetInfo = () => {
 
   return (
     <div
-      className="
-        w-full  my-3 flex justify-center bg-white rounded-lg border border-slate-200 shadow p-4
-        "
+      className={`
+        w-full ${className} my-3 flex justify-center bg-white rounded-lg border border-slate-200 shadow p-4
+        `}
     >
       <div className="w-full flex-col">
         <h2

@@ -14,18 +14,20 @@ const DashboardPage = () => {
       {/* Balance information */}
       <section
         className="
-          w-full p-5 bg-[#F5F6FA] flex-col gap-3 text-[#464646]
-      "
+          w-full max-h-[90vh] p-1 bg-[#F5F6FA] text-[#464646]
+          flex flex-col gap-3 sm:p-3 md:px-8 md:py-3
+          xl:grid xl:grid-cols-3 xl:grid-rows-6 xl:gap-3 xl:auto-rows-min xl:items-center 
+        "
       >
-        <DashboardBalanceInfo />
+        <DashboardBalanceInfo className="col-start-1 col-span-3 row-start-1 row-span-1" />
 
-        <DashboardRecentTransactions />
+        <DashboardRecentTransactions className="col-start-3 col-span-1 row-start-2 row-span-3" />
 
-        <DashboardBudgetInfo />
+        <DashboardBudgetInfo className="col-start-3 col-span-1 row-start-5 row-span-2" />
 
-        <DashboardStat />
+        <DashboardStat className="h-full col-start-1 col-span-2 row-start-2 row-span-3" />
 
-        <DashboardOverview />
+        <DashboardOverview className="h-full col-start-1 col-span-2 row-start-5 row-span-2" />
       </section>
     </div>
   );

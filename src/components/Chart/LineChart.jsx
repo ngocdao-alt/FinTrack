@@ -48,6 +48,7 @@ const LineChart = ({ labels = [], dataIncome = [], dataExpense = [] }) => {
 
   const options = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: { position: "bottom" },
       labels: {
