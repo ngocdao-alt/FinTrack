@@ -2,18 +2,20 @@ import { FiArrowUpRight } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import LogoF from "../assets/img/LogoF.png";
 import Laptop from "../assets/img/Laptop.png";
-
-
 export default function LandingPages() {
   return (
     <div className="min-h-screen flex" id="landingpage">
       {/* Nội dung chính */}
       <main
-        className="flex-1 h-full bg-gradient-to-b from-white via-white to-[#373ecb] md:bg-none"
-        style={{ minHeight: "100vh" }}
-      >
+  className="
+    flex-1 h-full
+    bg-gradient-to-b from-white via-white to-[#373ecb] xl:bg-none
+    "           /* Giữ gradient ở mobile, bỏ ở md+ */
+  style={{ minHeight: "100vh" }}
+>
         {/* Header */}
-        <header className="px-32 md:px-44 flex items-center justify-between px-6 py-4">
+       <header className="px-3 md:px-24 flex items-center justify-between py-2">
+
           {/* Logo */}
           <a href="#" className="flex items-start group">
             <div className="flex items-center">
@@ -23,9 +25,9 @@ export default function LandingPages() {
                 className="h-20 w-12 rounded-full mr-1"
               />
               <div className="leading-tight">
-                <span className="text-xl font-Roboto">Fin</span>
+                <span className="text-xl font-bold font-Roboto">Fin</span>
                 <br />
-                <span className="text-xl font-Roboto">Track</span>
+                <span className="text-xl font-bold font-Roboto">Track</span>
               </div>
             </div>
           </a>
@@ -34,7 +36,7 @@ export default function LandingPages() {
 <div className="flex space-x-2">
   <Link
     to="/login"
-    className="px-5 py-2 rounded-md text-dark text-sm font-bold
+    className="px-3 py-2 rounded-md text-dark text-sm font-bold
                bg-[#dad7ff] hover:bg-[#8f87ff]
                transition-colors duration-200"
   >
@@ -43,7 +45,7 @@ export default function LandingPages() {
 
   <Link
     to="/login?mode=register"
-    className="px-5 py-2 rounded-md text-dark text-sm font-bold
+    className="px-3  py-2 rounded-md text-dark text-sm font-bold
                bg-[#dad7ff] hover:bg-[#8f87ff ]
                transition-colors duration-200"
   >
@@ -54,10 +56,19 @@ export default function LandingPages() {
         </header>
 
         {/* Phần chính */}
-        <section className="px-32 md:px-44 flex flex-col md:flex-row gap-22 md:gap-26">
+    <section
+  className="
+    min-h-screen
+    flex flex-col items-center
+    gap-6 px-6                
+    md:gap-10 md:px-12      
+    lg:px-12                  
+    xl:flex-row xl:items-start xl:gap-10  
+    py-16                    
+  ">
           {/* Text */}
-          <div className="w-full md:w-1/2">
-            <h1 className="font-notosans font-bold leading-tight text-3xl sm:text-4xl md:text-6xl lg:text-7xl">
+          <div className=" w-full md:w-1/2">
+            <h1 className="font-notosans font-bold leading-tight text-3xl sm:text-4xl md:text-5xl lg:text-5xl  xl:text-5xl">
               <span className="block">SmartExpense</span>
               <span className="block flex items-center whitespace-nowrap">
                 Tracking<span className="ml-1">,</span>
@@ -68,29 +79,29 @@ export default function LandingPages() {
                   />
                 </span>
               </span>
-              <span className="block mt-1 sm:mt-2 text-3xl sm:text-4xl md:text-6xl">
+              <span className="block mt-1 sm:mt-2 text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-5xl">
                 Simplified
               </span>
             </h1>
 
-            <p className="font-roboto text-sm md:text-base text-gray-700 max-w-md mt-4">
+            <p className="font-roboto text-xl md:text-base text-gray-1000 max-w-xl mt-4">
               Empower your team with seamless, cloud-based tools designed to
               enhance productivity, collaboration, and efficiency.
             </p>
           </div>
 
           {/* Hình ảnh + gradient phía sau */}
-          <div className="w-full md:w-1/2 flex justify-center md:justify-end md:items-center mt-9 md:mt-7 relative">
-            {/* Gradient phía sau hình – chỉ hiển thị ở md trở lên */}
+          <div className="w-full md:w-1/2 flex justify-center xl:justify-end xl:items-center mt-9 xl:mt-7 relative">
+            {/* Gradient phía sau hình*/}
             <div
-              className="hidden md:block absolute rounded-[2rem] bg-gradient-to-b from-[#8f88ff] to-white"
+              className="hidden xl:block absolute rounded-[2rem] bg-gradient-to-b from-[#8f88ff] to-white"
               style={{
-                width: "330px",
-                height: "440px",
+                width: "350px",
+                height: "300px",
                 zIndex: 0,
-                top: "55%",
-                left: "55%",
-                transform: "translate(-30%, -47%)",
+                top: "95%",
+                left: "95%",
+                transform: "translate(-90%, -90%)",
               }}
             />
 
@@ -98,7 +109,7 @@ export default function LandingPages() {
             <img
               src={Laptop}
               alt="Hình Laptop & Phone"
-              className="w-full max-w-sm md:max-w-lg drop-shadow-md relative z-4"
+              className="w-full max-w-sm xl:max-w-md drop-shadow-xl relative z-4"
             />
           </div>
         </section>

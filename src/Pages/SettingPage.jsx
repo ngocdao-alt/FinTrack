@@ -29,10 +29,11 @@ const SettingPage = () => {
   const saveUserName = () => setEditingName(false); // TODO: call API
 
   return (
-    <div className="min-h-screen flex bg-[#f3f4f6]">
-      <main className="flex-1 px-4 sm:px-6 py-6 flex justify-center">
-        <div className="w-full max-w-4xl bg-white rounded-xl shadow-md p-6">
-          <h2 className="text-2xl font-semibold mb-8">Cài đặt</h2>
+    <div className="min-h-screen flex items-center justify-center bg-[#f3f4f6]">
+                            {/* MAIN */}
+<main className="flex-1 px-4 sm:px-6 py-6 ">
+  <div className="w-full max-w-4xl bg-white rounded-xl shadow-md p-6 mx-auto">
+    <h2 className="text-2xl font-semibold mb-8">Cài đặt</h2>
 
           <div className="flex flex-col md:flex-row gap-10 items-start">
             {/* === Thông tin người dùng === */}
