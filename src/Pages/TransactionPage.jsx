@@ -77,7 +77,7 @@ const TransactionPage = () => {
 
   return (
     <div className="min-h-screen w-full bg-[#f5f6fa] px-4 py-2">
-      <h1 className="text-3xl font-bold mb-4">Giao dịch</h1>
+      <h1 className="text-3xl font-Roboto mb-4">Giao dịch</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 bg-white p-4 rounded-md shadow">
         <Select
@@ -127,7 +127,7 @@ value={year}
           <FaPlus /> Thêm giao dịch
         </button>
       </div>
-      <div className="bg-white">
+      <div className="bg-white mt-6 rounded-md shadow p-4 overflow-x-auto">
       <table className="w-full text-left text-sm mt-4 md:text-base">
         <thead>
           <tr className="text-gray-600 border-b">
@@ -183,8 +183,7 @@ value={year}
           )}
         </tbody>
       </table>
-      </div>
-
+    </div>
       {totalPages > 1 && page < totalPages && (
         <div className="w-full flex justify-center">
           <button
