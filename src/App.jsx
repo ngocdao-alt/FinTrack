@@ -1,6 +1,6 @@
 import { Routes, Route, useLocation } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
-import LandingPage from "./Pages/LandingPage";
+import LandingPage from "./pages/LandingPage";
 import Sidebar from "./components/SideBarComponent";
 import DashboardPage from "./pages/DashboardPage";
 import Header from "./components/Header";
