@@ -26,6 +26,7 @@ const DashboardBudgetInfo = ({ className = "" }) => {
     <div
       className={`
         w-full ${className} my-3 flex justify-center bg-white rounded-lg border border-slate-200 shadow p-4
+        lg:my-0 lg:mb-1
         `}
     >
       <div className="w-full flex-col">

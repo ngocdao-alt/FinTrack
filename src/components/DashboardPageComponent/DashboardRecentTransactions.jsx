@@ -27,13 +27,14 @@ const DashboardRecentTransactions = ({ className = "" }) => {
     console.log(transactions);
   }, [transactions]);
 
-  const recentTransactions = transactions.slice(0, 6);
+  const recentTransactions = transactions.slice(0, 10);
 
   return (
     <div
       className={`
             w-full ${className} mt-5 p-4 bg-white rounded-lg border border-slate-200
             md:p-5
+            lg:mt-0
     `}
     >
       <div
@@ -81,7 +82,7 @@ const DashboardRecentTransactions = ({ className = "" }) => {
             </div>
           ))}
         </div>
-        <div className="absolute z-0 bottom-0 left-0 w-full h-10 bg-gradient-to-t from-white to-transparent" />
+        <div className="absolute z-0 bottom-0 left-0 w-full h-15 bg-gradient-to-t from-white to-transparent" />
       </div>
     </div>
   );

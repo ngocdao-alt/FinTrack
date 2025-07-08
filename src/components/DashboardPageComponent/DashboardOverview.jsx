@@ -71,12 +71,15 @@ const DashboardOverview = ({ className = "" }) => {
 
   return (
     <div
-      className={`w-full ${className} flex flex-col my-3 mb-3 bg-white rounded-lg border border-slate-200 shadow p-4`}
+      className={`
+        w-full ${className} flex flex-col my-3 mb-3 bg-white rounded-lg border border-slate-200 shadow p-4
+        lg:my-0 lg:mb-1
+      `}
     >
       <h2 className="mb-2 text-xl font-bold">Overview</h2>
 
       <div className="w-full p-5 flex justify-center items-center sm:p-0">
-        <div className="h-[250px] w-[80%] sm:w-[70%]  md:h-[200px] lg:h-[220px] lg:p-3">
+        <div className="h-[200px] w-[80%] sm:w-[70%]  md:h-[200px] lg:h-[200px] lg:p-0">
           <LineChart
             labels={labels}
             dataIncome={incomeData}
