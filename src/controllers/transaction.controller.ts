@@ -6,10 +6,20 @@ import { getLastDayOfMonth } from "../utils/getLastDayOfMonth";
 // CREATE
 export const createTransaction = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const { amount, type, category, note, receiptImage, date, isRecurring, recurringDay } = req.body;
+    const {
+      amount,
+      type,
+      category,
+      note,
+      receiptImage,
+      date,
+      recurringDay,
+    } = req.body;
+
+    const isRecurringBool = req.body.isRecurring === "true"; // ✅ ép kiểu đúng
 
     // Giao định kỳ
-    if (isRecurring) {
+    if (isRecurringBool) {
       // Validate
       if (!recurringDay || recurringDay < 1 || recurringDay > 31) {
         res.status(400).json({ message: "Ngày định kỳ (recurringDay) không hợp lệ" });
@@ -50,6 +60,7 @@ export const createTransaction = async (req: AuthRequest, res: Response): Promis
         template: templateTx,
         firstTransaction: firstTx,
       });
+      return;
     }
 
     // Giao dịch thông thường
@@ -81,38 +92,48 @@ export const createTransaction = async (req: AuthRequest, res: Response): Promis
 
 // GET ALL
 export const getTransactions = async (req: AuthRequest, res: Response) => {
-    try {
-        const { page = 1, limit = 10, type, category, keyword, month, year } = req.query;
-        
-        const filter: any = { user: req.userId };
+  try {
+    const { page = 1, limit = 10, type, category, keyword, month, year } = req.query;
 
-        if(type) filter.type = type;
-        if(category) filter.category = category;
-        if(keyword) filter.note = { $regex: keyword, $options: "i"};
+    const filter: any = { user: req.userId };
 
-        if(month && year) {
-            const start = new Date(`${year}-${month}-01`);
-            const end = new Date(`${year}-${+month + 1}-01`);
-            filter.date = { $gte: start, $lt: end};
-        }
+    if (type) filter.type = type;
+    if (category) filter.category = category;
+    if (keyword) filter.note = { $regex: keyword, $options: 'i' };
 
-        const skip = (+page - 1)* +limit;
-
-        const [transactions, total] = await Promise.all([
-            Transaction.find(filter).sort({date: - 1}).skip(skip).limit(+limit),
-            Transaction.countDocuments(filter),
-        ]);
-
-        res.json({
-            data: transactions,
-            total,
-            page: +page,
-            totalPages: Math.ceil(total / +limit)
-        });
-    } catch (err) {
-        res.status(500).json({ message: "Không thể lấy danh sách!", error: err });
+    // Xử lý lọc theo tháng và/hoặc năm
+    if (month && year) {
+      const start = new Date(Number(year), Number(month) - 1, 1);
+      const end = new Date(Number(year), Number(month), 1);
+      filter.date = { $gte: start, $lt: end };
+    } else if (year && !month) {
+      const start = new Date(Number(year), 0, 1);
+      const end = new Date(Number(year) + 1, 0, 1);
+      filter.date = { $gte: start, $lt: end };
+    } else if (month && !year) {
+      // Nếu chỉ có tháng, lấy tất cả các năm trong tháng đó (ít dùng nhưng vẫn hỗ trợ)
+      const monthNumber = Number(month);
+      filter.$expr = { $eq: [{ $month: "$date" }, monthNumber] };
     }
+
+    const skip = (+page - 1) * +limit;
+
+    const [transactions, total] = await Promise.all([
+      Transaction.find(filter).sort({ date: -1 }).skip(skip).limit(+limit),
+      Transaction.countDocuments(filter),
+    ]);
+
+    res.json({
+      data: transactions,
+      total,
+      page: +page,
+      totalPages: Math.ceil(total / +limit),
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Không thể lấy danh sách!', error: err });
+  }
 };
+
 
 // UPDATE
 export const updateTransaction = async (req: AuthRequest, res: Response) => {
