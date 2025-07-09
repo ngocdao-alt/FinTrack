@@ -28,28 +28,23 @@ export default function Login() {
     try {
       if (isRegister) {
         await dispatch(registerUser({ email, name, password })).unwrap();
-        toast.success("Đăng kí thành công!");
         setIsRegister(false);
       } else {
         await dispatch(loginUser({ email, password })).unwrap();
-        toast.success("Đăng nhập thành công!");
         navigate("/dashboard");
       }
 
       // Mock functionality for demo
       if (isRegister) {
-        alert("Đăng kí thành công!");
         setIsRegister(false);
       } else {
-        alert("Đăng nhập thành công!");
       }
 
       setEmail("");
       setName("");
       setPassword("");
     } catch (error) {
-      toast.error("Đăng nhập/Đăng ký thất bại");
-      alert("Đăng nhập/Đăng ký thất bại");
+      
     }
   };
 
