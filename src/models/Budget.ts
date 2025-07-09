@@ -1,25 +1,31 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
+interface CategoryBudget {
+  category: string;
+  amount: number;
+}
+
 export interface IBudget extends Document {
-    user: mongoose.Types.ObjectId;
-    month: number;
-    year: number;
-    amount: number;
-    alertLevel: number;
-};
+  user: mongoose.Types.ObjectId;
+  month: number;
+  year: number;
+  totalAmount: number;
+  categories: CategoryBudget[]; 
+  alertLevel: number;
+}
 
-const budgetSchema = new Schema<IBudget>(
+const BudgetSchema = new Schema<IBudget>({
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  month: { type: Number, required: true },
+  year: { type: Number, required: true },
+  totalAmount: { type: Number, required: true },
+  categories: [
     {
-        user: { type: Schema.Types.ObjectId, required: true},
-        month: { type: Number, required: true},
-        year: { type: Number, required: true},
-        amount: { type: Number, required: true},
-        alertLevel: { type: Number, default: 0}
-    },
-    {timestamps: true}
-);
+      category: { type: String, required: true },
+      amount: { type: Number, required: true },
+    }
+  ],
+  alertLevel: { type: Number, default: 0 },
+}, { timestamps: true });
 
-budgetSchema.index({ user: 1, month: 1, year: 1 }, { unique: true });
-
-export default mongoose.model<IBudget>("Budget", budgetSchema);
-
+export default mongoose.model<IBudget>('Budget', BudgetSchema);

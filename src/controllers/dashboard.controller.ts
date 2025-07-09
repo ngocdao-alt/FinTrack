@@ -13,8 +13,8 @@ export const getDashboardStats = async (req: AuthRequest, res: Response) => {
         if(month && year){
             const monthNum = parseInt(month as string, 10);
             const yearNum = parseInt(year as string, 10);
-            const start = new Date(Date.UTC(yearNum, monthNum - 1, 1)); // ví dụ: UTC 2025-06-01T00:00:00Z
-            const end = new Date(Date.UTC(yearNum, monthNum, 1));       // UTC 2025-07-01T00:00:00Z
+            const start = new Date(Date.UTC(yearNum, monthNum - 1, 1)); 
+            const end = new Date(Date.UTC(yearNum, monthNum, 1));       
             filter.date =  { $gte: start, $lt: end};
         }
 

@@ -8,7 +8,7 @@ export const createTransaction = async (req: AuthRequest, res: Response): Promis
   try {
     const { amount, type, category, note, receiptImage, date, isRecurring, recurringDay } = req.body;
 
-    // Trường hợp GIAO DỊCH ĐỊNH KỲ
+    // Giao định kỳ
     if (isRecurring) {
       // Validate
       if (!recurringDay || recurringDay < 1 || recurringDay > 31) {
@@ -16,7 +16,6 @@ export const createTransaction = async (req: AuthRequest, res: Response): Promis
         return;
       }
 
-      // Tạo bản mẫu (không có date)
       const templateTx = await Transaction.create({
         user: req.userId,
         amount,
@@ -29,7 +28,6 @@ export const createTransaction = async (req: AuthRequest, res: Response): Promis
         date: undefined,
       });
 
-      // Tạo bản đầu tiên có date
       const today = new Date();
       const year = today.getFullYear();
       const month = today.getMonth();
@@ -54,7 +52,7 @@ export const createTransaction = async (req: AuthRequest, res: Response): Promis
       });
     }
 
-    // Trường hợp GIAO DỊCH THÔNG THƯỜNG
+    // Giao dịch thông thường
     if (!date) {
       res.status(400).json({ message: "Giao dịch thường cần trường `date`" });
       return;

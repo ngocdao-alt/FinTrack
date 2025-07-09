@@ -1,14 +1,15 @@
 import { Router } from "express";
 import { requireAuth } from "../middlewares/requireAuth";
 import { createTransaction, deleteTransaction, getTransactions, getUsedCategories, updateTransaction } from "../controllers/transaction.controller";
+import upload from "../middlewares/upload";
 
 const router = Router();
 
 router.use(requireAuth);
 
-router.post('/', createTransaction);
+router.post('/', upload.none(), createTransaction);
 router.get('/', getTransactions);
-router.put('/:id', updateTransaction);
+router.put('/:id', upload.none(), updateTransaction);
 router.delete('/:id', deleteTransaction);
 router.get('/categories/used', getUsedCategories);
 
