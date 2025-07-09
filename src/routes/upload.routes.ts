@@ -5,6 +5,6 @@ import { uploadReceiptImages } from '../controllers/upload.controller';
 
 const router = Router();
 
-router.post('/receipt', requireAuth, upload.array("receiptImages", 10), uploadReceiptImages);
+router.post('/receipt', requireAuth, upload.array("receiptImages", 5), uploadReceiptImages);
 
 export default router;

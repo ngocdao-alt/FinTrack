@@ -1,7 +1,9 @@
-import Transaction from "../models/Transaction";
-import { Request, Response } from "express";
-import { AuthRequest } from "../middlewares/requireAuth";
-import { getLastDayOfMonth } from "../utils/getLastDayOfMonth";
+import { Request, Response } from 'express';
+import { AuthRequest } from '../middlewares/requireAuth';
+import Transaction from '../models/Transaction';
+import cloudinary from '../utils/cloudinary';
+import { v4 as uuid } from 'uuid';
+import { getLastDayOfMonth } from '../utils/getLastDayOfMonth';
 
 // CREATE
 export const createTransaction = async (req: AuthRequest, res: Response): Promise<void> => {
@@ -11,37 +13,53 @@ export const createTransaction = async (req: AuthRequest, res: Response): Promis
       type,
       category,
       note,
-      receiptImage,
       date,
       recurringDay,
+      isRecurring
     } = req.body;
 
-    const isRecurringBool = req.body.isRecurring === "true"; // ✅ ép kiểu đúng
+    // ✅ Upload ảnh lên Cloudinary nếu có
+    let receiptImages: string[] = [];
+    if (req.files && Array.isArray(req.files)) {
+      const uploadPromises = (req.files as Express.Multer.File[]).map(file => {
+        const base64 = `data:${file.mimetype};base64,${file.buffer.toString("base64")}`;
+        return cloudinary.uploader.upload(base64, {
+          folder: 'fintrack_receipts',
+          public_id: `receipt-${uuid()}`
+        });
+      });
 
-    // Giao định kỳ
+      const results = await Promise.all(uploadPromises);
+      receiptImages = results.map(result => result.secure_url);
+    }
+
+    const isRecurringBool = isRecurring === 'true' || isRecurring === true;
+
+    // ✅ Nếu là giao dịch định kỳ
     if (isRecurringBool) {
-      // Validate
       if (!recurringDay || recurringDay < 1 || recurringDay > 31) {
         res.status(400).json({ message: "Ngày định kỳ (recurringDay) không hợp lệ" });
         return;
       }
 
+      // 👉 Tạo bản mẫu không có date
       const templateTx = await Transaction.create({
         user: req.userId,
         amount,
         type,
         category,
         note,
-        receiptImage,
+        receiptImage: receiptImages,
         isRecurring: true,
         recurringDay,
-        date: undefined,
+        date: undefined
       });
 
+      // 👉 Tạo bản thực tế tháng này
       const today = new Date();
       const year = today.getFullYear();
       const month = today.getMonth();
-      const day = Math.min(recurringDay, getLastDayOfMonth(year, month));
+      const day = Math.min(+recurringDay, getLastDayOfMonth(year, month));
 
       const firstTx = await Transaction.create({
         user: req.userId,
@@ -49,21 +67,21 @@ export const createTransaction = async (req: AuthRequest, res: Response): Promis
         type,
         category,
         note,
-        receiptImage,
+        receiptImage: receiptImages,
         isRecurring: true,
         recurringDay,
-        date: new Date(year, month, day),
+        date: new Date(year, month, day)
       });
 
       res.status(201).json({
-        message: "Đã tạo giao dịch định kỳ và bản đầu tiên thành công",
+        message: "Đã tạo giao dịch định kỳ và bản đầu tiên",
         template: templateTx,
-        firstTransaction: firstTx,
+        firstTransaction: firstTx
       });
       return;
     }
 
-    // Giao dịch thông thường
+    // ✅ Nếu là giao dịch thông thường
     if (!date) {
       res.status(400).json({ message: "Giao dịch thường cần trường `date`" });
       return;
@@ -75,20 +93,22 @@ export const createTransaction = async (req: AuthRequest, res: Response): Promis
       type,
       category,
       note,
-      receiptImage,
+      receiptImage: receiptImages,
       isRecurring: false,
-      date,
+      date
     });
 
     res.status(201).json({
       message: "Đã tạo giao dịch thành công",
-      transaction: tx,
+      transaction: tx
     });
+
   } catch (error) {
-    console.error("Lỗi khi tạo giao dịch:", error);
+    console.error("❌ Lỗi khi tạo giao dịch:", error);
     res.status(500).json({ message: "Không thể tạo giao dịch", error });
   }
 };
+
 
 // GET ALL
 export const getTransactions = async (req: AuthRequest, res: Response) => {

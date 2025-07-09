@@ -7,7 +7,12 @@ const router = Router();
 
 router.use(requireAuth);
 
-router.post('/', upload.none(), createTransaction);
+router.post(
+  '/',
+  requireAuth,
+  upload.array('receiptImages', 5),  // 👈 Nhớ đúng tên key và giới hạn số ảnh
+  createTransaction
+);
 router.get('/', getTransactions);
 router.put('/:id', upload.none(), updateTransaction);
 router.delete('/:id', deleteTransaction);
