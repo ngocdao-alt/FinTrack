@@ -17,7 +17,7 @@ const BigSideBar = () => {
       path: "/transactions",
     },
     { icon: <FaWallet />, label: "budget", path: "/budget" },
-    { icon: <IoStatsChart />, label: "Statistics", path: "/statistics" },
+    { icon: <IoStatsChart />, label: "Statistics", path: "/stat" },
     { icon: <MdSettings />, label: "Setting", path: "/settings" },
   ];
 

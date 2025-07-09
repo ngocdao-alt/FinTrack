@@ -13,7 +13,7 @@ const DashboardBalanceInfo = ({ className = "" }) => {
   useEffect(() => {
     const date = new Date();
     dispatch(
-      getDashboard({ month: date.getMonth(), year: date.getFullYear() })
+      getDashboard({ month: date.getMonth() + 1, year: date.getFullYear() })
     );
   }, []);
 

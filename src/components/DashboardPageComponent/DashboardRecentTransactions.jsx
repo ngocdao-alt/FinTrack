@@ -69,7 +69,9 @@ const DashboardRecentTransactions = ({ className = "" }) => {
               key={item._id}
               className="grid grid-cols-3 justify-between items-start text-sm md:px-5"
             >
-              <span>{item.category}</span>
+              <span className="text-ellipsis line-clamp-1">
+                {item.category}
+              </span>
               <span>{formatDateToString(item.date)}</span>
               <span
                 className={`${

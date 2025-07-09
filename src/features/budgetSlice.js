@@ -7,9 +7,10 @@ const initialState = {
     loading: false,
     month: null,
     year: null,
-    amount: 0,
-    spent: 0,
-    percentUsed: 0,
+    totalBudget: 0,
+    totalSpent: 0,
+    totalPercentUsed: 0,
+    categoryStats: [],
     error: null,
 }
 
@@ -86,9 +87,10 @@ const budgetSlice = createSlice({
                 state.loading = false;
                 state.month = action.payload.month;
                 state.year = action.payload.year;
-                state.amount = action.payload.amount;
-                state.spent = action.payload.spent;
-                state.percentUsed = action.payload.percentUsed;
+                state.totalBudget = action.payload.totalBudget;
+                state.totalSpent = action.payload.totalSpent;
+                state.totalPercentUsed = action.payload.totalPercentUsed;
+                state.categoryStats = action.payload.categoryStats;
             })
             .addCase(getBudget.rejected, (state, action) => {
                 state.loading = false;

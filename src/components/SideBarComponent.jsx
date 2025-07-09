@@ -6,13 +6,14 @@ import { RiDashboardFill } from "react-icons/ri";
 import { GiReceiveMoney } from "react-icons/gi";
 import { Link } from "react-router-dom";
 import { IoMdCloseCircle } from "react-icons/io";
+import { IoStatsChart } from "react-icons/io5";
 import gsap from "gsap";
+
 const navArr = [
-  { icon: <AiFillHome />, label: "Home", path: "/" },
-  { icon: <RiDashboardFill />, label: "Control Panel", path: "/dashboard" },
+  { icon: <RiDashboardFill />, label: "Dashboard", path: "/dashboard" },
   { icon: <FaMoneyBillWave />, label: "Transaction", path: "/transactions" },
-  { icon: <MdCategory />, label: "Category", path: "/categories" },
   { icon: <GiReceiveMoney />, label: "Budget", path: "/budget" },
+  { icon: <IoStatsChart />, label: "Statistics", path: "/stat" },
   { icon: <MdSettings />, label: "Setting", path: "/settings" },
 ];
 
@@ -102,6 +103,7 @@ function SidebarComponent({ setToggleSidebar }) {
               {item.icon}
             </span>
             <Link
+              onClick={() => handleCloseSidebar()}
               to={item.path}
               className="
                 transform transition group-hover:scale-105

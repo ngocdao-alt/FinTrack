@@ -12,15 +12,15 @@ const DashboardBudgetInfo = ({ className = "" }) => {
 
   useEffect(() => {
     const date = new Date();
-    dispatch(getBudget({ month: date.getMonth(), year: date.getFullYear() }));
+    const currentMonth = date.getMonth() + 1;
+    const currentYear = date.getFullYear();
+
+    dispatch(getBudget({ month: currentMonth, year: currentYear }));
   }, []);
 
   useEffect(() => {
     console.log("Budget:", budget);
   }, [budget]);
-
-  const spentPercentage =
-    budget.amount > 0 ? Math.min((budget.spent / budget.amount) * 100, 100) : 0;
 
   return (
     <div
@@ -48,14 +48,14 @@ const DashboardBudgetInfo = ({ className = "" }) => {
             font-semibold
             "
           >
-            {formatCurrencyVN(budget.amount)} đ
+            {formatCurrencyVN(budget?.totalBudget || 0)} đ
           </span>
 
           <div className="relative w-[40%] h-3 bg-[#D1CDFB] rounded-full overflow-hidden">
             <div
               className="h-3 rounded-full transition-all duration-500"
               style={{
-                width: `${budget.percentUsed}%`,
+                width: `${budget.totalPercentUsed || 0}%`,
                 backgroundColor: "#5D43DB",
               }}
             ></div>
@@ -66,7 +66,7 @@ const DashboardBudgetInfo = ({ className = "" }) => {
             font-semibold
             "
           >
-            {budget.percentUsed}%
+            {budget.totalPercentUsed}%
           </span>
         </div>
 
