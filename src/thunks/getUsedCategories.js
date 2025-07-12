@@ -15,7 +15,8 @@ export const getUsedCategories = createAsyncThunk('category/getUsedCategories', 
                 }
             }
         )
-
+        console.log(res);
+        
         return res.data;
     } catch (error) {
         console.log(error);
