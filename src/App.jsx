@@ -18,6 +18,7 @@ function App() {
     location.pathname === "/login" || location.pathname === "/";
 
   return (
+    <>
     <Routes>
       {/* Routes không cần layout */}
       <Route path="/" element={<LandingPage />} />
@@ -33,6 +34,7 @@ function App() {
         <Route path="/settings" element={<SettingPage />} />
       </Route>
     </Routes>
+    </>
   );
 }
 

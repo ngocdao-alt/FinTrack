@@ -1,4 +1,3 @@
-// TransactionModal.jsx
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createTransaction, updateTransaction } from "../features/transactionSlice";
@@ -11,7 +10,7 @@ const initialState = {
   amount: "",
   category: "",
   note: "",
-  date: now.toISOString().slice(0, 10), // <-- NGÀY MẶC ĐỊNH
+  date: now.toISOString().slice(0, 10),
   receiptImages: [],
   isRecurring: false,
   recurringDay: now.getDate(),
@@ -23,28 +22,23 @@ const TransactionModal = ({ visible, onClose, transaction }) => {
 
   const [categoryList, setCategoryList] = useState([
     [
-    "Bán hàng",
-    "Di chuyển",
-    "Giáo dục",
-    "Giải trí",
-    "Lương",
-    "Mua sắm",
-    "Sức khỏe",
-    ]
+      "Bán hàng",
+      "Di chuyển",
+      "Giáo dục",
+      "Giải trí",
+      "Lương",
+      "Mua sắm",
+      "Sức khỏe",
+    ],
   ]);
 
   useEffect(() => {
     const getCategories = async () => {
       const res = await dispatch(getUsedCategories());
       setCategoryList(res.payload);
-    }
+    };
     getCategories();
-  }, [])
-
-  useEffect(() => {
-    console.log(categoryList);
-    
-  },[categoryList])
+  }, [dispatch]);
 
   useEffect(() => {
     if (transaction) {
@@ -58,82 +52,70 @@ const TransactionModal = ({ visible, onClose, transaction }) => {
     }
   }, [transaction]);
 
- const handleChange = (e) => {
-  const { name, value, type, checked, files } = e.target;
+  const handleChange = (e) => {
+    const { name, value, type, checked, files } = e.target;
 
-  if (type === "checkbox") {
-    setFormData((prev) => ({ ...prev, [name]: checked }));
-  } else if (type === "file") {
-    const selectedFiles = Array.from(files);
-    const currentFiles = formData.receiptImages || [];
+    if (type === "checkbox") {
+      setFormData((prev) => ({ ...prev, [name]: checked }));
+    } else if (type === "file") {
+      const selectedFiles = Array.from(files);
+      const currentFiles = formData.receiptImages || [];
 
-    // Gộp ảnh cũ và ảnh mới
-    const totalFiles = [...currentFiles, ...selectedFiles];
+      const totalFiles = [...currentFiles, ...selectedFiles];
+      const uniqueFiles = totalFiles.reduce((acc, file) => {
+        if (!acc.find((f) => f.name === file.name)) acc.push(file);
+        return acc;
+      }, []);
 
-    // Loại bỏ trùng lặp (nếu có), theo tên file
-    const uniqueFiles = totalFiles.reduce((acc, file) => {
-      if (!acc.find((f) => f.name === file.name)) acc.push(file);
-      return acc;
-    }, []);
+      if (uniqueFiles.length > 5) {
+        toast.error("You can upload up to 5 images only!");
+        return;
+      }
 
-    if (uniqueFiles.length > 5) {
-      toast.error("Chỉ được chọn tối đa 5 ảnh!");
-      return;
+      setFormData((prev) => ({ ...prev, receiptImages: uniqueFiles }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
     }
-
-    setFormData((prev) => ({ ...prev, receiptImages: uniqueFiles }));
-  } else {
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  }
-};
-
-
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
       const dataToSubmit = { ...formData };
-
-      if (!dataToSubmit.isRecurring) {
-        delete dataToSubmit.recurringDay;
-      }
-
-      console.log("✅ Data to submit:", dataToSubmit); // 👈 THÊM DÒNG NÀY
+      if (!dataToSubmit.isRecurring) delete dataToSubmit.recurringDay;
 
       if (transaction) {
         await dispatch(updateTransaction({ id: transaction._id, fields: dataToSubmit })).unwrap();
-        toast.success("Cập nhật thành công!");
+        toast.success("Updated successfully!");
       } else {
         await dispatch(createTransaction(dataToSubmit)).unwrap();
-        toast.success("Tạo giao dịch thành công!");
+        toast.success("Transaction created successfully!");
       }
 
       onClose();
     } catch (err) {
-      toast.error(err || "Đã có lỗi xảy ra!");
+      toast.error(err || "An error occurred!");
     }
   };
-
-
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-[2px] bg-black/30">
       <div className="bg-white p-6 rounded shadow-lg w-[90%] max-w-lg relative z-50 animate-fadeIn">
         <h2 className="text-xl font-semibold mb-4">
-          {transaction ? "Cập nhật giao dịch" : "Thêm giao dịch"}
+          {transaction ? "Edit Transaction" : "Add Transaction"}
         </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium">Loại</label>
+            <label className="block text-sm font-medium">Type</label>
             <select name="type" value={formData.type} onChange={handleChange} className="w-full border px-3 py-2 rounded">
-              <option value="income">Thu</option>
-              <option value="expense">Chi</option>
+              <option value="income">Income</option>
+              <option value="expense">Expense</option>
             </select>
           </div>
 
           <div>
-            <label className="block text-sm font-medium">Số tiền</label>
+            <label className="block text-sm font-medium">Amount</label>
             <input
               type="number"
               name="amount"
@@ -145,28 +127,26 @@ const TransactionModal = ({ visible, onClose, transaction }) => {
           </div>
 
           <div>
-          <label className="block text-sm font-medium">Danh mục</label>
-          <select
-            name="category"
-            value={formData.category}
-            onChange={handleChange}
-            className="w-full border px-3 py-2 rounded"
-            required
-          >
-            <option value="">-- Chọn danh mục --</option>
-            {Array.isArray(categoryList) && categoryList?.map((cat) => (
-              <option key={cat} value={cat}>
-                {cat}
-              </option>
-            ))}
-          </select>
-        </div>
-
-
-
+            <label className="block text-sm font-medium">Category</label>
+            <select
+              name="category"
+              value={formData.category}
+              onChange={handleChange}
+              className="w-full border px-3 py-2 rounded"
+              required
+            >
+              <option value="">-- Select category --</option>
+              {Array.isArray(categoryList) &&
+                categoryList.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat}
+                  </option>
+                ))}
+            </select>
+          </div>
 
           <div>
-            <label className="block text-sm font-medium">Ghi chú</label>
+            <label className="block text-sm font-medium">Note</label>
             <textarea
               name="note"
               value={formData.note}
@@ -178,7 +158,7 @@ const TransactionModal = ({ visible, onClose, transaction }) => {
 
           {!formData.isRecurring && (
             <div>
-              <label className="block text-sm font-medium">Ngày</label>
+              <label className="block text-sm font-medium">Date</label>
               <input
                 type="date"
                 name="date"
@@ -197,12 +177,12 @@ const TransactionModal = ({ visible, onClose, transaction }) => {
               checked={formData.isRecurring}
               onChange={handleChange}
             />
-            <label className="text-sm">Giao dịch định kỳ</label>
+            <label className="text-sm">Recurring transaction</label>
           </div>
 
           {formData.isRecurring && (
             <div>
-              <label className="block text-sm font-medium">Ngày định kỳ (1-31)</label>
+              <label className="block text-sm font-medium">Recurring day (1-31)</label>
               <input
                 type="number"
                 name="recurringDay"
@@ -216,47 +196,42 @@ const TransactionModal = ({ visible, onClose, transaction }) => {
           )}
 
           <div>
-  <label className="block text-sm font-medium mb-1">Ảnh hóa đơn (nếu có)</label>
-  <div
-    className="relative w-full p-4 border-2 border-dashed rounded-lg text-center
-               hover:bg-gray-50 cursor-pointer transition"
-  >
-    <label htmlFor="file-upload" className="cursor-pointer block text-gray-600 hover:text-indigo-600">
-      📎 Nhấn để chọn ảnh hóa đơn
-    </label>
-    <input
-      id="file-upload"
-      type="file"
-      multiple
-      onChange={handleChange}
-      className="hidden"
-    />
-  </div>
+            <label className="block text-sm font-medium mb-1">Receipt images (optional)</label>
+            <div className="relative w-full p-4 border-2 border-dashed rounded-lg text-center hover:bg-gray-50 cursor-pointer transition">
+              <label htmlFor="file-upload" className="cursor-pointer block text-gray-600 hover:text-indigo-600">
+                📎 Click to upload receipts
+              </label>
+              <input
+                id="file-upload"
+                type="file"
+                multiple
+                onChange={handleChange}
+                className="hidden"
+              />
+            </div>
 
-  {formData.receiptImages.length > 0 && (
-    <ul className="mt-2 text-sm text-gray-700 list-disc list-inside">
-      {formData.receiptImages.map((file, idx) => (
-        <li key={idx}>{file.name}</li>
-      ))}
-    </ul>
-  )}
-</div>
-
-
+            {formData.receiptImages.length > 0 && (
+              <ul className="mt-2 text-sm text-gray-700 list-disc list-inside">
+                {formData.receiptImages.map((file, idx) => (
+                  <li key={idx}>{file.name}</li>
+                ))}
+              </ul>
+            )}
+          </div>
 
           <div className="flex justify-end gap-2">
             <button
               type="button"
-              onClick={() => onClose()}
+              onClick={onClose}
               className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 cursor-pointer"
             >
-              Hủy
+              Cancel
             </button>
             <button
               type="submit"
               className="px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600 cursor-pointer"
             >
-              {transaction ? "Cập nhật" : "Thêm"}
+              {transaction ? "Update" : "Add"}
             </button>
           </div>
         </form>
