@@ -43,9 +43,7 @@ export default function Login() {
       setEmail("");
       setName("");
       setPassword("");
-    } catch (error) {
-      
-    }
+    } catch (error) {}
   };
 
   return (
@@ -56,7 +54,11 @@ export default function Login() {
         <header className="w-full flex items-center gap-2 px-4 py-3">
           <a href="#" className="flex items-start group">
             <div className="flex items-center">
-              <img src={LogoF} alt="Logo" className="h-20 w-12 rounded-full mr-1" />
+              <img
+                src={LogoF}
+                alt="Logo"
+                className="h-20 w-12 rounded-full mr-1"
+              />
               <div className="leading-tight">
                 <span className="text-xl font-Roboto">Fin</span>
                 <br />
@@ -116,7 +118,9 @@ export default function Login() {
             </div>
 
             <p className="text-sm text-gray-700 text-center">
-              {isRegister ? "Already have an account? " : "You don't have an account yet?"}
+              {isRegister
+                ? "Already have an account? "
+                : "You don't have an account yet?"}
               <span
                 onClick={() => setIsRegister((prev) => !prev)}
                 className="font-semibold text-indigo-600 cursor-pointer hover:underline"
@@ -135,7 +139,6 @@ export default function Login() {
           </div>
         </div>
       </div>
-
 
       {/* ===== DESKTOP ≥ 1024px ===== */}
       <div className="hidden lg:flex min-h-screen w-full relative">
@@ -193,7 +196,9 @@ export default function Login() {
             </div>
 
             <p className="text-sm text-gray-700">
-              {isRegister ? "Already have an account? " : "You don't have an account yet ? "}
+              {isRegister
+                ? "Already have an account? "
+                : "You don't have an account yet ? "}
               <span
                 onClick={() => setIsRegister((prev) => !prev)}
                 className="font-semibold text-indigo-600 cursor-pointer hover:underline"
@@ -218,15 +223,19 @@ export default function Login() {
           className="
             relative mt-[5%] mr-[5%] ml-[20%] rounded-4xl border-gray-300 bg-gradient-to-b from-indigo-600 via-indigo-200 to-white flex items-center justify-center
             lg:w-1/2
-        ">
-          <img src={phoneImg} alt="Phone" className=" w-[320px] lg:w-[420px] drop-shadow-2xl md:absolute md:-left-35 md:z-100" />
+        "
+        >
+          <img
+            src={phoneImg}
+            alt="Phone"
+            className=" w-[320px] lg:w-[420px] drop-shadow-2xl md:absolute md:-left-35 md:z-100"
+          />
 
           {/* Background decorative elements */}
           <div className="absolute top-20 left-20 w-32 h-32 bg-white bg-opacity-10 rounded-full blur-3xl"></div>
           <div className="absolute bottom-20 right-20 w-24 h-24 bg-white bg-opacity-10 rounded-full blur-2xl"></div>
         </div>
       </div>
-
     </>
   );
 }

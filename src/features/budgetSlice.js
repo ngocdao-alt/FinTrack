@@ -42,6 +42,8 @@ export const addBudget = createAsyncThunk('budget/addBudget', async (fields, { g
 
 export const getBudget = createAsyncThunk('budget/getBudget', async (fields, { getState, rejectWithValue }) => {
     try {
+        console.log("called");
+        
         const { token } = getState().auth;
         const { month, year } = fields;
 
@@ -95,6 +97,10 @@ const budgetSlice = createSlice({
             .addCase(getBudget.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
+                state.totalBudget = 0;
+                state.totalSpent = 0;
+                state.totalPercentUsed = 0;
+                state.categoryStats = [];
             })
     }
 })

@@ -16,15 +16,15 @@ const Header = () => {
           relative w-full h-20 px-6 flex justify-between items-center border border-slate-300
           sm:h-25 sm:px-10
           md:px-15
-          lg:px-5 lg:pb-3
+          lg:px-5 lg:h-20 lg:pb-2
     "
     >
       <img
         src={logo}
         className="
           max-w-20
-          sm:max-w-25
-          md:max-w-27
+          sm:max-w-22
+          md:max-w-23
         "
       />
       <TfiMenuAlt

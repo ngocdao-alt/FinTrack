@@ -3,7 +3,7 @@ import "react-circular-progressbar/dist/styles.css";
 
 const MyBudgetCircle = ({ percentage }) => {
   return (
-    <div style={{ width: 120, height: 120 }}>
+    <div className="w-[120px] aspect-square sm:w-[130px] md:w-[150px]">
       <CircularProgressbar
         value={percentage}
         text={`${percentage}%`}

@@ -79,7 +79,7 @@ const DashboardOverview = ({ className = "" }) => {
       <h2 className="mb-2 text-xl font-bold">Overview</h2>
 
       <div className="w-full p-5 flex justify-center items-center sm:p-0">
-        <div className="h-[200px] w-[80%] sm:w-[70%]  md:h-[200px] lg:h-[200px] lg:p-0">
+        <div className="h-[200px] w-[80%] sm:w-[70%]  md:h-[200px] lg:h-[150px] lg:p-0">
           <LineChart
             labels={labels}
             dataIncome={incomeData}

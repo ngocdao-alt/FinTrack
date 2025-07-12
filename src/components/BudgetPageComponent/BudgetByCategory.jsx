@@ -5,26 +5,28 @@ import formatCurrencyVN from "../../utils/formatCurrency";
 import { IoWarningOutline } from "react-icons/io5";
 
 const BudgetByCategory = ({ categoryStats }) => {
-  const dispatch = useDispatch();
   const now = new Date();
 
-  const colorPairs = [
-    { spent: "#008000", remaining: "#CCFF66" },
-    { spent: "#FF0000", remaining: "#FFC0CB" },
-    { spent: "#FFFF00", remaining: "#FFFACD" },
-    { spent: "#0000FF", remaining: "#ADD8E6" },
-    { spent: "#800080", remaining: "#E6CCFF" },
-    { spent: "#FFA500", remaining: "#FFE4B5" },
-    { spent: "#A52A2A", remaining: "#F4A460" },
-    { spent: "#00CED1", remaining: "#AFEEEE" },
-    { spent: "#FF69B4", remaining: "#FFD1DC" },
-    { spent: "#708090", remaining: "#D3D3D3" },
-    { spent: "#006400", remaining: "#98FB98" },
-    { spent: "#B22222", remaining: "#F08080" },
-    { spent: "#1E90FF", remaining: "#87CEFA" },
-    { spent: "#DA70D6", remaining: "#F8E6F9" },
-    { spent: "#FF8C00", remaining: "#FFDAB9" },
+  const colorLevels = [
+    {
+      spent: "#00BF63", // xanh lá dịu (an toàn)
+      remaining: "#C1FF72", // xanh nhạt
+    },
+    {
+      spent: "#FFDE59", // vàng
+      remaining: "#FBF3AA", // vàng nhạt
+    },
+    {
+      spent: "#FF3131", // đỏ đậm
+      remaining: "#FBB0B0", // đỏ nhạt
+    },
   ];
+
+  const getColorByUsage = (percent) => {
+    if (percent <= 50) return colorLevels[0]; // an toàn
+    if (percent <= 85) return colorLevels[1]; // trung bình
+    return colorLevels[2]; // nguy hiểm
+  };
 
   return categoryStats?.length === 0 ? (
     <section className="w-full h-32 p-3 flex justify-center items-center bg-white rounded text-[#464646] text-lg font-semibold">
@@ -34,46 +36,50 @@ const BudgetByCategory = ({ categoryStats }) => {
     <div
       className="
             w-full flex flex-col gap-3
+            sm:px-2
     "
     >
       {categoryStats.map((item, index) => {
-        const colors = colorPairs[index % colorPairs.length];
+        const colors = getColorByUsage(item.percentUsed || 0);
         const remaining = +item.budgetedAmount - +item.spentAmount;
         const percent = item.percentUsed || 0;
         const padded =
           percent < 100 ? String(percent).padStart(2, "0") + "%" : "100%";
 
         return (
-          <div key={item.category} className="w-full flex flex-col gap-1">
-            <h2 className="flex items-center text-[#464646] text-sm font-semibold ">
+          <div
+            key={item.category}
+            className="w-full flex flex-col gap-1 sm:gap-2 lg:py-1 lg:gap-3"
+          >
+            <h2 className="flex items-center text-[#464646] text-sm font-semibold sm:text-base sm:px-5 lg:px-2 xl:px-5 xl:w-[90%] xl:mx-auto">
               {item.category}: {formatCurrencyVN(+item?.budgetedAmount)} đ
               {item.percentUsed > 80 && (
                 <IoWarningOutline className="mx-1 text-red-500" />
               )}
             </h2>
-            <div className="flex justify-between items-center px-2 gap-3">
-              <div className="flex flex-1 flex-col gap-2 items-start justify-center">
-                <div className="flex items-center gap-1">
+            <div className="flex justify-between items-center px-2 gap-3 sm:px-10 lg:px-4 lg:gap-5 xl:w-[85%] xl:mx-auto">
+              <div className="flex flex-1 flex-col gap-2 items-start justify-center sm:gap-3 lg:grid lg:grid-cols-2 lg:flex-5">
+                <div className="flex items-center gap-1 sm:gap-2">
                   <div
                     className="p-2 rounded-full"
                     style={{ backgroundColor: colors.spent }}
                   ></div>
-                  <span className="text-[#464646] text-[12px]">
+                  <span className="text-[#464646] text-[12px] sm:text-base">
                     Spent: {formatCurrencyVN(item.spentAmount)} đ
                   </span>
                 </div>
-                <div className="flex items-center gap-1 text-[12px]">
+                <div className="flex items-center gap-1 sm:gap-2">
                   <div
                     className="p-2 rounded-full"
                     style={{ backgroundColor: colors.remaining }}
                   ></div>
-                  <span className="text-[#464646]">
+                  <span className="text-[#464646] text-[12px] sm:text-base">
                     Remain: {formatCurrencyVN(remaining < 0 ? 0 : remaining)} đ
                   </span>
                 </div>
               </div>
 
-              <div className="flex-1 flex items-center justify-between gap-2">
+              <div className="flex-1 flex items-center justify-between gap-2 lg:flex-4">
                 <div
                   style={{
                     backgroundColor: colors.remaining,
@@ -89,7 +95,9 @@ const BudgetByCategory = ({ categoryStats }) => {
                   ></div>
                 </div>
 
-                <span className="text-sm text-[#464646]">{padded}</span>
+                <span className="text-sm text-[#464646] sm:text-base">
+                  {padded}
+                </span>
               </div>
             </div>
 
