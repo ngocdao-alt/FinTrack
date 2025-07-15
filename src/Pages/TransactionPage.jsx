@@ -83,7 +83,7 @@ const TransactionPage = () => {
 
   const Select = ({ label, name, value, options, onChange, render }) => (
     <div className="relative">
-      <label className="block text-xl font-medium text-gray-600 mb-1">{label}</label>
+      <label className="block text-md font-medium text-gray-600 mb-1">{label}</label>
       <div className="relative">
         <select
           name={name}
@@ -150,14 +150,14 @@ const TransactionPage = () => {
             <div className="flex justify-between text-sm mb-2">
               <span className="text-gray-700 font-medium">Total income:</span>
               <span className="text-green-600 font-semibold text-right">
-                +{income.toLocaleString("en-US")}
+                +{income.toLocaleString("en-US")} đ
               </span>
             </div>
             <hr />
             <div className="flex justify-between text-sm mt-2">
               <span className="text-gray-700 font-medium">Total expense:</span>
               <span className="text-red-600 font-semibold text-right">
-                -{expense.toLocaleString("en-US")}
+                -{expense.toLocaleString("en-US")} đ
               </span>
             </div>
           </div>
@@ -166,7 +166,7 @@ const TransactionPage = () => {
 
           <div className="text-sm text-gray-700 whitespace-nowrap">
             <p className="font-medium">Total Transactions:</p>
-            <p className="text-indigo-500 font-semibold text-right">{total}</p>
+            <p className="text-indigo-500 font-semibold text-right">{total} </p>
           </div>
         </div>
       </div>
@@ -219,7 +219,7 @@ const TransactionPage = () => {
                     }
                   >
                     {t.type === "income" ? "+" : "-"}
-                    {formatCurrency(Number(t.amount))}
+                    {formatCurrency(Number(t.amount))} đ
                   </td>
                   <td>
                     {new Date(t.date).toLocaleDateString("en-GB")}
