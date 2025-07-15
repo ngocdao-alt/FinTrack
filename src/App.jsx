@@ -1,21 +1,16 @@
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route} from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import LandingPage from "./pages/LandingPage";
-import Sidebar from "./components/SideBarComponent";
 import DashboardPage from "./pages/DashboardPage";
 import Header from "./components/Header";
 import BudgetPage from "./pages/BudgetPage";
 import TransactionPage from "./pages/TransactionPage";
-import StatPage from "./pages/StatPage";
+import StatPage from "./pages/StatisticsPage"
 import SettingPage from "./pages/SettingPage";
 import MainLayout from "./layout/MainLayout";
-import Component from "./components/Component";
 import BigSideBar from "./components/BigSideBar";
 
 function App() {
-  const location = useLocation();
-  const hideHeader =
-    location.pathname === "/login" || location.pathname === "/";
 
   return (
     <>
@@ -32,6 +27,7 @@ function App() {
         <Route path="/transactions" element={<TransactionPage />} />
         <Route path="/stat" element={<StatPage />} />
         <Route path="/settings" element={<SettingPage />} />
+        
       </Route>
     </Routes>
     </>

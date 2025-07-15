@@ -52,7 +52,7 @@ export default function Login() {
             <img
               src={LogoF}
               alt="Logo"
-              className="h-20 w-12 rounded-full mr-1"
+              className="h-24 w-16 rounded-full mr-1"
             />
           </a>
         </header>
@@ -126,12 +126,13 @@ export default function Login() {
       {/* DESKTOP */}
       <div className="hidden lg:flex min-h-screen w-full relative">
         <div className="absolute top-6 left-6 flex items-center z-20">
-          <img src={LogoF} alt="Logo" className="h-16 w-12 rounded-full mr-2" />
+          <img src={LogoF} alt="Logo" className="h-24 w-18 rounded-full mr-2" />
         </div>
+        {/* Left Column */}
         <div className="w-1/2 flex flex-col items-center justify-center px-20 bg-white lg:pl-15 lg:pr-0">
           <form
             onSubmit={handleSubmit}
-            className="w-full max-w-lg ml-auto flex flex-col gap-6 pt-12"
+            className="w-full max-w-lg flex flex-col gap-6 pt-12 mb-25 ml-15"
           >
             <input
               type="email"
@@ -189,11 +190,12 @@ export default function Login() {
             </div>
           </form>
         </div>
-        <div className="relative mt-[10%] mr-[15%] ml-[20%] rounded-4xl border-gray-300 bg-gradient-to-b from-indigo-600 via-indigo-200 to-white flex items-center justify-center lg:w-1/2">
+        {/* Right Column */}
+        <div className="relative mt-[5%] mr-[5%] ml-[20%] rounded-4xl border-gray-300 bg-gradient-to-b from-indigo-600 via-indigo-200 to-white flex items-center justify-center lg:w-1/2">
           <img
             src={phoneImg}
             alt="Phone"
-            className="w-[320px] lg:w-[420px] drop-shadow-2xl md:absolute md:-left-50 md:z-100"
+            className="w-[320px] lg:w-[450px] drop-shadow-2xl md:absolute md:-left-50 md:z-100"
           />
           <div className="absolute top-20 left-20 w-32 h-32 bg-white bg-opacity-10 rounded-full blur-3xl"></div>
           <div className="absolute bottom-20 right-20 w-24 h-24 bg-white bg-opacity-10 rounded-full blur-2xl"></div>

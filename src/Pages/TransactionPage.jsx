@@ -82,107 +82,105 @@ const TransactionPage = () => {
   const years = Array.from({ length: 8 }, (_, i) => String(2018 + i));
 
   const Select = ({ label, name, value, options, onChange, render }) => (
-  <div className="relative">
-    <label className="block text-xl font-medium text-gray-600 mb-1">{label}</label>
     <div className="relative">
-      <select
-        name={name}
-        value={value}
-        onChange={onChange}
-        className="appearance-none w-[90%] bg-white text-gray-700 px-3 py-4 pr-8 rounded-md border border-transparent focus:outline-none focus:ring-2 focus:ring-indigo-300"
-      >
-        {options.map((opt) => (
-          <option key={opt} value={opt === "All" ? "" : opt} className="bg-white text-black">
-            {render ? render(opt) : opt}
-          </option>
-        ))}
-      </select>
-      {/* Mũi tên xanh */}
-      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center transform -translate-x-15">
-        <ChevronDown className="text-indigo-500" size={18} />
+      <label className="block text-xl font-medium text-gray-600 mb-1">{label}</label>
+      <div className="relative">
+        <select
+          name={name}
+          value={value}
+          onChange={onChange}
+          className="appearance-none w-[90%] bg-white text-gray-400 px-3 py-4 pr-8 rounded-md border border-transparent focus:outline-none focus:ring-2 focus:ring-indigo-300"
+        >
+          {options.map((opt) => (
+            <option key={opt} value={opt === "All" ? "" : opt} className="bg-white text-black">
+              {render ? render(opt) : opt}
+            </option>
+          ))}
+        </select>
+        {/* Mũi tên xanh */}
+        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center transform -translate-x-15">
+          <ChevronDown className="text-indigo-500" size={18} />
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
 
 
   return (
     <div className="min-h-screen w-full bg-[#F5F6FA] px-4 py-2">
-      <h1 className="text-3xl font-Roboto mb-4">Transaction</h1>
+      <div className="flex flex-col lg:flex-row justify-between gap-4 bg-[#F5F6FA] p-4 rounded-md flex-wrap">
+        {/* FILTERS - bên trái */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-[3]">
+          <Select
+            label="Type"
+            name="type"
+            value={type}
+            options={typeOptions}
+            onChange={handleFilterChange}
+            render={(o) =>
+              o === "income" ? "Income" : o === "expense" ? "Expense" : o
+            }
+          />
+          <Select
+            label="Category"
+            name="category"
+            value={category}
+            options={categoryOptions}
+            onChange={handleFilterChange}
+          />
+          <Select
+            label="Month"
+            name="month"
+            value={month}
+            options={["All", ...Array.from({ length: 12 }, (_, i) => String(i + 1))]}
+            onChange={handleFilterChange}
+          />
+          <Select
+            label="Year"
+            name="year"
+            value={year}
+            options={years}
+            onChange={handleFilterChange}
+          />
+        </div>
 
-<div className="flex flex-col lg:flex-row justify-between gap-4 bg-[#F5F6FA] p-4 rounded-md flex-wrap">
-    {/* FILTERS - bên trái */}
-  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-[3]">
-    <Select
-      label="Type"
-      name="type"
-      value={type}
-      options={typeOptions}
-      onChange={handleFilterChange}
-      render={(o) =>
-        o === "income" ? "Income" : o === "expense" ? "Expense" : o
-      }
-    />
-    <Select
-      label="Category"
-      name="category"
-      value={category}
-      options={categoryOptions}
-      onChange={handleFilterChange}
-    />
-    <Select
-      label="Month"
-      name="month"
-      value={month}
-      options={["All", ...Array.from({ length: 12 }, (_, i) => String(i + 1))]}
-      onChange={handleFilterChange}
-    />
-    <Select
-      label="Year"
-      name="year"
-      value={year}
-      options={years}
-      onChange={handleFilterChange}
-    />
-  </div>
+        {/* SUMMARY - bên phải */}
+        <div className="bg-white mt-8 rounded-md p-4 flex justify-between items-center flex-[2] min-w-[300px]">
+          <div className="flex-1">
+            <div className="flex justify-between text-sm mb-2">
+              <span className="text-gray-700 font-medium">Total income:</span>
+              <span className="text-green-600 font-semibold text-right">
+                +{income.toLocaleString("en-US")}
+              </span>
+            </div>
+            <hr />
+            <div className="flex justify-between text-sm mt-2">
+              <span className="text-gray-700 font-medium">Total expense:</span>
+              <span className="text-red-600 font-semibold text-right">
+                -{expense.toLocaleString("en-US")}
+              </span>
+            </div>
+          </div>
 
-    {/* SUMMARY - bên phải */}
-  <div className="bg-white mt-8 rounded-md p-4 flex justify-between items-center flex-[2] min-w-[300px]">
-    <div className="flex-1">
-      <div className="flex justify-between text-sm mb-2">
-        <span className="text-gray-700 font-medium">Total income:</span>
-        <span className="text-green-600 font-semibold text-right">
-          +{income.toLocaleString("en-US")}
-        </span>
+          <div className="w-[1px] h-16 bg-gray-300 mx-4" />
+
+          <div className="text-sm text-gray-700 whitespace-nowrap">
+            <p className="font-medium">Total Transactions:</p>
+            <p className="text-indigo-500 font-semibold text-right">{total}</p>
+          </div>
+        </div>
       </div>
-      <hr />
-      <div className="flex justify-between text-sm mt-2">
-        <span className="text-gray-700 font-medium">Total expense:</span>
-        <span className="text-red-600 font-semibold text-right">
-          -{expense.toLocaleString("en-US")}
-        </span>
-      </div>
-    </div>
-
-    <div className="w-[1px] h-16 bg-gray-300 mx-4" />
-
-    <div className="text-sm text-gray-700 whitespace-nowrap">
-      <p className="font-medium">Total Transactions:</p>
-      <p className="text-indigo-500 font-semibold text-right">{total}</p>
-    </div>
-  </div>
-</div>
 
 
 
       <div className="bg-white mt-6 rounded-md shadow p-4 overflow-x-auto">
         <div className="w-full flex justify-end">
-        <button
-          onClick={handleAdd}
-          className="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold text-sm py-2 px-4 rounded w-fit flex items-center gap-2 cursor-pointer"
-        >
-          <FaPlus /> Add Transaction
-        </button>
+          <button
+            onClick={handleAdd}
+            className="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold text-sm py-2 px-4 rounded w-fit flex items-center gap-2 cursor-pointer"
+          >
+            <FaPlus /> Add Transaction
+          </button>
         </div>
         <table className="w-full text-left text-sm mt-4 md:text-base">
           <thead>
@@ -251,24 +249,24 @@ const TransactionPage = () => {
           </tbody>
         </table>
       </div>
-<div className="w-full">
-      {totalPages > 1 && page < totalPages && (
-        <div className="w-full flex justify-center">
-          <button
-            onClick={handleLoadMore}
-            disabled={loading}
-            className="mt-6 p-3 rounded-full hover:bg-indigo-100 transition-all disabled:opacity-50 cursor-pointer"
-          >
-            {loading ? (
-              <span className="text-indigo-500 text-lg">Loading...</span>
-            ) : (
-              <ChevronDown size={40} className="text-indigo-600" />
-            )}
-          </button>
-        </div>
-      )}
+      <div className="w-full">
+        {totalPages > 1 && page < totalPages && (
+          <div className="w-full flex justify-center">
+            <button
+              onClick={handleLoadMore}
+              disabled={loading}
+              className="mt-6 p-3 rounded-full hover:bg-indigo-100 transition-all disabled:opacity-50 cursor-pointer"
+            >
+              {loading ? (
+                <span className="text-indigo-500 text-lg">Loading...</span>
+              ) : (
+                <ChevronDown size={40} className="text-indigo-600" />
+              )}
+            </button>
+          </div>
+        )}
 
-</div>
+      </div>
 
 
       {showModal && (
