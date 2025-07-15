@@ -1,14 +1,14 @@
 import React, { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import {
-  FaUserCircle,
+  FaUser,
   FaCamera,
   FaSave,
   FaEye,
   FaEyeSlash,
   FaPen,
   FaGlobe,
-  FaPencilAlt,
+  FaImage,
 } from "react-icons/fa";
 
 const SettingPage = () => {
@@ -18,68 +18,65 @@ const SettingPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [theme, setTheme] = useState("light");
   const [language, setLanguage] = useState("vi");
+  const [isHovering, setIsHovering] = useState(false);
 
   const fileInputRef = useRef(null);
 
-  const handleAvatarClick = () => fileInputRef.current?.click();
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
-    if (file) setAvatar(URL.createObjectURL(file));
+    if (file) {
+      setAvatar(URL.createObjectURL(file));
+    }
   };
-  const saveUserName = () => setEditingName(false); // TODO: call API
+
+  const saveUserName = () => {
+    setEditingName(false);
+    // TODO: Gửi tên người dùng mới lên API nếu cần
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#f3f4f6]">
-                            {/* MAIN */}
-<main className="flex-1 px-4 sm:px-6 py-6 ">
-  <div className="w-full max-w-4xl bg-white rounded-xl shadow-md p-6 mx-auto">
-    <h2 className="text-2xl font-semibold mb-8">Cài đặt</h2>
+    <div className=" flex-1 h-full flex items-center justify-center bg-[#f3f4f6]">
+      <main className="flex-1 px-4 sm:px-6 py-6">
+        <div className="w-full max-w-4xl bg-white rounded-xl shadow-md p-6 mx-auto">
+          <h2 className="text-2xl font-semibold mb-8">Cài đặt</h2>
 
-          <div className="flex flex-col md:flex-row gap-10 items-start">
+          <div className="flex flex-col md:flex-row gap-10 items-center md:items-start text-center md:text-left">
             {/* === Thông tin người dùng === */}
             <section className="flex-1">
-              <h3 className="text-lg font-semibold mb-4">
+              <h3 className="text-lg font-semibold mb-4 text-left w-full">
                 Thông tin người dùng
               </h3>
 
               {/* Avatar */}
               <div className="flex flex-col items-center mb-6">
-                <div className="relative group h-24 w-24 cursor-pointer">
+                <div
+                  className="relative h-24 w-24 rounded-full overflow-hidden cursor-pointer"
+                  onClick={() => fileInputRef.current?.click()}
+                  onMouseEnter={() => setIsHovering(true)}
+                  onMouseLeave={() => setIsHovering(false)}
+                  title="Đổi ảnh"
+                >
                   {avatar ? (
                     <img
                       src={avatar}
                       alt="avatar"
-                      className="h-full w-full rounded-full object-cover"
+                      className="h-full w-full object-cover rounded-full"
                     />
                   ) : (
-                    <div className="h-full w-full rounded-full overflow-hidden relative">
-                      <div className="absolute top-0 left-0 w-full h-1/2 bg-[#c7ccff]" />
-                      <div className="absolute bottom-0 left-0 w-full h-1/2 bg-[#3c3c3c]" />
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <FaUserCircle className="w-10 h-10 text-white" />
-                      </div>
+                    <div className="h-full w-full bg-[#7e5bef] flex items-center justify-center">
+                      <FaUser className="text-white text-3xl" />
                     </div>
                   )}
 
-                  {/* Overlay khi hover */}
+                  {/* Overlay luôn có mặt, ẩn hiện bằng opacity */}
                   <div
-                    onClick={handleAvatarClick}
-                    className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity"
-                    title="Đổi ảnh"
+                    className={`absolute inset-0 bg-gray-800/70 flex items-center justify-center rounded-full z-10
+                      transition-opacity duration-300
+                      ${isHovering ? "opacity-100" : "opacity-0"}`}
                   >
-                    <FaCamera className="text-2xl" />
+                    <FaImage className="text-white text-2xl" />
                   </div>
 
-                  {/* Icon chỉnh sửa */}
-                  <button
-                    onClick={handleAvatarClick}
-                    className="absolute -bottom-2 -right-2 bg-white p-1 rounded-full shadow hover:bg-gray-100"
-                    title="Đổi ảnh"
-                  >
-                    <FaPencilAlt className="text-sm text-gray-600" />
-                  </button>
-
-                  {/* Input upload ẩn */}
                   <input
                     ref={fileInputRef}
                     type="file"
@@ -145,8 +142,11 @@ const SettingPage = () => {
 
             {/* === Cài đặt giao diện === */}
             <section className="flex-1 mt-10 md:mt-0">
-              <h3 className="text-lg font-semibold mb-4">Giao diện</h3>
-              <label className="block mb-2 font-medium">Chủ đề</label>
+              <h3 className="text-lg font-semibold mb-4 text-left">Giao diện</h3>
+
+              <label className="block mb-2 font-medium text-left w-full">
+                Chủ đề
+              </label>
               <div className="flex space-x-6 mb-6">
                 {["light", "dark", "system"].map((opt) => (
                   <label
@@ -159,6 +159,7 @@ const SettingPage = () => {
                       value={opt}
                       checked={theme === opt}
                       onChange={() => setTheme(opt)}
+                      className="accent-purple-500"
                     />
                     <span>
                       {opt === "light"
