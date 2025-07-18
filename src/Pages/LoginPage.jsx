@@ -91,13 +91,13 @@ export default function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Password"
-                className="w-full rounded-lg px-4 py-3 bg-white outline-none ring-1 ring-gray-200 focus:ring-2 focus:ring-indigo-400 placeholder-gray-500 pr-12"
+                className="w-full rounded-lg px-4 py-3 bg-white outline-none ring-1 ring-gray-200 focus:ring-2 focus:ring-indigo-400 placeholder-gray-500 pr-12 cursor-pointer"
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 cursor-pointer"
               >
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
@@ -164,7 +164,7 @@ export default function Login() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 cursor-pointer"
               >
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
@@ -183,7 +183,7 @@ export default function Login() {
             <div className="flex justify-end">
               <button
                 type="submit"
-                className="w-fit px-6 py-2 rounded-xl bg-indigo-200 hover:bg-indigo-300 active:bg-indigo-400 text-gray-800 font-medium transition text-base"
+                className="w-fit px-6 py-2 rounded-xl bg-indigo-200 hover:bg-indigo-300 active:bg-indigo-400 text-gray-800 font-medium transition text-base cursor-pointer"
               >
                 {isRegister ? "Register" : "Sign in"}
               </button>

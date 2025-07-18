@@ -5,7 +5,7 @@ import DashboardPage from "./pages/DashboardPage";
 import Header from "./components/Header";
 import BudgetPage from "./pages/BudgetPage";
 import TransactionPage from "./pages/TransactionPage";
-import StatPage from "./pages/StatisticsPage"
+import StatPage from "./pages/StatPage";
 import SettingPage from "./pages/SettingPage";
 import MainLayout from "./layout/MainLayout";
 import BigSideBar from "./components/BigSideBar";
