@@ -15,7 +15,7 @@ const initialState = {
 export const getTransactions = createAsyncThunk('transaction/getTransactions', async (filter, { getState, rejectWithValue }) => {
     const { token } = getState().auth;
     try {
-        const { type, category, keyword, specificDate, month, year, page = 1} = filter;
+        const { type, category, keyword, specificDate='', month, year, page = 1} = filter;
 
         const res = await axios.get(
             `${BACK_END_URL}/api/transaction?type=${type}&category=${category}&keyword=${keyword}&specificDate=${specificDate}&month=${month}&year=${year}&page=${page}`,
