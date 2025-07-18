@@ -9,6 +9,7 @@ const initialState = {
     total: 0,
     page: 1,
     totalPages: 1,
+    shouldRefetch: false,
     error: null
 }
 
@@ -145,7 +146,11 @@ export const deleteTransaction = createAsyncThunk('transaction/deleteTransaction
 const transactionSlice = createSlice({
     name: "transaction",
     initialState,
-    reducers: {},
+    reducers: {
+        setShouldRefetch: (state) => {
+            state.shouldRefetch = false;
+        },
+    },
     extraReducers: builder => {
         builder
             .addCase(getTransactions.pending, state => {
@@ -197,8 +202,26 @@ const transactionSlice = createSlice({
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(createTransaction.fulfilled, (state, action) => {
+           .addCase(createTransaction.fulfilled, (state, action) => {
+                const newTx = action.payload;
+                const txs = state.transactions;
+
                 state.loading = false;
+
+                if (!txs.length) return;
+
+                const newDate = new Date(newTx.date).getTime();
+                const firstDate = new Date(txs[0].date).getTime();
+                const lastDate = new Date(txs[txs.length - 1].date).getTime();
+
+                if (newDate > firstDate) {
+                    txs.unshift(newTx);
+                    if (txs.length > 10) txs.pop(); 
+                }
+                else if (newDate <= firstDate && newDate >= lastDate) {
+                    state.shouldRefetch = true;
+                }
+                // Nếu không liên quan gì tới range hiện tại -> bỏ qua
             })
             .addCase(createTransaction.rejected, (state, action) => {
                 state.loading = false;
@@ -235,4 +258,5 @@ const transactionSlice = createSlice({
     }
 })
 
+export const { setShouldRefetch } = transactionSlice.actions;
 export default transactionSlice.reducer;

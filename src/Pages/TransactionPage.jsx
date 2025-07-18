@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   getTransactions,
   deleteTransaction,
+  setShouldRefetch,
 } from "../features/transactionSlice";
 import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
 import getUsedCategories from "../thunks/getUsedCategories";
@@ -11,12 +12,10 @@ import TransactionModal from "../components/TransactionModal";
 import DetailTransaction from "../components/DetailTransaction";
 import { ChevronDown } from "lucide-react";
 
-
 const TransactionPage = () => {
   const dispatch = useDispatch();
-  const { transactions, loading, total, page, totalPages } = useSelector(
-    (s) => s.transaction
-  );
+  const { transactions, loading, total, page, totalPages, shouldRefetch } =
+    useSelector((s) => s.transaction);
   const [categoryOptions, setCategoryOptions] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
@@ -43,6 +42,13 @@ const TransactionPage = () => {
   useEffect(() => {
     dispatch(getTransactions(filters));
   }, [dispatch, type, category, month, year, keyword]);
+
+  useEffect(() => {
+    if (shouldRefetch) {
+      dispatch(getTransactions(filters));
+      dispatch(setShouldRefetch(false));
+    }
+  }, [dispatch, shouldRefetch]);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -83,7 +89,9 @@ const TransactionPage = () => {
 
   const Select = ({ label, name, value, options, onChange, render }) => (
     <div className="relative">
-      <label className="block text-md font-medium text-gray-600 mb-1">{label}</label>
+      <label className="block text-md font-medium text-gray-600 mb-1">
+        {label}
+      </label>
       <div className="relative">
         <select
           name={name}
@@ -92,7 +100,11 @@ const TransactionPage = () => {
           className="appearance-none w-[90%] bg-white text-gray-400 px-3 py-4 pr-8 rounded-md border border-transparent focus:outline-none focus:ring-2 focus:ring-indigo-300"
         >
           {options.map((opt) => (
-            <option key={opt} value={opt === "All" ? "" : opt} className="bg-white text-black">
+            <option
+              key={opt}
+              value={opt === "All" ? "" : opt}
+              className="bg-white text-black"
+            >
               {render ? render(opt) : opt}
             </option>
           ))}
@@ -104,7 +116,6 @@ const TransactionPage = () => {
       </div>
     </div>
   );
-
 
   return (
     <div className="min-h-screen w-full bg-[#F5F6FA] px-4 py-2">
@@ -132,7 +143,10 @@ const TransactionPage = () => {
             label="Month"
             name="month"
             value={month}
-            options={["All", ...Array.from({ length: 12 }, (_, i) => String(i + 1))]}
+            options={[
+              "All",
+              ...Array.from({ length: 12 }, (_, i) => String(i + 1)),
+            ]}
             onChange={handleFilterChange}
           />
           <Select
@@ -170,8 +184,6 @@ const TransactionPage = () => {
           </div>
         </div>
       </div>
-
-
 
       <div className="bg-white mt-6 rounded-md shadow p-4 overflow-x-auto">
         <div className="w-full flex justify-end">
@@ -221,9 +233,7 @@ const TransactionPage = () => {
                     {t.type === "income" ? "+" : "-"}
                     {formatCurrency(Number(t.amount))} đ
                   </td>
-                  <td>
-                    {new Date(t.date).toLocaleDateString("en-GB")}
-                  </td>
+                  <td>{new Date(t.date).toLocaleDateString("en-GB")}</td>
                   <td className="hidden sm:table-cell">{t.note || "-"}</td>
                   <td className="py-2 text-right">
                     <span className="inline-flex gap-2 text-gray-600">
@@ -265,9 +275,7 @@ const TransactionPage = () => {
             </button>
           </div>
         )}
-
       </div>
-
 
       {showModal && (
         <TransactionModal
