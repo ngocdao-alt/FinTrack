@@ -158,6 +158,43 @@ export const getTransactions = async (req: AuthRequest, res: Response) => {
   }
 };
 
+export const getTransactionsByMonth = async (req: AuthRequest, res: Response) => {
+  try {
+    const { month, year } = req.query;
+
+    // Ép kiểu an toàn hơn
+    const monthNum = Number(month);
+    const yearNum = Number(year);
+
+    // Bắt buộc phải có cả tháng và năm để lọc cho chính xác
+    if (!month || !year || isNaN(monthNum) || isNaN(yearNum)) {
+      res.status(400).json({ message: 'Thiếu hoặc sai định dạng month/year' });
+      return;
+    }
+
+    const startOfMonth = new Date(yearNum, monthNum - 1, 1);
+    const endOfMonth = new Date(yearNum, monthNum, 1); // đầu tháng sau
+
+    const filter = {
+      user: req.userId,
+      date: { $gte: startOfMonth, $lt: endOfMonth },
+    };
+
+    const transactions = await Transaction.find(filter).sort({ date: 1 }); // sort tăng dần để thống kê đẹp hơn
+
+    res.json({
+      data: transactions,
+      total: transactions.length,
+      page: 1,
+      totalPage: 1,
+    });
+
+  } catch (err) {
+    console.error('[getTransactionsByMonth]', err);
+    res.status(500).json({ message: 'Không thể lấy danh sách giao dịch!', error: err });
+  }
+}
+
 
 // UPDATE
 export const updateTransaction = async (req: AuthRequest, res: Response) => {
