@@ -5,8 +5,11 @@ import Transaction from '../models/Transaction';
 import Notification from '../models/Notification';
 
 export const initCheckBudgetAlert = () => {
+  // Chạy mỗi ngày lúc 8:00 sáng
   cron.schedule('0 8 * * *', async () => {
-    console.log(`[Cron] Check budget alert running at ${new Date().toLocaleString()}`);
+  // cron.schedule('*/1 * * * *', async () => {
+    const now = new Date();
+    console.log(`[Cron] Kiểm tra ngân sách lúc ${now.toLocaleString()}`);
 
     const budgets = await Budget.find();
 
@@ -22,7 +25,9 @@ export const initCheckBudgetAlert = () => {
         date: { $gte: start, $lte: end },
       });
 
-      // ======= 1️⃣ Kiểm tra Ngân sách Tổng =======
+      console.log(`[DEBUG] Giao dịch tháng ${month}/${year} của user ${user}: ${transactions.length} giao dịch`);
+
+      // ===== 1️⃣ CẢNH BÁO NGÂN SÁCH TỔNG =====
       const totalSpent = transactions.reduce((sum, tx) => sum + tx.amount, 0);
       const totalPercentUsed = Math.round((totalSpent / totalAmount) * 100);
 
@@ -32,40 +37,34 @@ export const initCheckBudgetAlert = () => {
         if (totalPercentUsed >= threshold && (alertLevel ?? 0) < threshold) {
           const message = `Bạn đã chi tiêu ${totalPercentUsed}% ngân sách tổng tháng ${month}/${year}.`;
 
-          await Notification.create({
-            user,
-            type: 'budget_warning',
-            message
-          });
-
-          console.log(`[Budget Alert] Gửi cảnh báo TỔNG cho user ${user}: ${message}`);
+          await Notification.create({ user, type: 'budget_warning', message });
+          console.log(`[Budget Alert] [TỔNG] user=${user}: ${message}`);
 
           await Budget.updateOne({ _id: budget._id }, { $set: { alertLevel: threshold } });
-          break;  // Chỉ gửi 1 cảnh báo cao nhất
+          break;
         }
       }
 
-      // ======= 2️⃣ Kiểm tra từng Danh mục =======
+      // ===== 2️⃣ CẢNH BÁO NGÂN SÁCH THEO DANH MỤC =====
       const spentPerCategory: Record<string, number> = {};
       transactions.forEach(tx => {
-        if (!spentPerCategory[tx.category]) spentPerCategory[tx.category] = 0;
-        spentPerCategory[tx.category] += tx.amount;
+        spentPerCategory[tx.category] = (spentPerCategory[tx.category] || 0) + tx.amount;
       });
 
-      for (const catBudget of categories) {
+      const updatedCategories = [...categories]; // deep copy
+
+      for (let i = 0; i < categories.length; i++) {
+        const catBudget = categories[i];
         const spent = spentPerCategory[catBudget.category] || 0;
         const percentUsed = Math.round((spent / catBudget.amount) * 100);
+        const oldAlertLevel = catBudget.alertLevel || 0;
 
-        if (percentUsed >= 100) {
-          const message = `Bạn đã vượt ngân sách danh mục "${catBudget.category}" tháng ${month}/${year}.`;
+        const thresholds = [80, 90, 100];
 
-          const exists = await Notification.findOne({
-            user,
-            type: 'budget_category_warning',
-            message
-          });
+        for (const threshold of thresholds) {
+          if (percentUsed >= threshold && oldAlertLevel < threshold) {
+            const message = `Bạn đã chi tiêu ${percentUsed}% ngân sách danh mục "${catBudget.category}" tháng ${month}/${year}.`;
 
-          if (!exists) {
             await Notification.create({
               user,
               type: 'budget_category_warning',
@@ -73,9 +72,20 @@ export const initCheckBudgetAlert = () => {
             });
 
             console.log(`[Budget Category Alert] Gửi cảnh báo DANH MỤC cho user ${user}: ${message}`);
+
+            // 👇 Cập nhật alertLevel cho danh mục tương ứng
+            categories[i].alertLevel = threshold;
+
+            break;
           }
         }
       }
+
+      // ✅ Cập nhật lại alertLevel cho từng category
+      await Budget.updateOne(
+        { _id: budget._id },
+        { $set: { categories: updatedCategories } }
+      );
     }
   });
 };

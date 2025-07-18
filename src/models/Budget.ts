@@ -3,6 +3,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 interface CategoryBudget {
   category: string;
   amount: number;
+  alertLevel?: number;
 }
 
 export interface IBudget extends Document {
@@ -23,6 +24,7 @@ const BudgetSchema = new Schema<IBudget>({
     {
       category: { type: String, required: true },
       amount: { type: Number, required: true },
+      alertLevel: { type: Number, default: 0 }
     }
   ],
   alertLevel: { type: Number, default: 0 },

@@ -113,7 +113,7 @@ export const createTransaction = async (req: AuthRequest, res: Response): Promis
 // GET ALL
 export const getTransactions = async (req: AuthRequest, res: Response) => {
   try {
-    const { page = 1, limit = 10, type, category, keyword, month, year } = req.query;
+    const { page = 1, limit = 10, type, category, keyword, month, year, specificDate } = req.query;
 
     const filter: any = { user: req.userId };
 
@@ -122,16 +122,20 @@ export const getTransactions = async (req: AuthRequest, res: Response) => {
     if (keyword) filter.note = { $regex: keyword, $options: 'i' };
 
     // Xử lý lọc theo tháng và/hoặc năm
-    if (month && year) {
+    if (specificDate) {
+      const date = new Date(specificDate as string);
+      const nextDate = new Date(date);
+      nextDate.setDate(date.getDate() + 1);
+      filter.date = { $gte: date, $lt: nextDate };
+    } else if (month && year) {
       const start = new Date(Number(year), Number(month) - 1, 1);
       const end = new Date(Number(year), Number(month), 1);
       filter.date = { $gte: start, $lt: end };
-    } else if (year && !month) {
+    } else if (year) {
       const start = new Date(Number(year), 0, 1);
       const end = new Date(Number(year) + 1, 0, 1);
       filter.date = { $gte: start, $lt: end };
-    } else if (month && !year) {
-      // Nếu chỉ có tháng, lấy tất cả các năm trong tháng đó (ít dùng nhưng vẫn hỗ trợ)
+    } else if (month) {
       const monthNumber = Number(month);
       filter.$expr = { $eq: [{ $month: "$date" }, monthNumber] };
     }

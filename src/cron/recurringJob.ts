@@ -5,6 +5,7 @@ import { getLastDayOfMonth } from '../utils/getLastDayOfMonth';
 export const initRecurringTransactionJob = () => {
     // Chạy lúc 0:30 mỗi ngày
     cron.schedule("30 0 * * *", async () => {
+    // cron.schedule("*/1 * * * *", async () => {
   console.log(`[Recurring] Cron chạy lúc: ${new Date().toISOString()}`);
 
   const now = new Date();
@@ -30,10 +31,10 @@ export const initRecurringTransactionJob = () => {
 
     const exists = await Transaction.findOne({
       user: tx.user,
-      amount: tx.amount,
       type: tx.type,
       category: tx.category,
       isRecurring: true,
+      recurringDay: tx.recurringDay,
       date: {
         $gte: new Date(year, month, 1),
         $lt: new Date(year, month + 1, 1),
