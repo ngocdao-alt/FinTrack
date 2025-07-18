@@ -34,6 +34,28 @@ export const getTransactions = createAsyncThunk('transaction/getTransactions', a
     }
 });
 
+export const getTransactionsByMonth = createAsyncThunk('transaction/getTransactionsByMonth', async (date, { getState, rejectWithValue }) => {
+    const { token } = getState().auth;
+    try {
+        const {month, year} = date;
+
+        const res = await axios.get(
+            `${BACK_END_URL}/api/transactions/by-month?month=${month}&year=${year}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            }, 
+        );
+        console.log(res.data);
+        
+        return res.data;
+    } catch (error) {
+        console.log(error);
+        return rejectWithValue(error.response?.data?.message || error.message);
+    }
+});
+
 export const createTransaction = createAsyncThunk('transaction/createTransaction', async (fields, { getState, rejectWithValue }) => {
     try {
         const { token }= getState().auth;
@@ -62,7 +84,7 @@ export const createTransaction = createAsyncThunk('transaction/createTransaction
             },    
         )
 
-        return res.data
+        return res.data.transaction
     } catch (error) {
         return rejectWithValue(error.response?.data?.message || error.message);
     }
@@ -154,15 +176,29 @@ const transactionSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
+            .addCase(getTransactionsByMonth.pending, state => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getTransactionsByMonth.fulfilled, (state, action) => {   
+                state.loading = false;
+                const { data, total, page, totalPages } = action.payload;
+                state.transactions = data;
+                state.total = total;
+                state.page = page || 1;
+                state.totalPages = totalPages;
+                state.error = null;
+            })
+            .addCase(getTransactionsByMonth.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
             .addCase(createTransaction.pending, state => {
                 state.loading = true;
                 state.error = null;
             })
             .addCase(createTransaction.fulfilled, (state, action) => {
                 state.loading = false;
-                if(state.page === state.totalPages){
-                    state.transactions.push(action.payload);
-                } 
             })
             .addCase(createTransaction.rejected, (state, action) => {
                 state.loading = false;
