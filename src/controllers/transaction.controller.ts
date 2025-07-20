@@ -70,7 +70,7 @@ export const createTransaction = async (req: AuthRequest, res: Response): Promis
         receiptImage: receiptImages,
         isRecurring: true,
         recurringDay,
-        date: new Date(year, month, day)
+        date: new Date(date)
       });
 
       res.status(201).json({

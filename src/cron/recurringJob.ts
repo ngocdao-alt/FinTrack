@@ -3,10 +3,8 @@ import Transaction from '../models/Transaction';
 import { getLastDayOfMonth } from '../utils/getLastDayOfMonth';
 
 export const initRecurringTransactionJob = () => {
-    // Chạy lúc 0:30 mỗi ngày
-    cron.schedule("30 0 * * *", async () => {
+    cron.schedule("0 8 * * *", async () => {
     // cron.schedule("*/1 * * * *", async () => {
-  console.log(`[Recurring] Cron chạy lúc: ${new Date().toISOString()}`);
 
   const now = new Date();
   const today = now.getDate();

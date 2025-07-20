@@ -5,8 +5,7 @@ import Transaction from '../models/Transaction';
 import Notification from '../models/Notification';
 
 export const initCheckBudgetAlert = () => {
-  // Chạy mỗi ngày lúc 8:00 sáng
-  cron.schedule('0 8 * * *', async () => {
+  cron.schedule('30 0 * * *', async () => {
   // cron.schedule('*/1 * * * *', async () => {
     const now = new Date();
     console.log(`[Cron] Kiểm tra ngân sách lúc ${now.toLocaleString()}`);
@@ -27,7 +26,7 @@ export const initCheckBudgetAlert = () => {
 
       console.log(`[DEBUG] Giao dịch tháng ${month}/${year} của user ${user}: ${transactions.length} giao dịch`);
 
-      // ===== 1️⃣ CẢNH BÁO NGÂN SÁCH TỔNG =====
+      // Total budget Alert
       const totalSpent = transactions.reduce((sum, tx) => sum + tx.amount, 0);
       const totalPercentUsed = Math.round((totalSpent / totalAmount) * 100);
 
@@ -45,13 +44,13 @@ export const initCheckBudgetAlert = () => {
         }
       }
 
-      // ===== 2️⃣ CẢNH BÁO NGÂN SÁCH THEO DANH MỤC =====
+      // Budget by category Alert
       const spentPerCategory: Record<string, number> = {};
       transactions.forEach(tx => {
         spentPerCategory[tx.category] = (spentPerCategory[tx.category] || 0) + tx.amount;
       });
 
-      const updatedCategories = [...categories]; // deep copy
+      const updatedCategories = [...categories]; 
 
       for (let i = 0; i < categories.length; i++) {
         const catBudget = categories[i];
@@ -71,7 +70,7 @@ export const initCheckBudgetAlert = () => {
               message
             });
 
-            console.log(`[Budget Category Alert] Gửi cảnh báo DANH MỤC cho user ${user}: ${message}`);
+            console.log(`[Budget Category Alert] Gửi cảnh báo danh mục cho user ${user}: ${message}`);
 
             // 👇 Cập nhật alertLevel cho danh mục tương ứng
             categories[i].alertLevel = threshold;

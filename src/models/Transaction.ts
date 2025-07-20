@@ -10,6 +10,9 @@ export interface ITransaction extends Document {
     receiptImage?: string[];
     isRecurring?: boolean;
     recurringDay?: number;
+
+    createdAt?: Date;
+    updatedAt?: Date;
 }
 
 const transactionSchema = new Schema<ITransaction> (
