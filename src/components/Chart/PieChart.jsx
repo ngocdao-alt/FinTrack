@@ -23,11 +23,16 @@ const PieChart = () => {
     "#34d399",
   ];
 
+  const now = new Date();
+
   useEffect(() => {
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
     dispatch(
       getExpenseStat({
-        startDate: "2025-06-01",
-        endDate: "2025-06-30",
+        startDate: startOfMonth.toISOString().split("T")[0], // YYYY-MM-DD
+        endDate: endOfMonth.toISOString().split("T")[0],
       })
     );
   }, [dispatch]);

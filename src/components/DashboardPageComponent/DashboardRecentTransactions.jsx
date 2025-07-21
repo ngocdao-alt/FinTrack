@@ -32,7 +32,7 @@ const DashboardRecentTransactions = ({ className = "" }) => {
   return (
     <div
       className={`
-            w-full ${className} mt-5 p-4 bg-white rounded-lg border border-slate-200
+            w-full ${className} p-4 bg-white rounded-lg border border-slate-200 shadow 
             md:p-5
             lg:mt-0
     `}

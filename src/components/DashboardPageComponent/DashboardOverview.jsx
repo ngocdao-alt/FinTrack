@@ -33,7 +33,7 @@ const DashboardOverview = ({ className = "" }) => {
 
   useEffect(() => {
     const now = new Date();
-    const months = Array.from({ length: now.getMonth() + 1 }, (_, i) => i + 1); // [1, 2, 3, ..., currentMonth+1]
+    const months = Array.from({ length: now.getMonth() + 1 }, (_, i) => i + 1);
 
     const fetchDashboardData = async () => {
       const incomeArr = [];
@@ -72,14 +72,14 @@ const DashboardOverview = ({ className = "" }) => {
   return (
     <div
       className={`
-        w-full ${className} flex flex-col my-3 mb-3 bg-white rounded-lg border border-slate-200 shadow p-4
+        w-full h-full ${className} flex flex-col my-3 mb-3 bg-white rounded-lg border border-slate-200 shadow p-4
         lg:my-0 lg:mb-1
       `}
     >
       <h2 className="mb-2 text-xl font-bold">Overview</h2>
 
-      <div className="w-full p-5 flex justify-center items-center sm:p-0">
-        <div className="h-[200px] w-[80%] sm:w-[70%]  md:h-[200px] lg:h-[150px] lg:p-0">
+      <div className="w-full h-full p-5 flex justify-center items-center sm:p-0">
+        <div className="h-[200px] w-[80%] sm:w-[70%]  md:h-[200px] lg:h-[90%] lg:p-0">
           <LineChart
             labels={labels}
             dataIncome={incomeData}

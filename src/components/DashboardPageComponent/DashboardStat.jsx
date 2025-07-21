@@ -19,7 +19,7 @@ const DashboardStat = ({ className = "" }) => {
       </h2>
 
       <div className="h-full w-full p-5 flex justify-center items-center sm:p-0">
-        <div className="h-full w-[80%] sm:w-[70%]  md:max-h-[200px] lg:max-h-[220px] lg:p-3 xl:h-[px]">
+        <div className="h-full w-[80%] sm:w-[70%]  md:max-h-[200px] lg:max-h-[220px] lg:p-3 xl:max-h-[80%] xl:w-full">
           <PieChart />
         </div>
       </div>

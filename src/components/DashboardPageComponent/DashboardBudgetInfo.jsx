@@ -1,87 +1,70 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router";
 import { getBudget } from "../../features/budgetSlice";
 import formatCurrencyVN from "../../utils/formatCurrency";
 
 const DashboardBudgetInfo = ({ className = "" }) => {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
-
   const budget = useSelector((state) => state.budget);
 
-  useEffect(() => {
-    const date = new Date();
-    const currentMonth = date.getMonth() + 1;
-    const currentYear = date.getFullYear();
+  const total = budget?.totalBudget || 0;
+  const percent = budget?.totalPercentUsed || 0;
+  const spent = (total * percent) / 100;
+  const remain = total - spent;
 
-    dispatch(getBudget({ month: currentMonth, year: currentYear }));
+  useEffect(() => {
+    const now = new Date();
+    dispatch(getBudget({ month: now.getMonth() + 1, year: now.getFullYear() }));
   }, []);
-
-  useEffect(() => {
-    console.log("Budget:", budget);
-  }, [budget]);
 
   return (
     <div
-      className={`
-        w-full ${className} my-3 flex justify-center bg-white rounded-lg border border-slate-200 shadow p-4
-        lg:my-0 lg:mb-1
-        `}
+      className={`w-full bg-white rounded-lg p-4 shadow ${className} 2xl:p-6`}
     >
-      <div className="w-full flex-col">
-        <h2
-          className="
-            mb-2 text-xl font-bold
-            "
-        >
-          Budget
-        </h2>
+      <div className="h-full flex flex-col gap-2 lg:gap-3 xl:gap-2">
+        <h2 className="text-lg font-bold lg:text-xl 2xl:text-2xl">Budget</h2>
 
-        <div
-          className="
-            w-full flex gap-3 items-center justify-center
-            "
-        >
-          <span
-            className="
-            font-semibold
-            "
-          >
-            {formatCurrencyVN(budget?.totalBudget || 0)} đ
-          </span>
-
-          <div className="relative w-[40%] h-3 bg-[#D1CDFB] rounded-full overflow-hidden">
-            <div
-              className="h-3 rounded-full transition-all duration-500"
-              style={{
-                width: `${budget.totalPercentUsed || 0}%`,
-                backgroundColor: "#5D43DB",
-              }}
-            ></div>
+        <div className="h-full flex flex-col justify-around">
+          {/* Tổng ngân sách */}
+          <div className="text-base font-bold text-gray-600 text-end md:text-lg 2xl:text-2xl">
+            {formatCurrencyVN(total)} đ
           </div>
 
-          <span
-            className="
-            font-semibold
-            "
-          >
-            {budget.totalPercentUsed}%
-          </span>
-        </div>
+          {/* Phần trăm + thanh tiến trình */}
+          <div className="flex items-center gap-3 2xl:px-2">
+            {/* Tỷ lệ phần trăm */}
+            <span className="text-[14px] font-semibold text-gray-500 w-[35px] text-center md:text-base xl:text-[14px] 2xl:text-xl">
+              {percent}%
+            </span>
 
-        <div
-          className="
-                w-full mt-3 flex justify-center items-center gap-5
-            "
-        >
-          <div className="flex gap-3 items-center">
-            <div className="w-10 h-2 bg-[#5D43DB] rounded-full" />
-            <span>Spent</span>
+            {/* Thanh tiến trình */}
+            <div className="relative flex-1 h-2 bg-purple-100 rounded-full md:h-3 xl:h-2 2xl:h-4  ">
+              <div
+                className="absolute top-0 left-0 h-2 bg-[#767CFF] rounded-full transition-all duration-300 md:h-3 xl:h-2 2xl:h-4"
+                style={{ width: `${percent}%` }}
+              />
+            </div>
           </div>
-          <div className="flex gap-3 items-center">
-            <div className="w-10 h-2 bg-[#D1CDFB] rounded-full" />
-            <span>Remain</span>
+
+          {/* Spent / Remain (mini legend) */}
+          <div
+            className="
+            flex flex-col gap-3 text-[12px] text-gray-500 mt-2
+            md:flex-row md:justify-center md:gap-5 md:text-[14px]
+            lg:text-base lg:gap-6
+            xl:text-[14px] xl:gap-3
+          "
+          >
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-1.5 bg-[#767CFF] rounded-full" />
+              <span className="flex gap-3">
+                Spent: {formatCurrencyVN(spent)}đ
+              </span>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-1.5 bg-purple-200 rounded-full" />
+              <span>Remaining: {formatCurrencyVN(remain)}đ</span>
+            </div>
           </div>
         </div>
       </div>
