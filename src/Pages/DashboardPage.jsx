@@ -15,11 +15,12 @@ const DashboardPage = () => {
           w-full h-[85vh] p-1 bg-[#F5F6FA] text-[#464646]
           flex flex-col gap-3 sm:p-3 md:px-8 md:py-3
           xl:grid xl:grid-cols-3 xl:grid-rows-7 xl:gap-3 xl:auto-rows-auto xl:items-stretch xl:h-full
+          3xl:gap-5
         "
       >
         <DashboardBalanceInfo className="col-start-1 col-span-3 row-start-1 row-span-1" />
 
-        <DashboardRecentTransactions className="h-fit col-start-3 col-span-1 row-start-4 row-span-4" />
+        <DashboardRecentTransactions className="h-full col-start-3 col-span-1 row-start-4 row-span-4" />
 
         <DashboardBudgetInfo className="col-start-3 col-span-1 row-start-2 row-span-2" />
 

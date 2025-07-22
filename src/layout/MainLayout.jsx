@@ -9,7 +9,13 @@ const MainLayout = ({ header, sidebar }) => {
       </header>
 
       <div className="flex-1 flex overflow-hidden">
-        <aside className="hidden lg:block w-[220px] h-full bg-white shadow z-10">
+        <aside
+          className="
+          hidden lg:block w-[220px] h-full bg-white shadow z-10 
+          2xl:w-[250px] 
+          3xl:w-[320px] 
+        "
+        >
           {sidebar}
         </aside>
 

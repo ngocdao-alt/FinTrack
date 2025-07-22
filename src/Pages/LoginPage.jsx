@@ -6,10 +6,12 @@ import { loginUser, registerUser, clearError } from "../features/authSlice";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
 import LogoF from "../assets/img/logo.webp";
+import { useLoading } from "../context/LoadingContext";
 
 export default function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { setIsAppLoading } = useLoading();
 
   const [isRegister, setIsRegister] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -30,7 +32,12 @@ export default function Login() {
         await dispatch(loginUser({ email, password })).unwrap();
         toast.dismiss("login-success");
         toast.success("Đăng nhập thành công!", { id: "login-success" });
-        navigate("/dashboard");
+
+        setIsAppLoading(true);
+        setTimeout(() => {
+          navigate("/dashboard");
+          setIsAppLoading(false);
+        }, 3000);
       }
 
       setEmail("");
