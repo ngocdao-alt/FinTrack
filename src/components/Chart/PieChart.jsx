@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Doughnut } from "react-chartjs-2"; // 👈 Đổi Pie → Doughnut
+import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { useDispatch, useSelector } from "react-redux";
 import { getExpenseStat } from "../../features/statSlice";
@@ -64,7 +64,7 @@ const PieChart = () => {
   const options = {
     responsive: true,
     maintainAspectRatio: false,
-    cutout: "3%",
+    // cutout: "3%",
     plugins: {
       legend: {
         position: width >= 640 ? "right" : "bottom",
@@ -95,7 +95,7 @@ const PieChart = () => {
   if (stats.length === 0)
     return <div className="my-7 text-lg">No data to display</div>;
 
-  return <Doughnut data={data} options={options} />;
+  return <Pie data={data} options={options} />;
 };
 
 export default PieChart;
