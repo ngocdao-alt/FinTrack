@@ -185,7 +185,10 @@ const TransactionPage = () => {
         </div>
       </div>
 
-      <div className="bg-white mt-6 rounded-md shadow p-4 overflow-x-auto">
+      <div className="
+      bg-white mt-6 rounded-md shadow p-4 overflow-x-auto 
+      lg:p-10
+      ">
         <div className="w-full flex justify-end">
           <button
             onClick={handleAdd}
@@ -196,7 +199,7 @@ const TransactionPage = () => {
         </div>
         <table className="w-full text-left text-sm mt-4 md:text-base">
           <thead>
-            <tr className="text-gray-600 border-b">
+            <tr className="text-gray-600 border-b-2 ">
               <th>Category</th>
               <th>Amount</th>
               <th>Date</th>
@@ -221,7 +224,7 @@ const TransactionPage = () => {
               transactions.map((t, i) => (
                 <tr
                   key={i}
-                  className="border-b cursor-pointer hover:bg-gray-100 hover:opacity-80 transition duration-200"
+                  className="px-5 border-b border-slate-600 cursor-pointer hover:bg-gray-100 hover:opacity-80 transition duration-200 "
                   onClick={() => setDetailTransaction(t)}
                 >
                   <td>{t.category}</td>
@@ -235,10 +238,10 @@ const TransactionPage = () => {
                   </td>
                   <td>{new Date(t.date).toLocaleDateString("en-GB")}</td>
                   <td className="hidden sm:table-cell">{t.note || "-"}</td>
-                  <td className="py-2 text-right">
+                  <td className="py-2 text-right ">
                     <span className="inline-flex gap-2 text-gray-600">
                       <FaEdit
-                        className="cursor-pointer hover:text-blue-500"
+                        className="cursor-pointer hover:text-blue-500 "
                         onClick={(e) => {
                           e.stopPropagation();
                           handleEdit(t);

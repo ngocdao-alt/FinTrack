@@ -16,18 +16,18 @@ const BigSideBar = () => {
       label: "Transaction",
       path: "/transactions",
     },
-    { icon: <FaWallet />, label: "budget", path: "/budget" },
+    { icon: <FaWallet />, label: "Budget", path: "/budget" },
     { icon: <IoStatsChart />, label: "Statistics", path: "/stat" },
     { icon: <MdSettings />, label: "Setting", path: "/settings" },
   ];
 
   return (
-    <div className="w-full p-6 flex flex-col gap-0 text-[#464646] font-bold text-base">
+    <div className="w-full p-6 flex flex-col gap-0 text-[#464646] font-bold">
       {navArr.map((item, index) => (
         <div
           key={index}
           className={`
-                    group p-3 flex items-center gap-3 cursor-pointer rounded-lg
+                    group p-3 flex items-center gap-3 cursor-pointer rounded-lg 3xl:p-4
                     ${
                       location.pathname === item.path
                         ? "bg-gradient-to-r from-[#5D43DB] to-[#A596E7] text-white"
@@ -37,7 +37,7 @@ const BigSideBar = () => {
         >
           <span
             className="
-              text-3xl sm:text-3xl transform transition group-hover:scale-110
+              text-3xl transform transition group-hover:scale-110 3xl:text-4xl
             "
           >
             {item.icon}
@@ -45,7 +45,7 @@ const BigSideBar = () => {
           <Link
             to={item.path}
             className="
-                transform transition group-hover:scale-105
+                transform transition group-hover:scale-105 3xl:text-xl
               "
           >
             {item.label}

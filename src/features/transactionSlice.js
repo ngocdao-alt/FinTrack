@@ -41,7 +41,7 @@ export const getTransactionsByMonth = createAsyncThunk('transaction/getTransacti
         const {month, year} = date;
 
         const res = await axios.get(
-            `${BACK_END_URL}/api/transactions/by-month?month=${month}&year=${year}`,
+            `${BACK_END_URL}/api/transaction/by-month?month=${month}&year=${year}`,
             {
                 headers: {
                     Authorization: `Bearer ${token}`,

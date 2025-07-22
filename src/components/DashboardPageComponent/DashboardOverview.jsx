@@ -2,11 +2,13 @@ import React, { useEffect, useState } from "react";
 import LineChart from "../Chart/LineChart";
 import { useSelector } from "react-redux";
 import axios from "axios";
+import { useNavigate } from "react-router";
 
 const DashboardOverview = ({ className = "" }) => {
   const BACK_END_URL = import.meta.env.VITE_BACK_END_URL;
   const token = useSelector((state) => state.auth.token);
 
+  const navigate = useNavigate();
   const [incomeData, setIncomeData] = useState([]);
   const [expenseData, setExpenseData] = useState([]);
   const [labels, setLabels] = useState([]);
@@ -33,7 +35,7 @@ const DashboardOverview = ({ className = "" }) => {
 
   useEffect(() => {
     const now = new Date();
-    const months = Array.from({ length: now.getMonth() + 1 }, (_, i) => i + 1); // [1, 2, 3, ..., currentMonth+1]
+    const months = Array.from({ length: now.getMonth() + 1 }, (_, i) => i + 1);
 
     const fetchDashboardData = async () => {
       const incomeArr = [];
@@ -72,14 +74,22 @@ const DashboardOverview = ({ className = "" }) => {
   return (
     <div
       className={`
-        w-full ${className} flex flex-col my-3 mb-3 bg-white rounded-lg border border-slate-200 shadow p-4
+        w-full h-full ${className} flex flex-col mb-3 bg-white rounded-lg border border-slate-200 shadow p-4
         lg:my-0 lg:mb-1
+        3xl:p-6
       `}
     >
-      <h2 className="mb-2 text-xl font-bold">Overview</h2>
+      <h2
+        onClick={() => navigate("/stat")}
+        className="
+          w-fit mb-2 text-xl font-bold hover:scale-105 transition-all cursor-pointer 3xl:text-2xl
+      "
+      >
+        Overview
+      </h2>
 
-      <div className="w-full p-5 flex justify-center items-center sm:p-0">
-        <div className="h-[200px] w-[80%] sm:w-[70%]  md:h-[200px] lg:h-[150px] lg:p-0">
+      <div className="w-full h-full p-4 flex justify-center items-center sm:p-0">
+        <div className="h-full w-full sm:w-[70%] lg:h-[90%] lg:p-0">
           <LineChart
             labels={labels}
             dataIncome={incomeData}

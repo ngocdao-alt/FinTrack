@@ -8,7 +8,7 @@ import {
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import { Doughnut } from "react-chartjs-2";
 
-ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels);
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 const COLORS = [
   "#4F46E5", "#10B981", "#F59E0B", "#EF4444",
@@ -16,19 +16,21 @@ const COLORS = [
 ];
 
 const DonutChart = ({ categoryStats = [], totalBudget = 0 }) => {
-  const [activeIndex, setActiveIndex] = useState(null);
+const [activeIndex, setActiveIndex] = useState(null);
+const filteredStats = categoryStats.filter(item => item.spentAmount > 0);
+
 
   const chartData = {
-    labels: categoryStats.map((item) => item.category),
-    datasets: [
-      {
-        data: categoryStats.map((item) => item.spentAmount),
-        backgroundColor: COLORS,
-        borderWidth: 2,
-        hoverOffset: 12,
-      },
-    ],
-  };
+  labels: filteredStats.map((item) => item.category),
+  datasets: [
+    {
+      data: filteredStats.map((item) => item.spentAmount),
+      backgroundColor: COLORS,
+      borderWidth: 2,
+      hoverOffset: 12,
+    },
+  ],
+};
 
   const options = {
     responsive: true,
@@ -60,19 +62,19 @@ const DonutChart = ({ categoryStats = [], totalBudget = 0 }) => {
   };
 
   const centerData =
-    activeIndex !== null && categoryStats[activeIndex]
-      ? {
-          label: categoryStats[activeIndex].category,
-          amount:
-            categoryStats[activeIndex].spentAmount.toLocaleString() + "đ",
-          percent: totalBudget
-            ? (
-                (categoryStats[activeIndex].spentAmount / totalBudget) *
-                100
-              ).toFixed(0)
-            : 0,
-        }
-      : null;
+  activeIndex !== null && filteredStats[activeIndex]
+    ? {
+        label: filteredStats[activeIndex].category,
+        amount:
+          filteredStats[activeIndex].spentAmount.toLocaleString() + "đ",
+        percent: totalBudget
+          ? (
+              (filteredStats[activeIndex].spentAmount / totalBudget) *
+              100
+            ).toFixed(0)
+          : 0,
+      }
+    : null;
 
   return (
     <div className="relative w-full h-[260px] flex items-center justify-center">

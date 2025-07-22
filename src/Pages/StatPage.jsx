@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getTransactions } from '../features/transactionSlice';
+import { getTransactionsByMonth } from '../features/transactionSlice';
 import { getBudget } from '../features/budgetSlice';
 import DonutChart from '../components/Chart/DonutChart';
-
 
 const StatPage = () => {
   const dispatch = useDispatch();
@@ -17,17 +16,15 @@ const StatPage = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await dispatch(getTransactions({
+      const res = await dispatch(getTransactionsByMonth({
         month: month + 1,
-        year,
-        type: '',
-        category: '',
-        keyword: '',
-        page: 1
+        year
       }));
+
       if (res.payload?.data) {
         setTransactions(res.payload.data);
       }
+
       await dispatch(getBudget({ month: month + 1, year }));
     };
     fetchData();
@@ -44,31 +41,29 @@ const StatPage = () => {
   const { days, firstDay, totalDays } = getDaysInMonth(month, year);
   const budgetPerDay = totalBudget ? Math.floor(totalBudget / totalDays) : 0;
 
-  const formatDateToYMD = (date) => new Date(date).toLocaleDateString("en-CA");
-
-  const spendingByDate = {};
+  const transactionsByDayMap = {};
+  for (let i = 1; i <= totalDays; i++) {
+    transactionsByDayMap[i] = [];
+  }
   transactions.forEach((tx) => {
     const date = new Date(tx.date);
-    if (date.getFullYear() === year && date.getMonth() === month && tx.type === 'expense') {
+    if (date.getFullYear() === year && date.getMonth() === month) {
       const day = date.getDate();
-      spendingByDate[day] = (spendingByDate[day] || 0) + parseInt(tx.amount);
+      transactionsByDayMap[day].push(tx);
     }
   });
 
-  const transactionsByDay = transactions.filter((tx) => {
-    if (!selectedDate) return false;
-    const txDate = formatDateToYMD(tx.date);
-    const clickedDate = formatDateToYMD(new Date(year, month, selectedDate));
-    return txDate === clickedDate;
-  
-  });
-  console.log("✅ categoryStats:", categoryStats);
-
+  const transactionsByDay = selectedDate ? transactionsByDayMap[selectedDate] : [];
 
   return (
-    <div className="flex gap-6 p-6 w-full">
+<div className="
+                flex flex-col sm:flex-row gap-6 p-4 sm:p-6 w-full
+                h-full
+                2xl:text-xl
+                3xl:text-xl
+                ">
       {/* Lịch bên trái */}
-      <div className="w-[60%] bg-white rounded-xl shadow-md p-6">
+  <div className="w-full sm:w-[60%] xl:w-[60%] 2xl:w-[60%] 3xl:w-[60%] bg-white rounded-xl shadow-md p-4 sm:p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex gap-4">
             <select value={month} onChange={(e) => setMonth(Number(e.target.value))} className="border rounded px-2 py-1">
@@ -85,15 +80,25 @@ const StatPage = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-7 gap-2 text-center font-medium text-gray-700 mb-2">
+        <div className="
+        grid grid-cols-7 gap-2 text-center font-medium text-gray-700 mb-2 
+        2xl:text-xl
+        3xl:text-2xl
+        ">
           {['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'].map((d, i) => <div key={i}>{d}</div>)}
         </div>
 
-        <div className="grid grid-cols-7 gap-2 text-center text-sm">
+        <div className="
+        grid grid-cols-7 gap-2 text-center text-sm 
+        ">
           {Array.from({ length: firstDay }).map((_, i) => <div key={i}></div>)}
           {days.map((day, i) => {
-            const spent = spendingByDate[day] || 0;
-            const percent = budgetPerDay ? (spent / budgetPerDay) * 100 : 0;
+            const dailyTransactions = transactionsByDayMap[day];
+            const income = dailyTransactions.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
+            const expense = dailyTransactions.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
+            const net = income - expense;
+            const spentFromBudget = net < 0 ? Math.abs(net) : 0;
+            const percent = budgetPerDay ? (spentFromBudget / budgetPerDay) * 100 : 0;
 
             let bgColor = 'bg-gray-100 text-gray-800';
             if (totalBudget) {
@@ -106,55 +111,60 @@ const StatPage = () => {
               <div
                 key={i}
                 onClick={() => setSelectedDate(day)}
-                className={`cursor-pointer border rounded-md p-2 text-xs transition-all hover:scale-[1.02] ${bgColor}`}
+                className={`
+                  cursor-pointer border rounded-md p-2 text-[11px] transition-all hover:scale-[1.02]
+                  
+                  ${bgColor}`}
               >
-                <div className="font-medium">{day}</div>
-                <div>{spent.toLocaleString()}đ</div>
+                <div className="font-semibold text-sm">{day}</div>
+                <div className="truncate text-[10px] leading-tight max-w-full">
+                  {spentFromBudget.toLocaleString()}đ
+                </div>
               </div>
             );
           })}
         </div>
       </div>
 
-      <div className="w-[40%] flex flex-col gap-4 h-[600px]">
-  {/* Giao dịch ngày */}
-  <div className="flex-1 basis-1/2 bg-white rounded-xl shadow-md p-4 overflow-hidden">
-    <h3 className="text-lg font-semibold mb-3">
-      Giao dịch ngày {selectedDate ? `${selectedDate}/${month + 1}/${year}` : '(Chọn ngày)'}
-    </h3>
-    <div className="max-h-[200px] overflow-y-auto pr-2">
-      {selectedDate ? (
-        <ul className="text-sm space-y-2">
-          {transactionsByDay.length > 0 ? (
-            transactionsByDay.map((tx) => (
-              <li key={tx._id} className="flex justify-between border-b pb-1 text-gray-700">
-                <div className="flex flex-col">
-                  <span className="font-medium">{tx.category}</span>
-                  <span className="text-xs text-gray-500">{tx.note}</span>
-                </div>
-                <span className={tx.type === 'income' ? 'text-green-600' : 'text-red-600'}>
-                  {tx.type === 'income' ? '+' : '-'}
-                  {parseInt(tx.amount).toLocaleString()}đ
-                </span>
-              </li>
-            ))
-          ) : (
-            <p className="text-sm text-gray-500">Không có giao dịch.</p>
-          )}
-        </ul>
-      ) : (
-        <p className="text-sm text-gray-500">Vui lòng chọn ngày.</p>
-      )}
-    </div>
-  </div>
+      {/* Giao diện bên phải */}
+  <div className="w-full sm:w-[40%] xl:w-[40%] 2xl:w-[40%] 3xl:w-[40%] flex flex-col gap-4 h-auto sm:h-[600px] 3xl:h-full 2xl:h-full">
+        {/* Giao dịch ngày */}
+        <div className="flex-1 bg-white rounded-xl shadow-md p-4 overflow-hidden">
+          <h3 className="text-lg font-semibold mb-3">
+            Giao dịch ngày {selectedDate ? `${selectedDate}/${month + 1}/${year}` : '(Chọn ngày)'}
+          </h3>
+          <div className="max-h-[200px] overflow-y-auto pr-2">
+            {selectedDate ? (
+              <ul className="text-sm space-y-2">
+                {transactionsByDay.length > 0 ? (
+                  transactionsByDay.map((tx) => (
+                    <li key={tx._id} className="flex justify-between border-b pb-1 text-gray-700">
+                      <div className="flex flex-col">
+                        <span className="font-medium">{tx.category}</span>
+                        <span className="text-xs text-gray-500">{tx.note}</span>
+                      </div>
+                      <span className={tx.type === 'income' ? 'text-green-600' : 'text-red-600'}>
+                        {tx.type === 'income' ? '+' : '-'}
+                        {parseInt(tx.amount).toLocaleString()}đ
+                      </span>
+                    </li>
+                  ))
+                ) : (
+                  <p className="text-sm text-gray-500">Không có giao dịch.</p>
+                )}
+              </ul>
+            ) : (
+              <p className="text-sm text-gray-500">Vui lòng chọn ngày.</p>
+            )}
+          </div>
+        </div>
 
-  {/* Biểu đồ donut */}
-  <div className="flex-1 basis-1/2 bg-white rounded-xl shadow-md p-4 overflow-hidden flex flex-col items-center justify-center">
-    <h3 className="text-lg font-semibold mb-3">Thống kê theo danh mục</h3>
-    <DonutChart categoryStats={categoryStats} totalBudget={totalBudget} />
-  </div>
-</div>
-
+        {/* Biểu đồ donut */}
+        <div className="flex-1 bg-white rounded-xl shadow-md p-4 overflow-hidden flex flex-col items-center justify-center">
+          <h3 className="text-lg font-semibold mb-3">Thống kê theo danh mục</h3>
+          <DonutChart categoryStats={categoryStats} totalBudget={totalBudget} />
+        </div>
+      </div>
     </div>
   );
 };

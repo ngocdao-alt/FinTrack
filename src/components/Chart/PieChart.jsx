@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Doughnut } from "react-chartjs-2"; // 👈 Đổi Pie → Doughnut
+import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { useDispatch, useSelector } from "react-redux";
 import { getExpenseStat } from "../../features/statSlice";
@@ -23,11 +23,16 @@ const PieChart = () => {
     "#34d399",
   ];
 
+  const now = new Date();
+
   useEffect(() => {
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
     dispatch(
       getExpenseStat({
-        startDate: "2025-06-01",
-        endDate: "2025-06-30",
+        startDate: startOfMonth.toISOString().split("T")[0], // YYYY-MM-DD
+        endDate: endOfMonth.toISOString().split("T")[0],
       })
     );
   }, [dispatch]);
@@ -56,41 +61,40 @@ const PieChart = () => {
     ],
   };
 
-  const options = {
-    responsive: true,
-    maintainAspectRatio: false,
-    cutout: "3%",
-    plugins: {
-      legend: {
-        position: width >= 640 ? "right" : "bottom",
-        labels: {
-          boxWidth: width >= 640 ? 20 : 10,
-          padding: width >= 640 ? 20 : 10,
-          font: {
-            size: getFontSize(),
-          },
-        },
-      },
-      tooltip: {
-        callbacks: {
-          label: function (context) {
-            const value = context.raw || 0;
-            const percent = totalAmount
-              ? ((value / totalAmount) * 100).toFixed(1)
-              : 0;
-            return `${
-              context.label
-            }: ${value.toLocaleString()} đ (${percent}%)`;
-          },
+const options = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: {
+      position: width >= 640 ? "right" : "bottom",
+      labels: {
+        boxWidth: width >= 640 ? 20 : 10,
+        padding: width >= 640 ? 20 : 10,
+        font: {
+          size: getFontSize(),
         },
       },
     },
-  };
+    tooltip: {
+      enabled: true, // CHỈ hiển thị khi hover
+      callbacks: {
+        label: function (context) {
+          const value = context.raw || 0;
+          const percent = totalAmount
+            ? ((value / totalAmount) * 100).toFixed(1)
+            : 0;
+          return `${context.label}: ${value.toLocaleString()} đ (${percent}%)`;
+        },
+      },
+    },
+  },
+};
+
 
   if (stats.length === 0)
     return <div className="my-7 text-lg">No data to display</div>;
 
-  return <Doughnut data={data} options={options} />;
+  return <Pie data={data} options={options} />;
 };
 
 export default PieChart;
