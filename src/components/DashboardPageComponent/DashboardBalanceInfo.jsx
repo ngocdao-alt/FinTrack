@@ -5,9 +5,11 @@ import { FaLongArrowAltDown } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { getDashboard } from "../../features/dashboardSlice";
 import formatCurrencyVN from "../../utils/formatCurrency";
+import BalanceInfoLoading from "../Loading/DashboardLoading/BalanceInfoLoading";
 
 const DashboardBalanceInfo = ({ className = "" }) => {
   const dashboard = useSelector((state) => state.dashboard);
+  const loading = useSelector((state) => state.dashboard.loading);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -20,6 +22,8 @@ const DashboardBalanceInfo = ({ className = "" }) => {
   useEffect(() => {
     console.log(dashboard);
   }, [dashboard]);
+
+  if (loading) return <BalanceInfoLoading className={className} />;
 
   return (
     <section

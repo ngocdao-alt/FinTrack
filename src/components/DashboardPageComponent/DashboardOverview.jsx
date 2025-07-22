@@ -3,6 +3,7 @@ import LineChart from "../Chart/LineChart";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { useNavigate } from "react-router";
+import OverviewLoading from "../Loading/DashboardLoading/OverviewLoading";
 
 const DashboardOverview = ({ className = "" }) => {
   const BACK_END_URL = import.meta.env.VITE_BACK_END_URL;
@@ -70,6 +71,10 @@ const DashboardOverview = ({ className = "" }) => {
       fetchDashboardData();
     }
   }, [token]);
+
+  if (incomeData.length === 0 && expenseData.length === 0 && token) {
+    return <OverviewLoading className={className} />;
+  }
 
   return (
     <div

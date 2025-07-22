@@ -5,9 +5,11 @@ import { getDashboard } from "../../features/dashboardSlice";
 import formatDateToString from "../../utils/formatDateToString";
 import formatCurrencyVN from "../../utils/formatCurrency";
 import { useNavigate } from "react-router";
+import RecentTransactionsLoading from "../Loading/DashboardLoading/RecentTransactionsLoading";
 
 const DashboardRecentTransactions = ({ className = "" }) => {
   const transactions = useSelector((state) => state.transaction.transactions);
+  const loading = useSelector((state) => state.transaction.loading);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -22,6 +24,8 @@ const DashboardRecentTransactions = ({ className = "" }) => {
       })
     );
   }, []);
+
+  if (loading) return <RecentTransactionsLoading className={className} />;
 
   return (
     <div

@@ -1,9 +1,18 @@
-import React from "react";
+import React, { useEffect } from "react";
 import PieChart from "../Chart/PieChart";
 import { useNavigate } from "react-router";
+import { useSelector } from "react-redux";
+import StatLoading from "../Loading/DashboardLoading/StatLoading";
 
 const DashboardStat = ({ className = "" }) => {
   const navigate = useNavigate();
+  const loading = useSelector((state) => state.stat.loading);
+
+  useEffect(() => {
+    console.log(loading);
+  }, [loading]);
+
+  if (loading) return <StatLoading className={className} />;
 
   return (
     <div

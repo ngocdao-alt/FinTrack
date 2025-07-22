@@ -4,12 +4,14 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { useDispatch, useSelector } from "react-redux";
 import { getExpenseStat } from "../../features/statSlice";
 import useWindowWidth from "../../utils/useWindowWidth";
+import PieChartLoading from "../Loading/DashboardLoading/PieChartLoading";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const PieChart = () => {
   const dispatch = useDispatch();
   const stats = useSelector((state) => state.stat.stats);
+  const loading = useSelector((state) => state.stat.loading);
   const width = useWindowWidth();
 
   const COLORS = [
@@ -23,18 +25,18 @@ const PieChart = () => {
     "#34d399",
   ];
 
-  const now = new Date();
-
   useEffect(() => {
+    const now = new Date(); // di chuyển vào đây
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-
-    dispatch(
-      getExpenseStat({
-        startDate: startOfMonth.toISOString().split("T")[0], // YYYY-MM-DD
-        endDate: endOfMonth.toISOString().split("T")[0],
-      })
-    );
+    if (stats.length === 0 && !loading) {
+      dispatch(
+        getExpenseStat({
+          startDate: startOfMonth.toISOString().split("T")[0],
+          endDate: endOfMonth.toISOString().split("T")[0],
+        })
+      );
+    }
   }, [dispatch]);
 
   const getFontSize = () => {
@@ -47,7 +49,6 @@ const PieChart = () => {
   };
 
   const totalAmount = stats.reduce((acc, item) => acc + item.total, 0);
-  const totalValue = stats.reduce((sum, stat) => sum + stat.total, 0);
 
   const data = {
     labels: stats.map((stat) => stat.category),
@@ -92,7 +93,7 @@ const PieChart = () => {
     },
   };
 
-  if (stats.length === 0)
+  if (!loading && stats.length === 0)
     return <div className="my-7 text-lg">No data to display</div>;
 
   return <Pie data={data} options={options} />;

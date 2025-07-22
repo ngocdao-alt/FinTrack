@@ -3,11 +3,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { getBudget } from "../../features/budgetSlice";
 import formatCurrencyVN from "../../utils/formatCurrency";
 import { useNavigate } from "react-router";
+import ShortBudgetLoading from "../Loading/DashboardLoading/ShortBudgetLoading";
 
 const DashboardBudgetInfo = ({ className = "" }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const budget = useSelector((state) => state.budget);
+  const loading = useSelector((state) => state.budget.loading);
 
   const total = budget?.totalBudget || 0;
   const percent = budget?.totalPercentUsed || 0;
@@ -18,6 +20,8 @@ const DashboardBudgetInfo = ({ className = "" }) => {
     const now = new Date();
     dispatch(getBudget({ month: now.getMonth() + 1, year: now.getFullYear() }));
   }, []);
+
+  if (loading) return <ShortBudgetLoading className={className} />;
 
   return (
     <div
