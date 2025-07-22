@@ -1,5 +1,7 @@
-function formatCurrencyVN(number) {
-  return number.toLocaleString('vi-VN');
-}
+const formatCurrency = (num) =>
+  Number(num).toLocaleString("vi-VN", {
+    style: "decimal",
+    minimumFractionDigits: 0,
+  });
 
-export default formatCurrencyVN;
+export default formatCurrency;

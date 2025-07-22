@@ -62,36 +62,35 @@ const PieChart = () => {
     ],
   };
 
-  const options = {
-    responsive: true,
-    maintainAspectRatio: false,
-    // cutout: "3%",
-    plugins: {
-      legend: {
-        position: width >= 640 ? "right" : "bottom",
-        labels: {
-          boxWidth: width >= 640 ? 20 : 10,
-          padding: width >= 640 ? 20 : 10,
-          font: {
-            size: getFontSize(),
-          },
-        },
-      },
-      tooltip: {
-        callbacks: {
-          label: function (context) {
-            const value = context.raw || 0;
-            const percent = totalAmount
-              ? ((value / totalAmount) * 100).toFixed(1)
-              : 0;
-            return `${
-              context.label
-            }: ${value.toLocaleString()} đ (${percent}%)`;
-          },
+const options = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: {
+      position: width >= 640 ? "right" : "bottom",
+      labels: {
+        boxWidth: width >= 640 ? 20 : 10,
+        padding: width >= 640 ? 20 : 10,
+        font: {
+          size: getFontSize(),
         },
       },
     },
-  };
+    tooltip: {
+      enabled: true, // CHỈ hiển thị khi hover
+      callbacks: {
+        label: function (context) {
+          const value = context.raw || 0;
+          const percent = totalAmount
+            ? ((value / totalAmount) * 100).toFixed(1)
+            : 0;
+          return `${context.label}: ${value.toLocaleString()} đ (${percent}%)`;
+        },
+      },
+    },
+  },
+};
+
 
   if (!loading && stats.length === 0)
     return <div className="my-7 text-lg">No data to display</div>;
