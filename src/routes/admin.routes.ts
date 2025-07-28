@@ -1,0 +1,43 @@
+import express from "express";
+import { requireAuth } from "../middlewares/requireAuth";
+import { checkAdmin } from "../middlewares/checkAdmin";
+import * as UserController from "../controllers/admin/user.controller";
+import * as TransactionController from "../controllers/admin/transaction.controller";
+import * as ReportController from '../controllers/admin/report.controller';
+import * as DashboardController from '../controllers/admin/dashboard.controller';
+import * as CategoryController from '../controllers/admin/category.controller';
+import * as LogController from '../controllers/admin/log.controller';
+import { logActivity } from "../middlewares/logActivity";
+
+const router = express.Router();
+
+router.use(requireAuth, checkAdmin);
+router.use(logActivity);
+
+// User management
+router.get("/users", UserController.getAllUsers);
+router.put("/users/:userId", UserController.updateUserInfo);
+router.delete("/users/:userId", UserController.deleteUser);
+router.patch("/users/:userId", UserController.banUser);
+
+// Transaction management
+router.get("/transactions", TransactionController.getAllTransactions);
+router.delete("/transactions/:id", TransactionController.deleteTransaction);
+router.get("/transactions/stats", TransactionController.getTransactionStats);
+
+// Report management
+router.get("/reports", ReportController.getAllReports);
+router.get('/reports/:id', ReportController.getReportById);
+router.delete("/reports/:id", ReportController.deleteReport);
+
+// Dashboard
+router.get("/dashboard", DashboardController.getAdminDashboardStats);
+
+// Category
+router.get("/categories/summary", CategoryController.getCategorySummary);
+
+// Log
+router.get("/logs", LogController.getLogs);
+
+
+export default router;

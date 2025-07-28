@@ -2,10 +2,12 @@ import { Router } from "express";
 import { requireAuth } from "../middlewares/requireAuth";
 import { createTransaction, deleteTransaction, getTransactions, getTransactionsByMonth, getUsedCategories, updateTransaction } from "../controllers/transaction.controller";
 import upload from "../middlewares/upload";
+import { logActivity } from "../middlewares/logActivity";
 
 const router = Router();
 
 router.use(requireAuth);
+router.use(logActivity);
 
 router.post(
   '/',

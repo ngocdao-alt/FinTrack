@@ -11,6 +11,9 @@ import budgetRoutes from './routes/budget.routes';
 import userRoutes from './routes/user.routes';
 import notificationRoutes from './routes/notification.routes';
 import statRoutes from './routes/stat.routes';
+import reportRoutes from './routes/report.routes';
+import adminRoutes from './routes/admin.routes';
+import path from 'path';
 
 const app = express();
 
@@ -19,6 +22,8 @@ app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true}));
 app.use(express.json());
 app.use(cookieParser());
 app.use(morgan('dev'));
+app.use(express.json({ limit: '10mb' }));
+app.use('/static', express.static(path.join(__dirname, '../public')));
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -29,6 +34,8 @@ app.use('/api/budget', budgetRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/notification', notificationRoutes);
 app.use('/api/stats', statRoutes);
+app.use('/api/report', reportRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Default route
 app.get('/', (req, res) => {

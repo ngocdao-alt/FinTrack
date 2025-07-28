@@ -6,6 +6,7 @@ import { AuthRequest } from "../middlewares/requireAuth";
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import mongoose from "mongoose";
+import { logAction } from "../utils/logAction";
 
 dayjs.extend(utc);
 
@@ -15,7 +16,13 @@ export const setOrUpdateBudget = async (req: AuthRequest, res: Response) => {
     const { month, year, totalAmount, categories } = req.body;
 
     if (!month || !year || !totalAmount) {
-      res.status(400).json({ message: 'Vui lòng nhập tháng, năm và ngân sách tổng.' });
+      const msg = 'Vui lòng nhập tháng, năm và ngân sách tổng.';
+      await logAction(req, {
+        action: "setOrUpdateBudget",
+        statusCode: 400,
+        description: msg,
+      });
+      res.status(400).json({ message: msg });
       return;
     }
 
@@ -25,6 +32,12 @@ export const setOrUpdateBudget = async (req: AuthRequest, res: Response) => {
       existing.totalAmount = totalAmount;
       existing.categories = categories || [];
       await existing.save();
+
+      await logAction(req, {
+        action: "updateBudget",
+        statusCode: 200,
+        description: `Cập nhật ngân sách ${month}/${year}`,
+      });
 
       res.json({ message: 'Cập nhật ngân sách thành công.', budget: existing });
       return;
@@ -38,13 +51,28 @@ export const setOrUpdateBudget = async (req: AuthRequest, res: Response) => {
       categories: categories || [],
     });
 
+    await logAction(req, {
+      action: "createBudget",
+      statusCode: 201,
+      description: `Tạo ngân sách ${month}/${year}`,
+    });
+
     res.status(201).json({ message: 'Tạo ngân sách thành công.', budget: newBudget });
+    return;
 
   } catch (err) {
     console.error(err);
+    await logAction(req, {
+      action: "setOrUpdateBudget",
+      statusCode: 500,
+      description: 'Lỗi server khi tạo/cập nhật ngân sách.',
+      level: "error"
+    });
     res.status(500).json({ message: 'Lỗi khi tạo/cập nhật ngân sách.', error: err });
+    return;
   }
 };
+
 
 export const getMonthlyBudget = async (req: AuthRequest, res: Response) => {
   try {
