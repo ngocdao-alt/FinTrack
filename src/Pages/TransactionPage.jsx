@@ -11,6 +11,8 @@ import formatCurrency from "../utils/formatCurrency";
 import TransactionModal from "../components/TransactionModal";
 import DetailTransaction from "../components/DetailTransaction";
 import { ChevronDown } from "lucide-react";
+import Shimmer from "../components/Loading/Shimmer";
+
 
 const TransactionPage = () => {
   const dispatch = useDispatch();
@@ -209,12 +211,15 @@ const TransactionPage = () => {
           </thead>
           <tbody>
             {loading ? (
-              <tr>
-                <td colSpan="6" className="text-center py-4">
-                  Loading...
-                </td>
-              </tr>
-            ) : transactions.length === 0 ? (
+  [...Array(6)].map((_, index) => (
+    <tr key={index} className="relative h-12 overflow-hidden">
+      <td colSpan="6" className="bg-gray-100 rounded-md relative">
+        <Shimmer />
+      </td>
+    </tr>
+  ))
+) : transactions.length === 0 ? (
+
               <tr>
                 <td colSpan="6" className="text-center py-4">
                   No data to display
