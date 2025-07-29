@@ -77,8 +77,8 @@ const filteredStats = categoryStats.filter(item => item.spentAmount > 0);
     : null;
 
   return (
-    <div className="relative w-full h-[260px] flex items-center justify-center">
-  <div className="w-[220px] h-[220px]">
+    <div className="relative w-full h-[260px] flex items-center justify-center pd-4">
+  <div className="w-[220px] h-[200px]">
     <Doughnut
       data={chartData}
       options={options}
