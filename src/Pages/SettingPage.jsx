@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   FaUser,
   FaCamera,
@@ -10,11 +10,23 @@ import {
   FaGlobe,
   FaImage,
 } from "react-icons/fa";
+import { useDispatch } from "react-redux";
+import { logout } from "../features/authSlice";
+import toast from "react-hot-toast";
 
 const SettingPage = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const [avatar, setAvatar] = useState(null);
   const [userName, setUserName] = useState("Nguyễn Văn A");
+  const [phone, setPhone] = useState("0123456789");
+  const [dob, setDob] = useState("1999-01-01");
+  const [address, setAddress] = useState("123/456 ABC");
   const [editingName, setEditingName] = useState(false);
+  const [editingPhone, setEditingPhone] = useState(false);
+  const [editingDob, setEditingDob] = useState(false);
+  const [editingAddress, setEditingAddress] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [theme, setTheme] = useState("light");
   const [language, setLanguage] = useState("vi");
@@ -34,16 +46,39 @@ const SettingPage = () => {
     // TODO: Gửi tên người dùng mới lên API nếu cần
   };
 
+  const savePhone = () => {
+    setEditingPhone(false);
+    // TODO: Gửi tên người dùng mới lên API nếu cần
+  };
+
+  const saveDob = () => {
+    setEditingDob(false);
+    // TODO: Gửi tên người dùng mới lên API nếu cần
+  };
+
+  const saveAddress = () => {
+    setEditingAddress(false);
+    // TODO: Gửi tên người dùng mới lên API nếu cần
+  };
+
+  const handleLogout = () => {
+    dispatch(logout);
+    navigate("/login");
+    toast("Logged out!", {
+      icon: "ℹ️",
+    });
+  };
+
   return (
-    <div className=" flex-1 h-full flex items-center justify-center bg-[#f3f4f6]">
+    <div className="h-fit flex items-start justify-center bg-[#f3f4f6] sm:h-full xl:items-center">
       <main className="flex-1 px-4 sm:px-6 py-6">
-        <div className="w-full max-w-4xl bg-white rounded-xl shadow-md p-6 mx-auto">
+        <div className="w-full max-w-4xl bg-white rounded-xl shadow-lg p-6 mx-auto">
           <h2 className="text-2xl font-semibold mb-8">Cài đặt</h2>
 
           <div className="flex flex-col md:flex-row gap-10 items-center md:items-start text-center md:text-left">
             {/* === Thông tin người dùng === */}
-            <section className="flex-1">
-              <h3 className="text-lg font-semibold mb-4 text-left w-full">
+            <section className="flex-1 w-full sm:px-3">
+              <h3 className="w-full text-center text-lg font-semibold mb-4 sm:text-left">
                 Thông tin người dùng
               </h3>
 
@@ -95,10 +130,10 @@ const SettingPage = () => {
                     value={userName}
                     readOnly={!editingName}
                     onChange={(e) => setUserName(e.target.value)}
-                    className={`w-full border-b bg-transparent pr-8 ${
+                    className={`w-full border-b bg-transparent pr-8 px-2 py-1 ${
                       editingName
-                        ? "border-indigo-400 focus:outline-none"
-                        : "border-gray-400"
+                        ? "border-indigo-400 focus:outline-[#7E5BEF]"
+                        : "border-gray-400 outline-none cursor-not-allowed"
                     }`}
                   />
                   <button
@@ -112,11 +147,80 @@ const SettingPage = () => {
                   </button>
                 </div>
 
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={phone}
+                    readOnly={!editingPhone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className={`w-full border-b bg-transparent pr-8 px-2 py-1 ${
+                      editingPhone
+                        ? "border-indigo-400 focus:outline-[#7E5BEF]"
+                        : "border-gray-400 outline-none cursor-not-allowed"
+                    }`}
+                  />
+                  <button
+                    className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-600 hover:text-indigo-600"
+                    onClick={() =>
+                      editingPhone ? savePhone() : setEditingPhone(true)
+                    }
+                    title={editingPhone ? "Lưu sđt" : "Chỉnh sửa sđt"}
+                  >
+                    {editingPhone ? <FaSave /> : <FaPen />}
+                  </button>
+                </div>
+
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={dob}
+                    readOnly={!editingDob}
+                    onChange={(e) => setDob(e.target.value)}
+                    className={`w-full border-b bg-transparent pr-8 px-2 py-1 ${
+                      editingDob
+                        ? "border-indigo-400 focus:outline-[#7E5BEF]"
+                        : "border-gray-400 outline-none cursor-not-allowed"
+                    }`}
+                  />
+                  <button
+                    className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-600 hover:text-indigo-600"
+                    onClick={() =>
+                      editingDob ? saveDob() : setEditingDob(true)
+                    }
+                    title={editingDob ? "Lưu ngày sinh" : "Chỉnh sửa ngày sinh"}
+                  >
+                    {editingDob ? <FaSave /> : <FaPen />}
+                  </button>
+                </div>
+
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={address}
+                    readOnly={!editingAddress}
+                    onChange={(e) => setAddress(e.target.value)}
+                    className={`w-full border-b bg-transparent pr-8 px-2 py-1 ${
+                      editingAddress
+                        ? "border-indigo-400 focus:outline-[#7E5BEF]"
+                        : "border-gray-400 outline-none cursor-not-allowed"
+                    }`}
+                  />
+                  <button
+                    className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-600 hover:text-indigo-600"
+                    onClick={() =>
+                      editingAddress ? saveAddress() : setEditingAddress(true)
+                    }
+                    title={editingAddress ? "Lưu địa chỉ" : "Chỉnh sửa địa chỉ"}
+                  >
+                    {editingAddress ? <FaSave /> : <FaPen />}
+                  </button>
+                </div>
+
                 <input
                   type="email"
                   value="nguyenvana@gmail.com"
                   readOnly
-                  className="w-full border-b border-gray-400 bg-transparent"
+                  className="w-full px-2 py-1 border-b border-gray-400 bg-transparent outline-none cursor-not-allowed"
                 />
 
                 <div className="relative select-none">
@@ -124,10 +228,10 @@ const SettingPage = () => {
                     type={showPassword ? "text" : "password"}
                     value="123456"
                     readOnly
-                    className="w-full border-b border-gray-400 bg-transparent pr-8"
+                    className="w-full px-2 py-1 border-b border-gray-400 bg-transparent pr-8 outline-none cursor-not-allowed"
                   />
                   <button
-                    className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-600 hover:text-indigo-600"
+                    className="absolute right-0 top-1/2 -translate-y-1/2 px-2 py-1 text-gray-600 hover:text-indigo-600 "
                     onClick={() => setShowPassword((s) => !s)}
                     title={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
                   >
@@ -141,8 +245,10 @@ const SettingPage = () => {
             <div className="hidden md:block w-px bg-gray-300 self-stretch"></div>
 
             {/* === Cài đặt giao diện === */}
-            <section className="flex-1 mt-10 md:mt-0">
-              <h3 className="text-lg font-semibold mb-4 text-left">Giao diện</h3>
+            <section className="w-full my-3 flex-1 md:mt-0">
+              <h3 className="text-lg font-semibold mb-4 text-left">
+                Giao diện
+              </h3>
 
               <label className="block mb-2 font-medium text-left w-full">
                 Chủ đề
@@ -187,12 +293,12 @@ const SettingPage = () => {
                 </select>
               </div>
 
-              <Link
-                to="/login"
-                className="block text-center w-full bg-indigo-500 text-white py-2 rounded-md hover:bg-indigo-600 transition-colors"
+              <button
+                onClick={handleLogout}
+                className="block text-center w-full bg-indigo-500 text-white py-2 rounded-md hover:bg-indigo-600 transition-colors cursor-pointer"
               >
                 Đăng xuất
-              </Link>
+              </button>
             </section>
           </div>
         </div>

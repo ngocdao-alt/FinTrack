@@ -11,6 +11,7 @@ import MainLayout from "./layout/MainLayout";
 import BigSideBar from "./components/BigSideBar";
 import { useLoading } from "./context/LoadingContext";
 import FullScreenLottie from "./components/Loading/FullScreenLottie";
+import ReportExport from "./pages/ReportReviewPage";
 
 function App() {
   const { isAppLoading } = useLoading();
@@ -31,6 +32,7 @@ function App() {
           <Route path="/transactions" element={<TransactionPage />} />
           <Route path="/stat" element={<StatPage />} />
           <Route path="/settings" element={<SettingPage />} />
+          <Route path="/report" element={<ReportExport />} />
         </Route>
       </Routes>
     </>
