@@ -12,6 +12,7 @@ const DashboardOverview = ({ className = "" }) => {
   const navigate = useNavigate();
   const [incomeData, setIncomeData] = useState([]);
   const [expenseData, setExpenseData] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [labels, setLabels] = useState([]);
 
   const getMonthLabels = () => {
@@ -44,6 +45,7 @@ const DashboardOverview = ({ className = "" }) => {
 
       for (const month of months) {
         try {
+          setLoading(true);
           const res = await axios.get(
             `${BACK_END_URL}/api/dashboard?month=${month}&year=${now.getFullYear()}`,
             {
@@ -56,7 +58,10 @@ const DashboardOverview = ({ className = "" }) => {
           const { totalIncome = 0, totalExpense = 0 } = res.data || {};
           incomeArr.push(totalIncome);
           expenseArr.push(totalExpense);
+
+          setLoading(false);
         } catch (error) {
+          setLoading(false);
           incomeArr.push(0);
           expenseArr.push(0);
         }
@@ -75,6 +80,13 @@ const DashboardOverview = ({ className = "" }) => {
   if (incomeData.length === 0 && expenseData.length === 0 && token) {
     return <OverviewLoading className={className} />;
   }
+
+  if (!loading && incomeData.length === 0 && expenseData.length === 0)
+    return (
+      <div className="w-full h-full p-5 flex justify-center items-center font-semibold 3xl:text-xl">
+        No data to display
+      </div>
+    );
 
   return (
     <div

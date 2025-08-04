@@ -26,8 +26,6 @@ export const getTransactions = createAsyncThunk('transaction/getTransactions', a
                 }
             }, 
         );
-        console.log(res.data);
-        
         return res.data;
     } catch (error) {
         console.log(error);

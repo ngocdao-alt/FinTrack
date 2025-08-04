@@ -5,9 +5,11 @@ import formatCurrencyVN from "../utils/formatCurrency";
 import MyBudgetCircle from "../components/BudgetPageComponent/MyBudgetCircle";
 import BudgetByCategory from "../components/BudgetPageComponent/BudgetByCategory";
 import BudgetModal from "../components/BudgetPageComponent/BudgetModal";
+import BudgetPageLoading from "../components/Loading/BudgetLoading/BudgetPageLoading";
 
 const BudgetPage = () => {
   const now = new Date();
+  const token = useSelector((state) => state.auth.token);
   const dispatch = useDispatch();
   const budget = useSelector((state) => state.budget);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -32,9 +34,15 @@ const BudgetPage = () => {
 
   const years = Array.from({ length: 6 }, (_, i) => 2020 + i);
 
+  const fetchBudget = async () => {
+    await dispatch(getBudget({ month: selectedMonth, year: selectedYear }));
+  };
+
   useEffect(() => {
-    dispatch(getBudget({ month: selectedMonth, year: selectedYear }));
+    fetchBudget();
   }, [selectedMonth, selectedYear]);
+
+  if (budget.loading) return <BudgetPageLoading />;
 
   return (
     <section
@@ -122,6 +130,10 @@ const BudgetPage = () => {
             setIsFormOpen={setIsFormOpen}
             monthValues={monthValues}
             years={years}
+            token={token}
+            onClose={() => {
+              fetchBudget(); // Gọi lại API khi form đóng
+            }}
           />
         )}
 

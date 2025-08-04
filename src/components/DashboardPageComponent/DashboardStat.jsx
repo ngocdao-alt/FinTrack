@@ -1,16 +1,30 @@
 import React, { useEffect } from "react";
 import PieChart from "../Chart/PieChart";
 import { useNavigate } from "react-router";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import StatLoading from "../Loading/DashboardLoading/StatLoading";
+import { getExpenseStat } from "../../features/statSlice";
 
 const DashboardStat = ({ className = "" }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const stats = useSelector((state) => state.stat.stats);
   const loading = useSelector((state) => state.stat.loading);
 
   useEffect(() => {
-    console.log(loading);
-  }, [loading]);
+    const now = new Date(); // di chuyển vào đây
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    if (stats.length === 0 && !loading) {
+      dispatch(
+        getExpenseStat({
+          startDate: startOfMonth.toISOString().split("T")[0],
+          endDate: endOfMonth.toISOString().split("T")[0],
+        })
+      );
+    }
+  }, [dispatch]);
 
   if (loading) return <StatLoading className={className} />;
 
@@ -35,7 +49,7 @@ const DashboardStat = ({ className = "" }) => {
 
       <div className="h-full w-full p-5 flex justify-center items-center sm:p-0">
         <div className="w-full h-full sm:w-[80%] lg:w-[80%] lg:p-3 xl:w-[80%] 3xl:w-[70%]">
-          <PieChart />
+          <PieChart stats={stats} loading={loading} />
         </div>
       </div>
     </div>

@@ -35,6 +35,7 @@ export const markNotificationAsRead = createAsyncThunk('notificaiton/markNotific
 
         const res = await axios.patch(
             `${BACK_END_URL}/api/notification/${id}/read`,
+            {},
             {
                 headers: {
                     Authorization: `Bearer ${token}`

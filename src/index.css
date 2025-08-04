@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tailwindcss/utilities";
+@custom-variant dark (&:where(.dark, .dark *));
 /* Thêm font nếu muốn */
 
 @theme {
@@ -39,6 +40,14 @@
     100% {
       left: 100%;
     }
+  }
+}
+
+@layer base {
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
   }
 }
 

@@ -14,17 +14,20 @@ const initialState = {
     error: null,
 }
 
-export const addBudget = createAsyncThunk('budget/addBudget', async (fields, { getState, rejectWithValue }) => {
+export const addBudget = createAsyncThunk('budget/addBudget', async ({ month, year, totalAmount, categories}, { getState, rejectWithValue }) => {
+    // console.log(fields);
+    
     try {
         const { token } = getState().auth;
-        const { month, year, amount } = fields;
+        // const { month, year, amount, categories } = fields;
 
         const res = await axios.post(
             `${BACK_END_URL}/api/budget`,
             {
                 month,
                 year,
-                amount
+                totalAmount,
+                categories
             },
             {
                 headers: {

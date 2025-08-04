@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import phoneImg from "../assets/img/phoneImg.png";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { loginUser, registerUser, clearError } from "../features/authSlice";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
@@ -11,6 +11,7 @@ import { useLoading } from "../context/LoadingContext";
 export default function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const user = useSelector((state) => state.auth.user);
   const { setIsAppLoading } = useLoading();
 
   const [isRegister, setIsRegister] = useState(false);
@@ -35,7 +36,11 @@ export default function Login() {
 
         setIsAppLoading(true);
         setTimeout(() => {
-          navigate("/dashboard");
+          if (user.role === "admin") {
+            navigate("/admin");
+          } else {
+            navigate("/dashboard");
+          }
           setIsAppLoading(false);
         }, 3000);
       }

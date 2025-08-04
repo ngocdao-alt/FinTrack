@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   FaUser,
@@ -10,64 +10,100 @@ import {
   FaGlobe,
   FaImage,
 } from "react-icons/fa";
-import { useDispatch } from "react-redux";
-import { logout } from "../features/authSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { logout, updateUser } from "../features/authSlice";
 import toast from "react-hot-toast";
+
+// ...imports giữ nguyên
 
 const SettingPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { user } = useSelector((state) => state.auth);
 
-  const [avatar, setAvatar] = useState(null);
-  const [userName, setUserName] = useState("Nguyễn Văn A");
-  const [phone, setPhone] = useState("0123456789");
-  const [dob, setDob] = useState("1999-01-01");
-  const [address, setAddress] = useState("123/456 ABC");
-  const [editingName, setEditingName] = useState(false);
-  const [editingPhone, setEditingPhone] = useState(false);
-  const [editingDob, setEditingDob] = useState(false);
-  const [editingAddress, setEditingAddress] = useState(false);
+  const [profile, setProfile] = useState({
+    name: user.name,
+    phone: user.phone,
+    dob: user.dob,
+    address: user.address,
+  });
+  const [editing, setEditing] = useState({
+    name: false,
+    phone: false,
+    dob: false,
+    address: false,
+  });
+
+  useEffect(() => {
+    console.log(user);
+  }, []);
+
+  const [avatarFile, setAvatarFile] = useState(null);
+  const [avatarPreview, setAvatarPreview] = useState(user.avatar);
+  const fileInputRef = useRef(null);
   const [showPassword, setShowPassword] = useState(false);
   const [theme, setTheme] = useState("light");
   const [language, setLanguage] = useState("vi");
   const [isHovering, setIsHovering] = useState(false);
 
-  const fileInputRef = useRef(null);
-
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setAvatar(URL.createObjectURL(file));
+      setAvatarFile(file);
+      setAvatarPreview(URL.createObjectURL(file));
     }
   };
 
-  const saveUserName = () => {
-    setEditingName(false);
-    // TODO: Gửi tên người dùng mới lên API nếu cần
+  const toggleEdit = (field) => {
+    setEditing((prev) => ({ ...prev, [field]: !prev[field] }));
   };
 
-  const savePhone = () => {
-    setEditingPhone(false);
-    // TODO: Gửi tên người dùng mới lên API nếu cần
-  };
+  const handleSaveProfile = () => {
+    const formData = new FormData();
+    formData.append("name", profile.name);
+    formData.append("phone", profile.phone);
+    formData.append("dob", profile.dob);
+    formData.append("address", profile.address);
+    if (avatarFile) formData.append("avatar", avatarFile);
 
-  const saveDob = () => {
-    setEditingDob(false);
-    // TODO: Gửi tên người dùng mới lên API nếu cần
-  };
-
-  const saveAddress = () => {
-    setEditingAddress(false);
-    // TODO: Gửi tên người dùng mới lên API nếu cần
+    try {
+      dispatch(updateUser(formData));
+      toast.success("Đã lưu thông tin!");
+    } catch (err) {
+      toast.error("Lỗi khi lưu: " + err.message || err);
+    }
   };
 
   const handleLogout = () => {
-    dispatch(logout);
+    dispatch(logout());
     navigate("/login");
-    toast("Logged out!", {
-      icon: "ℹ️",
-    });
+    toast("Đã đăng xuất!", { icon: "👋" });
   };
+
+  const EditableField = ({ label, field }) => (
+    <div className="relative">
+      <input
+        type="text"
+        value={profile[field]}
+        readOnly={!editing[field]}
+        onChange={(e) =>
+          setProfile((prev) => ({ ...prev, [field]: e.target.value }))
+        }
+        className={`w-full border-b bg-transparent pr-8 px-2 py-1 ${
+          editing[field]
+            ? "border-indigo-400 focus:outline-[#7E5BEF]"
+            : "border-gray-400 outline-none cursor-not-allowed"
+        }`}
+      />
+      <button
+        className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-600 hover:text-indigo-600"
+        onClick={() => toggleEdit(field)}
+        title={editing[field] ? `Lưu ${label}` : `Chỉnh sửa ${label}`}
+      >
+        {editing[field] ? <FaSave /> : <FaPen />}
+      </button>
+    </div>
+  );
 
   return (
     <div className="h-fit flex items-start justify-center bg-[#f3f4f6] sm:h-full xl:items-center">
@@ -85,15 +121,15 @@ const SettingPage = () => {
               {/* Avatar */}
               <div className="flex flex-col items-center mb-6">
                 <div
-                  className="relative h-24 w-24 rounded-full overflow-hidden cursor-pointer"
+                  className="relative h-20 w-20 rounded-full overflow-hidden cursor-pointer"
                   onClick={() => fileInputRef.current?.click()}
                   onMouseEnter={() => setIsHovering(true)}
                   onMouseLeave={() => setIsHovering(false)}
                   title="Đổi ảnh"
                 >
-                  {avatar ? (
+                  {avatarPreview ? (
                     <img
-                      src={avatar}
+                      src={avatarPreview}
                       alt="avatar"
                       className="h-full w-full object-cover rounded-full"
                     />
@@ -102,16 +138,13 @@ const SettingPage = () => {
                       <FaUser className="text-white text-3xl" />
                     </div>
                   )}
-
-                  {/* Overlay luôn có mặt, ẩn hiện bằng opacity */}
                   <div
-                    className={`absolute inset-0 bg-gray-800/70 flex items-center justify-center rounded-full z-10
-                      transition-opacity duration-300
-                      ${isHovering ? "opacity-100" : "opacity-0"}`}
+                    className={`absolute inset-0 bg-gray-800/70 flex items-center justify-center rounded-full z-10 transition-opacity duration-300 ${
+                      isHovering ? "opacity-100" : "opacity-0"
+                    }`}
                   >
                     <FaImage className="text-white text-2xl" />
                   </div>
-
                   <input
                     ref={fileInputRef}
                     type="file"
@@ -122,103 +155,16 @@ const SettingPage = () => {
                 </div>
               </div>
 
-              {/* Tên, Email, Mật khẩu */}
-              <div className="space-y-5">
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={userName}
-                    readOnly={!editingName}
-                    onChange={(e) => setUserName(e.target.value)}
-                    className={`w-full border-b bg-transparent pr-8 px-2 py-1 ${
-                      editingName
-                        ? "border-indigo-400 focus:outline-[#7E5BEF]"
-                        : "border-gray-400 outline-none cursor-not-allowed"
-                    }`}
-                  />
-                  <button
-                    className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-600 hover:text-indigo-600"
-                    onClick={() =>
-                      editingName ? saveUserName() : setEditingName(true)
-                    }
-                    title={editingName ? "Lưu tên" : "Chỉnh sửa tên"}
-                  >
-                    {editingName ? <FaSave /> : <FaPen />}
-                  </button>
-                </div>
-
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={phone}
-                    readOnly={!editingPhone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className={`w-full border-b bg-transparent pr-8 px-2 py-1 ${
-                      editingPhone
-                        ? "border-indigo-400 focus:outline-[#7E5BEF]"
-                        : "border-gray-400 outline-none cursor-not-allowed"
-                    }`}
-                  />
-                  <button
-                    className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-600 hover:text-indigo-600"
-                    onClick={() =>
-                      editingPhone ? savePhone() : setEditingPhone(true)
-                    }
-                    title={editingPhone ? "Lưu sđt" : "Chỉnh sửa sđt"}
-                  >
-                    {editingPhone ? <FaSave /> : <FaPen />}
-                  </button>
-                </div>
-
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={dob}
-                    readOnly={!editingDob}
-                    onChange={(e) => setDob(e.target.value)}
-                    className={`w-full border-b bg-transparent pr-8 px-2 py-1 ${
-                      editingDob
-                        ? "border-indigo-400 focus:outline-[#7E5BEF]"
-                        : "border-gray-400 outline-none cursor-not-allowed"
-                    }`}
-                  />
-                  <button
-                    className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-600 hover:text-indigo-600"
-                    onClick={() =>
-                      editingDob ? saveDob() : setEditingDob(true)
-                    }
-                    title={editingDob ? "Lưu ngày sinh" : "Chỉnh sửa ngày sinh"}
-                  >
-                    {editingDob ? <FaSave /> : <FaPen />}
-                  </button>
-                </div>
-
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={address}
-                    readOnly={!editingAddress}
-                    onChange={(e) => setAddress(e.target.value)}
-                    className={`w-full border-b bg-transparent pr-8 px-2 py-1 ${
-                      editingAddress
-                        ? "border-indigo-400 focus:outline-[#7E5BEF]"
-                        : "border-gray-400 outline-none cursor-not-allowed"
-                    }`}
-                  />
-                  <button
-                    className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-600 hover:text-indigo-600"
-                    onClick={() =>
-                      editingAddress ? saveAddress() : setEditingAddress(true)
-                    }
-                    title={editingAddress ? "Lưu địa chỉ" : "Chỉnh sửa địa chỉ"}
-                  >
-                    {editingAddress ? <FaSave /> : <FaPen />}
-                  </button>
-                </div>
+              {/* Các trường chỉnh sửa */}
+              <div className="space-y-4">
+                <EditableField label="Tên" field="name" />
+                <EditableField label="SĐT" field="phone" />
+                <EditableField label="Ngày sinh" field="dob" />
+                <EditableField label="Địa chỉ" field="address" />
 
                 <input
                   type="email"
-                  value="nguyenvana@gmail.com"
+                  value={user.email}
                   readOnly
                   className="w-full px-2 py-1 border-b border-gray-400 bg-transparent outline-none cursor-not-allowed"
                 />
@@ -231,20 +177,25 @@ const SettingPage = () => {
                     className="w-full px-2 py-1 border-b border-gray-400 bg-transparent pr-8 outline-none cursor-not-allowed"
                   />
                   <button
-                    className="absolute right-0 top-1/2 -translate-y-1/2 px-2 py-1 text-gray-600 hover:text-indigo-600 "
+                    className="absolute right-0 top-1/2 -translate-y-1/2 px-2 py-1 text-gray-600 hover:text-indigo-600"
                     onClick={() => setShowPassword((s) => !s)}
                     title={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
                   >
                     {showPassword ? <FaEyeSlash /> : <FaEye />}
                   </button>
                 </div>
+
+                <button
+                  onClick={handleSaveProfile}
+                  className="block text-center w-full bg-indigo-500 text-white py-1 rounded-md hover:bg-indigo-600 transition-colors cursor-pointer"
+                >
+                  Lưu
+                </button>
               </div>
             </section>
 
-            {/* === Divider === */}
-            <div className="hidden md:block w-px bg-gray-300 self-stretch"></div>
-
-            {/* === Cài đặt giao diện === */}
+            {/* Cài đặt giao diện */}
+            <div className="hidden md:block w-px bg-gray-300 self-stretch" />
             <section className="w-full my-3 flex-1 md:mt-0">
               <h3 className="text-lg font-semibold mb-4 text-left">
                 Giao diện
