@@ -10,7 +10,6 @@ import {
   FaGlobe,
   FaImage,
 } from "react-icons/fa";
-
 const SettingPage = () => {
   const [avatar, setAvatar] = useState(null);
   const [userName, setUserName] = useState("Nguyễn Văn A");
@@ -19,7 +18,6 @@ const SettingPage = () => {
   const [theme, setTheme] = useState("light");
   const [language, setLanguage] = useState("vi");
   const [isHovering, setIsHovering] = useState(false);
-
   const fileInputRef = useRef(null);
 
   const handleAvatarChange = (e) => {
