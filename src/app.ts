@@ -1,9 +1,12 @@
+// app.ts
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import cookieParser from "cookie-parser";
-import authRoutes from './routes/auth.routes'
+import path from 'path';
+
+import authRoutes from './routes/auth.routes';
 import transactionRoutes from './routes/transaction.routes';
 import dashboardRoutes from './routes/dashboard.routes';
 import uploadRoutes from './routes/upload.routes';
@@ -13,16 +16,17 @@ import notificationRoutes from './routes/notification.routes';
 import statRoutes from './routes/stat.routes';
 import reportRoutes from './routes/report.routes';
 import adminRoutes from './routes/admin.routes';
-import path from 'path';
 
 const app = express();
 
+const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
+
+// Middleware
 app.use(helmet());
-app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true}));
-app.use(express.json());
+app.use(cors({ origin: FRONTEND_URL, credentials: true }));
+app.use(express.json({ limit: '10mb' }));
 app.use(cookieParser());
 app.use(morgan('dev'));
-app.use(express.json({ limit: '10mb' }));
 app.use('/static', express.static(path.join(__dirname, '../public')));
 
 // Routes
@@ -37,7 +41,6 @@ app.use('/api/stats', statRoutes);
 app.use('/api/report', reportRoutes);
 app.use('/api/admin', adminRoutes);
 
-// Default route
 app.get('/', (req, res) => {
     res.send('FinTrack API is running');
 });

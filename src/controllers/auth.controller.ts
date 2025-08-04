@@ -39,6 +39,7 @@ export const register = async (req: Request, res: Response): Promise<any> => {
         name: user.name,
         email: user.email,
         avatar: user.avatarUrl,
+        role: user.role,
         dob: user.dob,
         phone: user.phone,
         address: user.address,
@@ -98,6 +99,7 @@ export const login = async (req: Request, res: Response): Promise<any> => {
         name: user.name,
         email: user.email,
         avatar: user.avatarUrl,
+        role: user.role,
         dob: user.dob,
         phone: user.phone,
         address: user.address,
@@ -105,6 +107,7 @@ export const login = async (req: Request, res: Response): Promise<any> => {
       },
     });
   } catch (err) {
+    console.log(err);
     await logAction(req, {
       action: "login_error",
       statusCode: 500,

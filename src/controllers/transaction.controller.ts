@@ -4,6 +4,7 @@ import Transaction from '../models/Transaction';
 import cloudinary from '../utils/cloudinary';
 import { v4 as uuid } from 'uuid';
 import { getLastDayOfMonth } from '../utils/getLastDayOfMonth';
+import { logAction } from '../utils/logAction';
 
 // CREATE
 export const createTransaction = async (req: AuthRequest, res: Response): Promise<void> => {
@@ -18,7 +19,6 @@ export const createTransaction = async (req: AuthRequest, res: Response): Promis
       isRecurring
     } = req.body;
 
-    // ✅ Upload ảnh lên Cloudinary nếu có
     let receiptImages: string[] = [];
     if (req.files && Array.isArray(req.files)) {
       const uploadPromises = (req.files as Express.Multer.File[]).map(file => {
@@ -35,14 +35,12 @@ export const createTransaction = async (req: AuthRequest, res: Response): Promis
 
     const isRecurringBool = isRecurring === 'true' || isRecurring === true;
 
-    // ✅ Nếu là giao dịch định kỳ
     if (isRecurringBool) {
       if (!recurringDay || recurringDay < 1 || recurringDay > 31) {
         res.status(400).json({ message: "Ngày định kỳ (recurringDay) không hợp lệ" });
         return;
       }
 
-      // 👉 Tạo bản mẫu không có date
       const templateTx = await Transaction.create({
         user: req.userId,
         amount,
@@ -55,7 +53,6 @@ export const createTransaction = async (req: AuthRequest, res: Response): Promis
         date: undefined
       });
 
-      // 👉 Tạo bản thực tế tháng này
       const today = new Date();
       const year = today.getFullYear();
       const month = today.getMonth();
@@ -73,6 +70,12 @@ export const createTransaction = async (req: AuthRequest, res: Response): Promis
         date: new Date(date)
       });
 
+      await logAction(req, {
+        action: "Create Recurring Transaction",
+        statusCode: 201,
+        description: `Tạo giao dịch định kỳ ngày ${recurringDay}`
+      });
+
       res.status(201).json({
         message: "Đã tạo giao dịch định kỳ và bản đầu tiên",
         template: templateTx,
@@ -81,7 +84,6 @@ export const createTransaction = async (req: AuthRequest, res: Response): Promis
       return;
     }
 
-    // ✅ Nếu là giao dịch thông thường
     if (!date) {
       res.status(400).json({ message: "Giao dịch thường cần trường `date`" });
       return;
@@ -98,6 +100,12 @@ export const createTransaction = async (req: AuthRequest, res: Response): Promis
       date
     });
 
+    await logAction(req, {
+      action: "Create Transaction",
+      statusCode: 201,
+      description: `Tạo giao dịch thường ${type} - ${category}`
+    });
+
     res.status(201).json({
       message: "Đã tạo giao dịch thành công",
       transaction: tx
@@ -105,6 +113,14 @@ export const createTransaction = async (req: AuthRequest, res: Response): Promis
 
   } catch (error) {
     console.error("❌ Lỗi khi tạo giao dịch:", error);
+
+    await logAction(req, {
+      action: "Create Transaction",
+      statusCode: 500,
+      description: "Lỗi khi tạo giao dịch",
+      level: "error"
+    });
+
     res.status(500).json({ message: "Không thể tạo giao dịch", error });
   }
 };
@@ -198,39 +214,72 @@ export const getTransactionsByMonth = async (req: AuthRequest, res: Response) =>
 
 // UPDATE
 export const updateTransaction = async (req: AuthRequest, res: Response) => {
-    try {
-        const { id } = req.params;
-        const tx = await Transaction.findOneAndUpdate(
-            { _id: id, user: req.userId },
-            req.body,
-            { new: true }
-        );
-        if(!tx) {
-            res.status(404).json({ message: "Giao dịch không tồn tại!" });
-            return;
-        }
-        res.json(tx);
-    } catch (error) {
-        res.status(500).json({ message: "Không thể cập nhật!", error })
-        console.log(error);
+  try {
+    const { id } = req.params;
+    const tx = await Transaction.findOneAndUpdate(
+      { _id: id, user: req.userId },
+      req.body,
+      { new: true }
+    );
+
+    if (!tx) {
+      res.status(404).json({ message: "Giao dịch không tồn tại!" });
+      return;
     }
-}   
+
+    await logAction(req, {
+      action: "Update Transaction",
+      statusCode: 200,
+      description: `Đã cập nhật giao dịch ID: ${id}`
+    });
+
+    res.json(tx);
+  } catch (error) {
+    console.log(error);
+
+    await logAction(req, {
+      action: "Update Transaction",
+      statusCode: 500,
+      description: "Lỗi khi cập nhật giao dịch",
+      level: "error"
+    });
+
+    res.status(500).json({ message: "Không thể cập nhật!", error });
+  }
+};
+
 
 // DELETE
 export const deleteTransaction = async (req: AuthRequest, res: Response) => {
-    try {
-        const { id } = req.params;
-        const tx = await Transaction.findOneAndDelete({_id: id, user: req.userId});
-        if(!tx) {
-            res.status(404).json({ message: "Giao dịch không tồn tại!"});
-            return;
-        };
-        res.json({ message: "Đã xóa giao dịch!" });
-    } catch (error) {
-        res.status(500).json({ message: "Không thể xóa giao dịch!", error});
-        console.log(error);
+  try {
+    const { id } = req.params;
+    const tx = await Transaction.findOneAndDelete({ _id: id, user: req.userId });
+
+    if (!tx) {
+      res.status(404).json({ message: "Giao dịch không tồn tại!" });
+      return;
     }
-}
+
+    await logAction(req, {
+      action: "Delete Transaction",
+      statusCode: 200,
+      description: `Đã xoá giao dịch ID: ${id}`
+    });
+
+    res.json({ message: "Đã xóa giao dịch!" });
+  } catch (error) {
+    console.log(error);
+
+    await logAction(req, {
+      action: "Delete Transaction",
+      statusCode: 500,
+      description: "Lỗi khi xoá giao dịch",
+      level: "error"
+    });
+
+    res.status(500).json({ message: "Không thể xóa giao dịch!", error });
+  }
+};
 
 export const getUsedCategories = async (req: AuthRequest, res: Response) => {
     try {

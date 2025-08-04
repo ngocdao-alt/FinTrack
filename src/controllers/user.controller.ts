@@ -2,6 +2,7 @@ import { Response } from "express";
 import { AuthRequest } from "../middlewares/requireAuth";
 import cloudinary from "../utils/cloudinary";
 import User from "../models/User";
+import { logAction } from "../utils/logAction";
 
 export const updateProfile = async (req: AuthRequest, res: Response) => {
   try {
@@ -39,8 +40,21 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
       { new: true }
     ).select("-password");
 
+    await logAction(req, {
+      action: "Cập nhật hồ sơ",
+      statusCode: 200,
+      description: "Người dùng cập nhật hồ sơ thành công",
+    });
+
     res.json(updatedUser);
   } catch (error) {
+    await logAction(req, {
+      action: "Cập nhật hồ sơ",
+      statusCode: 500,
+      description: "Cập nhật hồ sơ thất bại",
+      level: "error",
+    });
+
     res.status(500).json({ message: "Không thể cập nhật hồ sơ", error });
   }
 };

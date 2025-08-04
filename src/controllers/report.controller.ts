@@ -17,6 +17,21 @@ export const exportReport = async (req: AuthRequest, res: Response) => {
   }
 
   try {
+    // ✅ Tìm xem đã có báo cáo chưa
+    const existingReport = await ReportModel.findOne({ userId, month });
+
+    if (existingReport) {
+      // 🔁 Nếu đã có → trả về luôn
+      await logAction(req, {
+        action: 'Export Report',
+        statusCode: 200,
+        description: `Lấy lại báo cáo tháng ${month} - ID: ${existingReport.reportId}`,
+      });
+
+      return res.status(200).json({ report: existingReport });
+    }
+
+    // 🚀 Nếu chưa có → tạo mới
     const reportId = uuidv4();
     const pdfBuffer = await generatePDF(html);
     const fileName = `${reportId}.pdf`;
@@ -37,7 +52,7 @@ export const exportReport = async (req: AuthRequest, res: Response) => {
     await logAction(req, {
       action: 'Export Report',
       statusCode: 200,
-      description: `Xuất báo cáo tháng ${month} - ID: ${reportId}`,
+      description: `Xuất báo cáo mới tháng ${month} - ID: ${reportId}`,
     });
 
     res.status(200).json({ report });
@@ -54,3 +69,4 @@ export const exportReport = async (req: AuthRequest, res: Response) => {
     res.status(500).json({ message: 'Export failed', error: err });
   }
 };
+

@@ -12,6 +12,8 @@ dayjs.extend(utc);
 
 // POST /api/budget
 export const setOrUpdateBudget = async (req: AuthRequest, res: Response) => {
+  console.log(req.body);
+  
   try {
     const { month, year, totalAmount, categories } = req.body;
 
