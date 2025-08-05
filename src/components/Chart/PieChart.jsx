@@ -1,15 +1,12 @@
 import React, { useEffect } from "react";
-import { Doughnut } from "react-chartjs-2"; // 👈 Đổi Pie → Doughnut
+import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-import { useDispatch, useSelector } from "react-redux";
-import { getExpenseStat } from "../../features/statSlice";
 import useWindowWidth from "../../utils/useWindowWidth";
+import PieChartLoading from "../Loading/DashboardLoading/PieChartLoading";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const PieChart = () => {
-  const dispatch = useDispatch();
-  const stats = useSelector((state) => state.stat.stats);
+const PieChart = ({ stats, loading }) => {
   const width = useWindowWidth();
 
   const COLORS = [
@@ -23,15 +20,6 @@ const PieChart = () => {
     "#34d399",
   ];
 
-  useEffect(() => {
-    dispatch(
-      getExpenseStat({
-        startDate: "2025-06-01",
-        endDate: "2025-06-30",
-      })
-    );
-  }, [dispatch]);
-
   const getFontSize = () => {
     if (width < 640) return 12;
     else if (width >= 640 && width < 768) return 14;
@@ -42,7 +30,6 @@ const PieChart = () => {
   };
 
   const totalAmount = stats.reduce((acc, item) => acc + item.total, 0);
-  const totalValue = stats.reduce((sum, stat) => sum + stat.total, 0);
 
   const data = {
     labels: stats.map((stat) => stat.category),
@@ -59,7 +46,6 @@ const PieChart = () => {
   const options = {
     responsive: true,
     maintainAspectRatio: false,
-    cutout: "3%",
     plugins: {
       legend: {
         position: width >= 640 ? "right" : "bottom",
@@ -72,6 +58,7 @@ const PieChart = () => {
         },
       },
       tooltip: {
+        enabled: true, // CHỈ hiển thị khi hover
         callbacks: {
           label: function (context) {
             const value = context.raw || 0;
@@ -87,10 +74,14 @@ const PieChart = () => {
     },
   };
 
-  if (stats.length === 0)
-    return <div className="my-7 text-lg">No data to display</div>;
+  if (!loading && stats.length === 0)
+    return (
+      <div className="w-full h-full p-5 flex justify-center items-center font-semibold 3xl:text-xl">
+        No data to display
+      </div>
+    );
 
-  return <Doughnut data={data} options={options} />;
+  return <Pie data={data} options={options} />;
 };
 
 export default PieChart;

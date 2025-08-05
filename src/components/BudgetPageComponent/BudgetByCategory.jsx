@@ -9,23 +9,23 @@ const BudgetByCategory = ({ categoryStats }) => {
 
   const colorLevels = [
     {
-      spent: "#00BF63", // xanh lá dịu (an toàn)
-      remaining: "#C1FF72", // xanh nhạt
+      spent: "#00BF63",
+      remaining: "#C1FF72",
     },
     {
-      spent: "#FFDE59", // vàng
-      remaining: "#FBF3AA", // vàng nhạt
+      spent: "#FFDE59",
+      remaining: "#FBF3AA",
     },
     {
-      spent: "#FF3131", // đỏ đậm
-      remaining: "#FBB0B0", // đỏ nhạt
+      spent: "#FF3131",
+      remaining: "#FBB0B0",
     },
   ];
 
   const getColorByUsage = (percent) => {
-    if (percent <= 50) return colorLevels[0]; // an toàn
-    if (percent <= 85) return colorLevels[1]; // trung bình
-    return colorLevels[2]; // nguy hiểm
+    if (percent <= 50) return colorLevels[0];
+    if (percent <= 85) return colorLevels[1];
+    return colorLevels[2];
   };
 
   return categoryStats?.length === 0 ? (

@@ -5,9 +5,11 @@ import { FaLongArrowAltDown } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { getDashboard } from "../../features/dashboardSlice";
 import formatCurrencyVN from "../../utils/formatCurrency";
+import BalanceInfoLoading from "../Loading/DashboardLoading/BalanceInfoLoading";
 
 const DashboardBalanceInfo = ({ className = "" }) => {
   const dashboard = useSelector((state) => state.dashboard);
+  const loading = useSelector((state) => state.dashboard.loading);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -20,6 +22,8 @@ const DashboardBalanceInfo = ({ className = "" }) => {
   useEffect(() => {
     console.log(dashboard);
   }, [dashboard]);
+
+  if (loading) return <BalanceInfoLoading className={className} />;
 
   return (
     <section
@@ -35,8 +39,8 @@ const DashboardBalanceInfo = ({ className = "" }) => {
           md:col-span-1 md:col-start-3
       "
       >
-        <TfiWallet className="text-[40px] md:text-4xl" />
-        <div className="flex flex-col font-semibold text-base">
+        <TfiWallet className="text-[40px] md:text-4xl 3xl:text-5xl" />
+        <div className="flex flex-col font-semibold text-base 3xl:text-xl">
           <span>Balance</span>
           <span>{formatCurrencyVN(dashboard?.balance)} đ</span>
         </div>
@@ -49,8 +53,8 @@ const DashboardBalanceInfo = ({ className = "" }) => {
           md:col-start-1 md:row-start-1
       "
       >
-        <FaLongArrowAltUp className="text-3xl text-green-500 md:text-4xl" />
-        <div className="flex flex-col font-semibold text-sm md:text-base">
+        <FaLongArrowAltUp className="text-3xl text-green-500 md:text-4xl 3xl:text-5xl" />
+        <div className="flex flex-col font-semibold text-sm md:text-base 3xl:text-lg">
           <span>Gross Income</span>
           <span>{formatCurrencyVN(dashboard?.totalIncome)} đ</span>
         </div>
@@ -63,8 +67,8 @@ const DashboardBalanceInfo = ({ className = "" }) => {
           md:col-start-2 md:row-start-1
       "
       >
-        <FaLongArrowAltDown className="text-3xl text-red-500" />
-        <div className="flex flex-col font-semibold text-sm md:text-base">
+        <FaLongArrowAltDown className="text-3xl text-red-500 3xl:text-5xl" />
+        <div className="flex flex-col font-semibold text-sm md:text-base 3xl:text-lg">
           <span>Total Expense</span>
           <span>{formatCurrencyVN(dashboard?.totalExpense)} đ</span>
         </div>

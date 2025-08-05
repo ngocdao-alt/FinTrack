@@ -1,15 +1,18 @@
 import { useState, useRef } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import phoneImg from "../assets/img/phoneImg.png";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { loginUser, registerUser, clearError } from "../features/authSlice";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
 import LogoF from "../assets/img/logo.webp";
+import { useLoading } from "../context/LoadingContext";
 
 export default function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const user = useSelector((state) => state.auth.user);
+  const { setIsAppLoading } = useLoading();
 
   const [isRegister, setIsRegister] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -30,7 +33,16 @@ export default function Login() {
         await dispatch(loginUser({ email, password })).unwrap();
         toast.dismiss("login-success");
         toast.success("Đăng nhập thành công!", { id: "login-success" });
-        navigate("/dashboard");
+
+        setIsAppLoading(true);
+        setTimeout(() => {
+          if (user.role === "admin") {
+            navigate("/admin");
+          } else {
+            navigate("/dashboard");
+          }
+          setIsAppLoading(false);
+        }, 3000);
       }
 
       setEmail("");
@@ -46,14 +58,16 @@ export default function Login() {
   return (
     <>
       {/* MOBILE */}
-      <div className="lg:hidden min-h-screen flex flex-col bg-gradient-to-b from-white via-indigo-200 to-indigo-600">
+      <div className="lg:hidden min-h-screen flex flex-col bg-gradient-to-b from-[#8f88ff] to-white">
         <header className="w-full flex items-center gap-2 px-4 py-3">
           <a href="#" className="flex items-start group">
-            <img
-              src={LogoF}
-              alt="Logo"
-              className="h-24 w-16 rounded-full mr-1"
-            />
+            <div className="flex items-center">
+              <img
+                src={LogoF}
+                alt="Landingpage logo"
+                className="h-20  rounded-full mr-1"
+              />
+            </div>
           </a>
         </header>
 
@@ -91,13 +105,13 @@ export default function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Password"
-                className="w-full rounded-lg px-4 py-3 bg-white outline-none ring-1 ring-gray-200 focus:ring-2 focus:ring-indigo-400 placeholder-gray-500 pr-12"
+                className="w-full rounded-lg px-4 py-3 bg-white outline-none ring-1 ring-gray-200 focus:ring-2 focus:ring-indigo-400 placeholder-gray-500 pr-12 cursor-pointer"
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 cursor-pointer"
               >
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
@@ -124,9 +138,9 @@ export default function Login() {
       </div>
 
       {/* DESKTOP */}
-      <div className="hidden lg:flex min-h-screen w-full relative">
+      <div className="hidden lg:flex min-h-screen w-full relative overflow-hidden">
         <div className="absolute top-6 left-6 flex items-center z-20">
-          <img src={LogoF} alt="Logo" className="h-24 w-18 rounded-full mr-2" />
+          <img src={LogoF} alt="Logo" className="h-20 rounded-full ml-18 mb-300" />
         </div>
         {/* Left Column */}
         <div className="w-1/2 flex flex-col items-center justify-center px-20 bg-white lg:pl-15 lg:pr-0">
@@ -139,7 +153,7 @@ export default function Login() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Email"
-              className="w-full rounded-lg px-4 py-3 bg-white outline-none placeholder-gray-500 text-lg border-2 border-black-1000"
+              className="w-full rounded-lg px-4 py-3 bg-white outline-none placeholder-gray-500 text-lg border-2 border-black-600 3xl:text-2xl"
               required
             />
             {isRegister && (
@@ -148,7 +162,7 @@ export default function Login() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Name"
-                className="w-full rounded-lg px-4 py-3 bg-white outline-none placeholder-gray-500 text-lg border-2 border-black-600"
+                className="w-full rounded-lg px-4 py-3 bg-white outline-none placeholder-gray-500 text-lg border-2 border-black-600 3xl:text-2xl"
                 required
               />
             )}
@@ -158,18 +172,18 @@ export default function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Password"
-                className="w-full rounded-lg px-4 py-3 bg-white outline-none placeholder-gray-500 text-lg border-2 border-black-600"
+                className="w-full rounded-lg px-4 py-3 bg-white outline-none placeholder-gray-500 text-lg border-2 border-black-600 3xl:text-2xl"
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 cursor-pointer 3xl:text-xl"
               >
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
-            <p className="text-sm text-gray-700">
+            <p className="text-sm text-gray-700 3xl:text-xl">
               {isRegister
                 ? "Already have an account? "
                 : "You don't have an account yet ? "}
@@ -183,7 +197,7 @@ export default function Login() {
             <div className="flex justify-end">
               <button
                 type="submit"
-                className="w-fit px-6 py-2 rounded-xl bg-indigo-200 hover:bg-indigo-300 active:bg-indigo-400 text-gray-800 font-medium transition text-base"
+                className="w-fit px-6 py-2 rounded-xl bg-indigo-200 hover:bg-indigo-300 active:bg-indigo-400 text-gray-800 font-medium transition text-base cursor-pointer 3xl:text-xl"
               >
                 {isRegister ? "Register" : "Sign in"}
               </button>
@@ -191,7 +205,7 @@ export default function Login() {
           </form>
         </div>
         {/* Right Column */}
-        <div className="relative mt-[5%] mr-[5%] ml-[20%] rounded-4xl border-gray-300 bg-gradient-to-b from-indigo-600 via-indigo-200 to-white flex items-center justify-center lg:w-1/2">
+        <div className="relative mt-[5%] mr-[5%] ml-[20%] rounded-4xl border-gray-300 bg-gradient-to-b from-[#8f88ff] to-white flex items-center justify-center lg:w-1/2">
           <img
             src={phoneImg}
             alt="Phone"

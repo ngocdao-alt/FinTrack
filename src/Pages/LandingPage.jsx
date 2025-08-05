@@ -1,116 +1,99 @@
 import { FiArrowUpRight } from "react-icons/fi";
 import { Link } from "react-router-dom";
-import LogoF from "../assets/img/LogoF.png";
+import LogoF from "../assets/img/logo.webp";
 import Laptop from "../assets/img/Laptop.png";
+
 export default function LandingPages() {
   return (
-    <div className="min-h-screen flex" id="landingpage">
-      {/* Nội dung chính */}
-      <main
-  className="
-    flex-1 h-full
-    bg-gradient-to-b from-white via-white to-[#373ecb] xl:bg-none
-    "           /* Giữ gradient ở mobile, bỏ ở md+ */
-  style={{ minHeight: "100vh" }}
->
+    <div
+      className="flex flex-col min-h-screen overflow-x-hidden"
+      id="landingpage"
+    >
+<main className="flex-1 h-full bg-gradient-to-b from-white via-white to-[#373ecb] xl:bg-none max-w-[1536px] mx-auto w-full">
         {/* Header */}
-       <header className="px-3 md:px-24 flex items-center justify-between py-2">
-
-          {/* Logo */}
-          <a href="#" className="flex items-start group">
+<header className="w-full px-4 md:px-12 lg:px-20 xl:px-24 py-6 flex items-center justify-between max-w-[1536px] mx-auto">
+          <a href="#" className="flex items-start group 3xl:-ml-45">
             <div className="flex items-center">
               <img
                 src={LogoF}
                 alt="Landingpage logo"
-                className="h-20 w-12 rounded-full mr-1"
+                className="h-20 rounded-full mr-1"
               />
-              <div className="leading-tight">
-                <span className="text-xl font-bold font-Roboto">Fin</span>
-                <br />
-                <span className="text-xl font-bold font-Roboto">Track</span>
-              </div>
             </div>
           </a>
 
-          {/* Nút đăng nhập/đăng ký */}
-<div className="flex space-x-2">
-  <Link
-    to="/login"
-    className="px-3 py-2 rounded-md text-dark text-sm font-bold
-               bg-[#dad7ff] hover:bg-[#8f87ff]
-               transition-colors duration-200"
-  >
-    Sign in
-  </Link>
-
-  <Link
-    to="/login?mode=register"
-    className="px-3  py-2 rounded-md text-dark text-sm font-bold
-               bg-[#dad7ff] hover:bg-[#8f87ff ]
-               transition-colors duration-200"
-  >
-    Register
-  </Link>
-</div>
-
+          <div className="flex space-x-2">
+            <Link
+              to="/login"
+              className="px-4 py-2 rounded-full text-gray-800 text-sm font-bold bg-[#dad7ff] hover:bg-[#8f87ff] transition 3xl:text-xl"
+            >
+              Sign in
+            </Link>
+            <Link
+              to="/login?mode=register"
+              className="px-4 py-2 rounded-full text-gray-800 text-sm font-bold bg-[#dad7ff] hover:bg-[#8f87ff] transition 3xl:text-xl 3xl:-mr-15"
+            >
+              Register
+            </Link>
+          </div>
         </header>
 
-        {/* Phần chính */}
-    <section
-  className="
-    min-h-screen
-    flex flex-col items-center
-    gap-6 px-6                
-    md:gap-10 md:px-12      
-    lg:px-12                  
-    xl:flex-row xl:items-start xl:gap-10  
-    py-16                    
-  ">
+
+        {/* Nội dung chính */}
+<section className="flex flex-col md:flex-row items-center md:items-start gap-10 px-6 md:px-12 lg:px-20 xl:px-24 py-8 flex-grow max-w-[1536px] mx-auto w-full">
           {/* Text */}
-          <div className=" w-full md:w-1/2">
-            <h1 className="font-notosans font-bold leading-tight text-3xl sm:text-4xl md:text-5xl lg:text-5xl  xl:text-5xl">
+          <div className="w-full md:w-1/2 px-2 md:px-4 lg:px-10">
+<h1 className="font-notosans font-bold leading-tight text-4xl sm:text-5xl md:text-6xl lg:text-5xl xl:text-7xl 3xl:text-8xl text-gray-900 3xl:mr-20">
               <span className="block">SmartExpense</span>
-              <span className="block flex items-center whitespace-nowrap">
+              <span className="block items-center whitespace-nowrap">
                 Tracking<span className="ml-1">,</span>
-                <span className="ml-2 inline-flex items-center justify-center rounded-full bg-violet-400 p-1">
-                  <FiArrowUpRight
-                    style={{ fontSize: "36px" }}
-                    className="text-black-200"
-                  />
+                <span className="ml-2 inline-flex items-center justify-center rounded-full bg-violet-200 p-1">
+                  <FiArrowUpRight style={{ fontSize: "40px" }} />
                 </span>
               </span>
-              <span className="block mt-1 sm:mt-2 text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-5xl">
+              <span className="block mt-2 text-4xl sm:text-5xl md:text-6xl lg:text-5xl xl:text-7xl">
                 Simplified
               </span>
             </h1>
 
-            <p className="font-roboto text-xl md:text-base text-gray-1000 max-w-xl mt-4">
-              Empower your team with seamless, cloud-based tools designed to
-              enhance productivity, collaboration, and efficiency.
+<p className="font-mono text-md md:text-xl text-gray-700 max-w-xl mt-6 lg:text-xl 3xl:text-2xl 3xl:mr-20 ">
+              Empower your team with seamless, cloud-based tools <br />
+              designed to enhance productivity, collaboration, and <br />
+              efficiency.
             </p>
           </div>
 
-          {/* Hình ảnh + gradient phía sau */}
-          <div className="w-full md:w-1/2 flex justify-center xl:justify-end xl:items-center mt-9 xl:mt-7 relative">
-            {/* Gradient phía sau hình*/}
+          {/* Bên phải - Hình ảnh */}
+          <div className="h-auto w-full md:w-1/2 flex justify-center items-center relative 3xl:mt-10">
+            {/* Gradient (ẩn ở mobile) */}
             <div
-              className="hidden xl:block absolute rounded-[2rem] bg-gradient-to-b from-[#8f88ff] to-white"
+              className="hidden xl:block absolute rounded-[2rem] bg-gradient-to-b from-[#8f88ff] to-white 3xl:ml-10 "
               style={{
-                width: "350px",
-                height: "300px",
+                width: "450px",
+                height: "500px",
                 zIndex: 0,
-                top: "95%",
-                left: "95%",
-                transform: "translate(-90%, -90%)",
+                bottom: "-30%",
+                left: "98%",
+                transform: "translateX(-90%)",
               }}
             />
 
-            {/* Hình laptop */}
+            {/* Hình ảnh */}
             <img
-              src={Laptop}
-              alt="Hình Laptop & Phone"
-              className="w-full max-w-sm xl:max-w-md drop-shadow-xl relative z-4"
-            />
+  src={Laptop}
+  alt="Laptop và Điện thoại"
+  className="
+    w-full
+    max-w-xs sm:max-w-sm md:max-w-md
+    lg:max-w-lg xl:max-w-xl 3xl:max-w-2xl
+    drop-shadow-xl
+    relative
+    mt-8
+    mx-auto
+    3xl:ml-10
+  "
+/>
+
           </div>
         </section>
       </main>

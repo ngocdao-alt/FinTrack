@@ -5,9 +5,11 @@ import { getDashboard } from "../../features/dashboardSlice";
 import formatDateToString from "../../utils/formatDateToString";
 import formatCurrencyVN from "../../utils/formatCurrency";
 import { useNavigate } from "react-router";
+import RecentTransactionsLoading from "../Loading/DashboardLoading/RecentTransactionsLoading";
 
 const DashboardRecentTransactions = ({ className = "" }) => {
   const transactions = useSelector((state) => state.transaction.transactions);
+  const loading = useSelector((state) => state.transaction.loading);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -23,16 +25,12 @@ const DashboardRecentTransactions = ({ className = "" }) => {
     );
   }, []);
 
-  useEffect(() => {
-    console.log(transactions);
-  }, [transactions]);
-
-  const recentTransactions = transactions.slice(0, 10);
+  if (loading) return <RecentTransactionsLoading className={className} />;
 
   return (
     <div
       className={`
-            w-full ${className} mt-5 p-4 bg-white rounded-lg border border-slate-200
+            w-full ${className} p-4 bg-white rounded-lg border border-slate-200 shadow 
             md:p-5
             lg:mt-0
     `}
@@ -43,8 +41,9 @@ const DashboardRecentTransactions = ({ className = "" }) => {
             "
       >
         <h2
+          onClick={() => navigate("/transactions")}
           className="
-                text-xl font-semibold
+                text-xl font-semibold hover:scale-105 transition-all cursor-pointer
             "
         >
           Recent Transactions
@@ -60,14 +59,14 @@ const DashboardRecentTransactions = ({ className = "" }) => {
         </span>
       </div>
 
-      <hr className="w-full my-1 h-[1.5px] bg-[#A0A0A0] border-none" />
+      <hr className="w-full my-1 h-[1.5px] bg-[#A0A0A0] border-none 2xl:mb-2" />
 
-      <div className="relative max-h-64 overflow-hidden">
+      <div className="relative max-h-[85%] overflow-hidden">
         <div className="flex flex-col gap-3 md:gap-4">
-          {recentTransactions.map((item, index) => (
+          {transactions.map((item, index) => (
             <div
               key={item._id}
-              className="grid grid-cols-3 justify-between items-start text-sm md:px-5"
+              className="grid grid-cols-3 justify-between items-start text-sm md:px-5 3xl:text-base"
             >
               <span className="text-ellipsis line-clamp-1">
                 {item.category}
