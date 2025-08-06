@@ -9,10 +9,12 @@ import { BsFillPeopleFill } from "react-icons/bs";
 import { IoMdAnalytics } from "react-icons/io";
 import { RxActivityLog } from "react-icons/rx";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 const BigSideBar = () => {
   const location = useLocation();
   const user = useSelector((state) => state.auth.user);
+  const { t, i18n } = useTranslation();
   const [navArr, setNavArr] = useState([]);
 
   useEffect(() => {
@@ -20,52 +22,56 @@ const BigSideBar = () => {
       setNavArr([
         {
           icon: <MdSpaceDashboard />,
-          label: "Dashboard",
+          label: t("dashboard"),
           path: "/admin/dashboard",
         },
         {
           icon: <AiOutlineTransaction />,
-          label: "Transaction",
+          label: t("transactions"),
           path: "/admin/transactions",
         },
         { icon: <BsFillPeopleFill />, label: "Users", path: "/admin/users" },
         {
           icon: <IoMdAnalytics />,
-          label: "Analytics",
+          label: t("analytics"),
           path: "/admin/analytics",
         },
         { icon: <RxActivityLog />, label: "Logs", path: "/admin/logs" },
       ]);
     } else {
       setNavArr([
-        { icon: <MdSpaceDashboard />, label: "Dashboard", path: "/dashboard" },
+        {
+          icon: <MdSpaceDashboard />,
+          label: t("dashboard"),
+          path: "/dashboard",
+        },
         {
           icon: <AiOutlineTransaction />,
-          label: "Transaction",
+          label: t("transactions"),
           path: "/transactions",
         },
-        { icon: <FaWallet />, label: "Budget", path: "/budget" },
-        { icon: <IoStatsChart />, label: "Statistics", path: "/stat" },
-        { icon: <MdSettings />, label: "Setting", path: "/settings" },
+        { icon: <FaWallet />, label: t("budget"), path: "/budget" },
+        { icon: <IoStatsChart />, label: t("stat"), path: "/stat" },
+        { icon: <MdSettings />, label: t("setting"), path: "/settings" },
       ]);
     }
-  }, [user]);
+  }, [user, i18n.language]);
 
   return (
-    <div className="w-full p-6 flex flex-col gap-0 text-[#464646] font-bold">
+    <div className="w-full h-screen p-6 flex flex-col gap-0 text-[#464646] font-bold dark:bg-[#2B2B2F] dark:text-white/87">
       {navArr.map((item, index) => {
         const isActive = location.pathname === item.path;
         const isAdmin = user.role === "admin";
 
         const activeGradient = isAdmin
           ? "bg-gradient-to-r from-sky-600 to-sky-300 text-white"
-          : "bg-gradient-to-r from-[#5D43DB] to-[#A596E7] text-white";
+          : "bg-gradient-to-r from-[#5D43DB] to-[#A596E7] dark:from-[#6865C0] dark:to-[#6865C0] text-white dark:text-[#3E3D3D]";
 
         return (
           <div
             key={index}
             className={`group p-3 flex items-center gap-3 cursor-pointer rounded-lg 3xl:p-4 ${
-              isActive ? activeGradient : "bg-white"
+              isActive ? activeGradient : "bg-transparent"
             }`}
           >
             <span className="text-3xl transform transition group-hover:scale-110 3xl:text-4xl">

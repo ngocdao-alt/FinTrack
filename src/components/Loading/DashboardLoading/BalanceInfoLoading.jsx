@@ -1,7 +1,12 @@
 import React from "react";
 
 const SkeletonBox = ({ className = "" }) => (
-  <div className={`shimmer rounded-lg ${className}`}></div>
+  <div
+    className={`
+      shimmer rounded-lg bg-slate-200 dark:bg-[#3A3B3C]
+      ${className}
+    `}
+  ></div>
 );
 
 const BalanceInfoLoading = ({ className = "" }) => {

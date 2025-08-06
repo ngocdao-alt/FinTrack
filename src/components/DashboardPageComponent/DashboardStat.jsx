@@ -4,10 +4,12 @@ import { useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import StatLoading from "../Loading/DashboardLoading/StatLoading";
 import { getExpenseStat } from "../../features/statSlice";
+import { useTranslation } from "react-i18next";
 
 const DashboardStat = ({ className = "" }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { t, i18n } = useTranslation();
 
   const stats = useSelector((state) => state.stat.stats);
   const loading = useSelector((state) => state.stat.loading);
@@ -31,7 +33,7 @@ const DashboardStat = ({ className = "" }) => {
   return (
     <div
       className={`
-        w-full ${className} flex flex-col bg-white rounded-lg border border-slate-200 shadow p-4 
+        w-full ${className} flex flex-col bg-white rounded-lg border border-slate-200 shadow p-4 dark:bg-[#2E2E33] dark:border-slate-700 dark:text-white/90
         lg:mb-1 lg:my-0
         3xl:p-6
         `}
@@ -44,7 +46,7 @@ const DashboardStat = ({ className = "" }) => {
             3xl:text-2xl
           "
       >
-        Stats
+        {t("stat")}
       </h2>
 
       <div className="h-full w-full p-5 flex justify-center items-center sm:p-0">

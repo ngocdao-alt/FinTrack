@@ -4,10 +4,12 @@ import { getBudget } from "../../features/budgetSlice";
 import formatCurrencyVN from "../../utils/formatCurrency";
 import { useNavigate } from "react-router";
 import ShortBudgetLoading from "../Loading/DashboardLoading/ShortBudgetLoading";
+import { useTranslation } from "react-i18next";
 
 const DashboardBudgetInfo = ({ className = "" }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const budget = useSelector((state) => state.budget);
   const loading = useSelector((state) => state.budget.loading);
 
@@ -25,7 +27,7 @@ const DashboardBudgetInfo = ({ className = "" }) => {
 
   return (
     <div
-      className={`w-full bg-white rounded-lg p-4 shadow ${className} 3xl:p-6`}
+      className={`w-full bg-white rounded-lg p-4 shadow ${className} 3xl:p-6 dark:bg-[#2E2E33] dark:text-white/90 dark:border-slate-700 dark:border`}
     >
       <div className="h-full flex flex-col gap-2 lg:gap-3 xl:gap-2">
         <h2
@@ -34,19 +36,19 @@ const DashboardBudgetInfo = ({ className = "" }) => {
             w-fit text-lg font-bold hover:scale-105 transition-all cursor-pointer lg:text-xl 3xl:text-2xl
         "
         >
-          Budget
+          {t("budget")}
         </h2>
 
         <div className="h-full flex flex-col justify-around md:w-[80%] md:mx-auto lg:w-[75%] xl:w-full">
           {/* Tổng ngân sách */}
-          <div className="text-base font-bold text-gray-600 text-end md:text-lg 3xl:text-xl">
+          <div className="text-base font-bold text-gray-600 text-end md:text-lg 3xl:text-xl dark:text-white/80">
             {formatCurrencyVN(total)} đ
           </div>
 
           {/* Phần trăm + thanh tiến trình */}
           <div className="flex items-center gap-3">
             {/* Tỷ lệ phần trăm */}
-            <span className="text-[14px] font-semibold text-gray-500 w-[35px] text-center md:text-base xl:text-[14px] 3xl:text-lg">
+            <span className="text-[14px] font-semibold text-gray-500 w-[35px] text-center md:text-base xl:text-[14px] 3xl:text-lg dark:text-white/80">
               {percent}%
             </span>
 
@@ -62,7 +64,7 @@ const DashboardBudgetInfo = ({ className = "" }) => {
           {/* Spent / Remain (mini legend) */}
           <div
             className="
-            flex flex-col gap-3 text-[12px] text-gray-500 mt-2 px-2
+            flex flex-col gap-3 text-[12px] text-gray-500 mt-2 px-2 dark:text-white/80
             md:px-0 md:flex-row md:justify-center md:gap-5 md:text-[14px]
             lg:text-base lg:gap-6
             xl:text-[14px] xl:gap-3
@@ -72,12 +74,14 @@ const DashboardBudgetInfo = ({ className = "" }) => {
             <div className="flex items-center gap-1">
               <div className="w-3 h-1.5 bg-[#767CFF] rounded-full" />
               <span className="flex gap-3">
-                Spent: {formatCurrencyVN(spent)}đ
+                {t("spent")}: {formatCurrencyVN(spent)}đ
               </span>
             </div>
             <div className="flex items-center gap-1">
               <div className="w-3 h-1.5 bg-purple-200 rounded-full" />
-              <span>Remaining: {formatCurrencyVN(remain)}đ</span>
+              <span>
+                {t("remaining")}: {formatCurrencyVN(remain)}đ
+              </span>
             </div>
           </div>
         </div>

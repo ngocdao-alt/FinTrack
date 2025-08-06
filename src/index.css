@@ -14,32 +14,42 @@
 
 @layer utilities {
   .shimmer {
-    @apply relative overflow-hidden bg-slate-200;
+    @apply relative overflow-hidden bg-slate-200 dark:bg-[#2E2E33];
   }
+}
 
-  .shimmer::after {
-    content: "";
-    position: absolute;
-    top: 0;
+/* Không để trong @layer, dùng CSS gốc để hỗ trợ ::after và dark mode */
+.shimmer::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -150%;
+  height: 100%;
+  width: 150%;
+  background-image: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: shimmer-slide 1.5s infinite;
+}
+
+.dark .shimmer::after {
+  background-image: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.08),
+    transparent
+  );
+}
+
+@keyframes shimmer-slide {
+  0% {
     left: -150%;
-    height: 100%;
-    width: 150%;
-    background-image: linear-gradient(
-      90deg,
-      transparent,
-      rgba(255, 255, 255, 0.4),
-      transparent
-    );
-    animation: shimmer-slide 1.5s infinite;
   }
-
-  @keyframes shimmer-slide {
-    0% {
-      left: -150%;
-    }
-    100% {
-      left: 100%;
-    }
+  100% {
+    left: 100%;
   }
 }
 
@@ -54,3 +64,4 @@
 body {
   font-family: 'Roboto Mono', monospace;
 }
+

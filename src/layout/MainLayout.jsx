@@ -19,7 +19,7 @@ const MainLayout = ({ header, sidebar }) => {
           {sidebar}
         </aside>
 
-        <main className="flex-1 overflow-y-auto p-2 bg-[#f5f6fa] xl:p-0">
+        <main className="flex-1 overflow-y-auto p-2 bg-[#f5f6fa] xl:p-0 dark:bg-[#35363A]">
           <Outlet />
         </main>
       </div>

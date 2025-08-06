@@ -8,17 +8,24 @@ import { Link } from "react-router-dom";
 import { IoMdCloseCircle } from "react-icons/io";
 import { IoStatsChart } from "react-icons/io5";
 import gsap from "gsap";
-
-const navArr = [
-  { icon: <RiDashboardFill />, label: "Dashboard", path: "/dashboard" },
-  { icon: <FaMoneyBillWave />, label: "Transaction", path: "/transactions" },
-  { icon: <GiReceiveMoney />, label: "Budget", path: "/budget" },
-  { icon: <IoStatsChart />, label: "Statistics", path: "/stat" },
-  { icon: <MdSettings />, label: "Setting", path: "/settings" },
-];
+import { useTranslation } from "react-i18next";
 
 function SidebarComponent({ setToggleSidebar }) {
-  const sidebarRef = useRef(); // tham chiếu tới div Sidebar
+  const { t, i18n } = useTranslation();
+
+  const sidebarRef = useRef();
+
+  const navArr = [
+    { icon: <RiDashboardFill />, label: t("dashboard"), path: "/dashboard" },
+    {
+      icon: <FaMoneyBillWave />,
+      label: t("transactions"),
+      path: "/transactions",
+    },
+    { icon: <GiReceiveMoney />, label: t("budget"), path: "/budget" },
+    { icon: <IoStatsChart />, label: t("stat"), path: "/stat" },
+    { icon: <MdSettings />, label: t("setting"), path: "/settings" },
+  ];
 
   useEffect(() => {
     // Slide in

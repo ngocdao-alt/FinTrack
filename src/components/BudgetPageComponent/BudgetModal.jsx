@@ -3,26 +3,28 @@ import { useDispatch, useSelector } from "react-redux";
 import { addBudget } from "../../features/budgetSlice";
 import toast from "react-hot-toast";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
 
-const BudgetModal = ({ monthValues, years, setIsFormOpen, token, onClose }) => {
+const BudgetModal = ({
+  categoryList,
+  selectedMonth,
+  selectedYear,
+  monthValues,
+  years,
+  setIsFormOpen,
+  token,
+  onClose,
+}) => {
+  const { t } = useTranslation();
   const error = useSelector((state) => state.budget.error);
   const BACK_END_URL = import.meta.env.VITE_BACK_END_URL;
-  const now = new Date();
   const dispatch = useDispatch();
 
-  const categoryOptions = [
-    "Nhà cửa",
-    "Ăn uống",
-    "Di chuyển",
-    "Giáo dục",
-    "Đầu tư",
-    "Giải trí",
-    "Mua sắm",
-  ];
+  const categoryNames = categoryList.map((cat) => cat.key);
 
   const [formData, setFormData] = useState({
-    month: now.getMonth() + 1,
-    year: now.getFullYear(),
+    month: selectedMonth,
+    year: selectedYear,
     totalAmount: "",
     categories: [],
   });
@@ -44,10 +46,10 @@ const BudgetModal = ({ monthValues, years, setIsFormOpen, token, onClose }) => {
           }
         );
 
-        // Nếu có budget => set form
-        if (res) {
-          const data = res.data;
+        const data = res.data;
 
+        if (data && data.categoryStats?.length > 0) {
+          // Nếu có dữ liệu ngân sách
           setFormData({
             month: data.month,
             year: data.year,
@@ -57,14 +59,27 @@ const BudgetModal = ({ monthValues, years, setIsFormOpen, token, onClose }) => {
               amount: c.budgetedAmount,
             })),
           });
+        } else {
+          // Nếu không có ngân sách => reset categories
+          setFormData((prev) => ({
+            ...prev,
+            totalAmount: "",
+            categories: [],
+          }));
         }
       } catch (error) {
         console.error("❌ Không lấy được budget:", error);
+        // Khi lỗi gọi API, cũng nên reset để tránh giữ dữ liệu cũ
+        setFormData((prev) => ({
+          ...prev,
+          totalAmount: "",
+          categories: [],
+        }));
       }
     };
 
     fetchBudget();
-  }, [dispatch, formData.month, formData.year]); // chạy một lần khi mở modal
+  }, [formData.month, formData.year]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -74,21 +89,15 @@ const BudgetModal = ({ monthValues, years, setIsFormOpen, token, onClose }) => {
     }));
   };
 
+  const getCategoryMeta = (key) =>
+    categoryList.find((c) => c.key === key) || {};
+
   const addCategory = () => {
     const selected = formData.categories.map((c) => c.name);
-    const available = categoryOptions.filter((opt) => !selected.includes(opt));
+    const available = categoryNames.filter((opt) => !selected.includes(opt));
+    if (available.length === 0) return;
 
-    if (available.length === 0) {
-      console.warn("Không còn hạng mục để thêm!");
-      return;
-    }
-
-    // Mặc định chọn hạng mục đầu tiên còn lại
-    const newCategory = {
-      name: available[0],
-      amount: "",
-    };
-
+    const newCategory = { name: available[0], amount: "" };
     setFormData((prev) => ({
       ...prev,
       categories: [...prev.categories, newCategory],
@@ -98,16 +107,11 @@ const BudgetModal = ({ monthValues, years, setIsFormOpen, token, onClose }) => {
   const updateCategory = (index, field, value) => {
     setFormData((prev) => {
       const updated = [...prev.categories];
-
       updated[index] = {
         ...updated[index],
         [field]: field === "amount" ? Number(value) : value,
       };
-
-      return {
-        ...prev,
-        categories: updated,
-      };
+      return { ...prev, categories: updated };
     });
   };
 
@@ -121,8 +125,7 @@ const BudgetModal = ({ monthValues, years, setIsFormOpen, token, onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const transformedCategories = formData.categories.map((cat) => ({
+    const transformed = formData.categories.map((cat) => ({
       category: cat.name,
       amount: cat.amount,
     }));
@@ -133,7 +136,7 @@ const BudgetModal = ({ monthValues, years, setIsFormOpen, token, onClose }) => {
           month: Number(formData.month),
           year: Number(formData.year),
           totalAmount: Number(formData.totalAmount),
-          categories: transformedCategories,
+          categories: transformed,
         })
       );
       if (!error) {
@@ -141,14 +144,13 @@ const BudgetModal = ({ monthValues, years, setIsFormOpen, token, onClose }) => {
         setIsFormOpen(false);
         onClose?.();
       }
-    } catch (error) {
-      console.log(error);
-      toast.error("Something is wrong!");
+    } catch (err) {
+      toast.error("Something went wrong");
     }
   };
 
   const selectedCategories = formData.categories.map((c) => c.name);
-  const remainingOptions = categoryOptions.filter(
+  const remainingOptions = categoryNames.filter(
     (opt) => !selectedCategories.includes(opt)
   );
 
@@ -160,26 +162,26 @@ const BudgetModal = ({ monthValues, years, setIsFormOpen, token, onClose }) => {
       <form
         onClick={(e) => e.stopPropagation()}
         onSubmit={handleSubmit}
-        className="bg-white p-6 rounded shadow-lg w-[90%] max-w-lg relative z-50 animate-fadeIn"
+        className="bg-white p-6 rounded shadow-lg w-[90%] max-w-lg relative z-50 animate-fadeIn dark:bg-[#2E2E33]"
       >
-        <h2 className="text-xl text-black font-semibold mb-4">Add Budget</h2>
+        <h2 className="text-xl font-semibold mb-4 dark:text-white/90">
+          {t("addBudget")}
+        </h2>
 
         <div className="flex flex-col gap-4">
           {/* Month */}
           <div>
-            <label className="block font-medium text-gray-700">Month:</label>
+            <label className="block font-medium text-gray-700 dark:text-white/83">
+              {t("month")}:
+            </label>
             <select
               name="month"
               value={formData.month}
               onChange={handleChange}
-              className="w-full p-2 border border-slate-300 bg-white rounded cursor-pointer outline-none"
+              className="w-full p-2 border rounded dark:bg-[#2E2E33] dark:border-slate-700 dark:text-white/83"
             >
               {monthValues?.map((item, index) => (
-                <option
-                  className="cursor-pointer"
-                  key={index}
-                  value={item.value}
-                >
+                <option key={index} value={item.value}>
                   {item.title}
                 </option>
               ))}
@@ -188,15 +190,17 @@ const BudgetModal = ({ monthValues, years, setIsFormOpen, token, onClose }) => {
 
           {/* Year */}
           <div>
-            <label className="block font-medium text-gray-700">Year:</label>
+            <label className="block font-medium text-gray-700 dark:text-white/83">
+              {t("year")}:
+            </label>
             <select
               name="year"
               value={formData.year}
               onChange={handleChange}
-              className="w-full p-2 border border-slate-300 bg-white rounded cursor-pointer outline-none"
+              className="w-full p-2 border rounded dark:bg-[#2E2E33] dark:border-slate-700 dark:text-white/83"
             >
-              {years?.map((item, index) => (
-                <option className="cursor-pointer" key={index} value={item}>
+              {years?.map((item) => (
+                <option key={item} value={item}>
                   {item}
                 </option>
               ))}
@@ -205,8 +209,8 @@ const BudgetModal = ({ monthValues, years, setIsFormOpen, token, onClose }) => {
 
           {/* Total Amount */}
           <div>
-            <label className="block font-medium text-gray-700">
-              Total Budget:
+            <label className="block font-medium text-gray-700 dark:text-white/83">
+              {t("totalBudget")}:
             </label>
             <input
               type="number"
@@ -214,60 +218,60 @@ const BudgetModal = ({ monthValues, years, setIsFormOpen, token, onClose }) => {
               value={formData.totalAmount}
               onChange={handleChange}
               placeholder="VD: 10000000"
-              className="w-full p-2 border border-slate-300 rounded outline-slate-300"
+              className="w-full p-2 border rounded dark:bg-[#2E2E33] dark:border-slate-700 dark:text-white/83"
               required
             />
           </div>
 
           {/* Categories */}
           <div>
-            <label className="block font-medium text-gray-700">
-              Categories:
+            <label className="block font-medium text-gray-700 dark:text-white/83">
+              {t("categories.title")}:
             </label>
+
             {formData.categories.map((cat, index) => {
-              // Lấy ra danh sách các category đã chọn ở các dòng khác
-              const selectedCategories = formData.categories
+              const selectedOthers = formData.categories
                 .filter((_, i) => i !== index)
                 .map((c) => c.name);
 
-              // Lọc ra các option chưa được chọn hoặc chính nó (để không mất giá trị hiện tại)
-              const availableOptions = categoryOptions.filter(
-                (opt) => !selectedCategories.includes(opt) || opt === cat.name
+              const available = categoryNames.filter(
+                (opt) => !selectedOthers.includes(opt) || opt === cat.name
               );
 
               return (
-                <div key={index} className="flex gap-2 mt-2 ">
+                <div key={index} className="flex gap-2 mt-2">
                   <select
-                    name="category"
                     value={cat.name}
                     onChange={(e) =>
                       updateCategory(index, "name", e.target.value)
                     }
-                    className="w-full p-2 border border-slate-300 bg-white rounded cursor-pointer outline-none"
+                    className="w-full p-2 border rounded dark:bg-[#2E2E33] dark:border-slate-700 dark:text-white/83"
                   >
-                    {availableOptions.map((item, idx) => (
-                      <option className="cursor-pointer" key={idx} value={item}>
-                        {item}
-                      </option>
-                    ))}
+                    {available.map((item) => {
+                      const { icon } = getCategoryMeta(item);
+                      return (
+                        <option key={item} value={item}>
+                          {icon} {t(`categories.${item}`)}
+                        </option>
+                      );
+                    })}
                   </select>
 
                   <input
-                    name="amount"
                     type="number"
                     value={cat.amount}
                     onChange={(e) =>
                       updateCategory(index, "amount", e.target.value)
                     }
-                    placeholder="Số tiền"
-                    className="w-[120px] p-2 border border-slate-300 rounded"
+                    placeholder={t("amount")}
+                    className="w-[120px] p-2 border rounded dark:bg-[#2E2E33] dark:border-slate-700 dark:text-white/83"
                     required
                   />
 
                   <button
                     type="button"
                     onClick={() => removeCategory(index)}
-                    className="text-red-500 font-bold cursor-pointer hover:scale-110 transition-all"
+                    className="text-red-500 font-bold hover:scale-110 cursor-pointer transition-all"
                   >
                     ✕
                   </button>
@@ -277,10 +281,7 @@ const BudgetModal = ({ monthValues, years, setIsFormOpen, token, onClose }) => {
 
             <button
               type="button"
-              onClick={() => {
-                if (remainingOptions.length === 0) return;
-                addCategory();
-              }}
+              onClick={addCategory}
               className={`mt-2 font-semibold transition-all ${
                 remainingOptions.length === 0
                   ? "text-gray-400 cursor-not-allowed"
@@ -288,15 +289,15 @@ const BudgetModal = ({ monthValues, years, setIsFormOpen, token, onClose }) => {
               }`}
               disabled={remainingOptions.length === 0}
             >
-              + Thêm hạng mục
+              + {t("add")} {t("categories.title")}
             </button>
           </div>
 
           <button
             type="submit"
-            className="bg-[#8574d4] text-white rounded p-2 mt-4 hover:bg-[#6A57DE] cursor-pointer transition-all"
+            className="bg-[#8574d4] text-white rounded p-2 mt-4 hover:bg-[#6A57DE] transition-all"
           >
-            Lưu ngân sách
+            {t("save")}
           </button>
         </div>
       </form>

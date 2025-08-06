@@ -10,6 +10,7 @@ import {
   Legend,
   Filler,
 } from "chart.js";
+import { useTranslation } from "react-i18next";
 
 ChartJS.register(
   LineElement,
@@ -22,11 +23,12 @@ ChartJS.register(
 );
 
 const LineChart = ({ labels = [], dataIncome = [], dataExpense = [] }) => {
+  const { t, i18n } = useTranslation();
   const data = {
     labels,
     datasets: [
       {
-        label: "Income",
+        label: t("income"),
         data: dataIncome,
         borderColor: "#4ade80",
         backgroundColor: "rgba(74, 222, 128, 0.2)",
@@ -35,7 +37,7 @@ const LineChart = ({ labels = [], dataIncome = [], dataExpense = [] }) => {
         pointRadius: 4,
       },
       {
-        label: "Expense",
+        label: t("expense"),
         data: dataExpense,
         borderColor: "#f87171",
         backgroundColor: "rgba(248, 113, 113, 0.2)",

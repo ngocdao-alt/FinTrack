@@ -12,7 +12,7 @@ const DashboardPage = () => {
       {/* Balance information */}
       <section
         className="
-          w-full h-[85vh] p-1 bg-[#F5F6FA] text-[#464646]
+          w-full h-[85vh] p-1 bg-[#F5F6FA] text-[#464646] dark:bg-[#35363A] dark:text-white/90
           flex flex-col gap-3 sm:p-3 md:px-8 md:py-3
           xl:grid xl:grid-cols-3 xl:grid-rows-7 xl:gap-3 xl:auto-rows-auto xl:items-stretch xl:h-full
           3xl:gap-5

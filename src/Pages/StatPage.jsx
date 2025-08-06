@@ -4,10 +4,12 @@ import { getTransactionsByMonth } from "../features/transactionSlice";
 import { getBudget } from "../features/budgetSlice";
 import DonutChart from "../components/Chart/DonutChart";
 import ReportExport from "./ReportExport";
+import { useTranslation } from "react-i18next";
 
 const StatPage = () => {
   const dispatch = useDispatch();
   const now = new Date();
+  const { t, i18n } = useTranslation();
   const [month, setMonth] = useState(now.getMonth() + 1); // UI: 1-12
   const [year, setYear] = useState(now.getFullYear());
   const [selectedDate, setSelectedDate] = useState(null);
@@ -91,29 +93,37 @@ const StatPage = () => {
   return (
     <div className="flex flex-col md:flex-row gap-4 md:gap-6 p-4 md:p-6 w-full max-w-screen-2xl mx-auto md:h-[640px]">
       {/* Cột trái: Lịch */}
-      <div className="w-full flex flex-col md:w-[60%] bg-white rounded-xl shadow-md p-4 md:p-6 md:h-full">
+      <div className="w-full flex flex-col md:w-[60%] bg-white rounded-xl shadow-md p-4 md:p-6 md:h-full dark:bg-[#2E2E33] dark:border dark:border-slate-700">
         <div className="flex items-center justify-between mb-4">
           <div className="flex gap-4">
             <select
               value={month}
               onChange={(e) => setMonth(Number(e.target.value))}
-              className="border rounded px-2 py-1"
+              className="border rounded px-2 py-1 dark:border-slate-700 dark:text-white/83 cursor-pointer"
             >
               {Array.from({ length: 12 }).map((_, idx) => (
-                <option key={idx} value={idx + 1}>
-                  Tháng {idx + 1}
+                <option
+                  key={idx}
+                  value={idx + 1}
+                  className="dark:bg-[#2E2E33] dark:text-white/83"
+                >
+                  {t("month")} {idx + 1}
                 </option>
               ))}
             </select>
             <select
               value={year}
               onChange={(e) => setYear(Number(e.target.value))}
-              className="border rounded px-2 py-1"
+              className="border rounded px-2 py-1 dark:border-slate-700 dark:text-white/83 cursor-pointer"
             >
               {Array.from({ length: 10 }).map((_, idx) => {
                 const y = 2020 + idx;
                 return (
-                  <option key={idx} value={y}>
+                  <option
+                    key={idx}
+                    value={y}
+                    className="dark:bg-[#2E2E33] dark:text-white/83"
+                  >
                     {y}
                   </option>
                 );
@@ -122,9 +132,17 @@ const StatPage = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-7 gap-2 text-center font-medium text-gray-700 mb-2">
-          {["T2", "T3", "T4", "T5", "T6", "T7", "CN"].map((d, i) => (
-            <div key={i}>{d}</div>
+        <div className="grid grid-cols-7 gap-2 text-center font-medium text-gray-700 mb-2 dark:text-white/83">
+          {[
+            "monday",
+            "tuesday",
+            "wednesday",
+            "thursday",
+            "friday",
+            "saturday",
+            "sunday",
+          ].map((d, i) => (
+            <div key={i}>{t(d)}</div>
           ))}
         </div>
 
@@ -140,10 +158,8 @@ const StatPage = () => {
             const expense = dailyTx
               .filter((t) => t.type === "expense")
               .reduce((s, t) => s + t.amount, 0);
-            const net = income - expense;
-            const spentFromBudget = net < 0 ? Math.abs(net) : 0;
             const percent = totalBudget
-              ? (spentFromBudget / budgetPerDay) * 100
+              ? (expense / budgetPerDay) * 100
               : maxExpenseInMonth > 0
               ? (expense / maxExpenseInMonth) * 100
               : 0;
@@ -161,7 +177,7 @@ const StatPage = () => {
               >
                 <div className="font-semibold text-sm">{day}</div>
                 <div className="truncate text-[10px] leading-tight max-w-full">
-                  {spentFromBudget.toLocaleString()}đ
+                  {expense.toLocaleString()}đ
                 </div>
               </div>
             );
@@ -173,11 +189,13 @@ const StatPage = () => {
       </div>
 
       {/* Cột phải: Giao dịch + Donut */}
-      <div className="w-full md:w-[40%] md:h-full flex flex-col gap-4">
-        <div className="bg-white rounded-xl shadow-md p-4 flex-1 flex flex-col overflow-hidden">
-          <h3 className="text-lg font-semibold mb-3">
-            Giao dịch ngày{" "}
-            {selectedDate ? `${selectedDate}/${month}/${year}` : "(Chọn ngày)"}
+      <div className="w-full md:w-[40%] md:h-full flex flex-col gap-4 ">
+        <div className="bg-white rounded-xl shadow-md p-4 flex-1 flex flex-col overflow-hidden dark:bg-[#2E2E33] dark:border dark:border-slate-700">
+          <h3 className="text-lg font-semibold mb-3 dark:text-white/87">
+            {t("transactions")}{" "}
+            {selectedDate
+              ? `${selectedDate}/${month}/${year}`
+              : `(${t("selectDate")})`}
           </h3>
           <div className="overflow-y-auto pr-2 flex-1">
             {selectedDate ? (
@@ -186,12 +204,14 @@ const StatPage = () => {
                   {transactionsByDay.map((tx) => (
                     <li
                       key={tx._id}
-                      className="flex justify-between border-b pb-1 text-gray-700"
+                      className="flex justify-between border-b pb-1 text-gray-700 dark:text-white/83 dark:border-slate-600"
                     >
                       <div className="flex flex-col">
-                        <span className="font-medium">{tx.category}</span>
+                        <span className="font-medium">
+                          {t(`categories.${tx.category}`)}
+                        </span>
                         {tx.note && (
-                          <span className="text-xs text-gray-500">
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
                             {tx.note}
                           </span>
                         )}
@@ -199,8 +219,8 @@ const StatPage = () => {
                       <span
                         className={
                           tx.type === "income"
-                            ? "text-green-600"
-                            : "text-red-600"
+                            ? "text-green-500 dark:text-green-600"
+                            : "text-red-500 dark:text-red-600"
                         }
                       >
                         {tx.type === "income" ? "+" : "-"}
@@ -210,28 +230,32 @@ const StatPage = () => {
                   ))}
                 </ul>
               ) : (
-                <p className="text-sm text-gray-500">Không có giao dịch.</p>
+                <p className="text-sm text-gray-500 dark:text-white/83">
+                  {t("noData")}.
+                </p>
               )
             ) : (
-              <p className="text-sm text-gray-500">Vui lòng chọn ngày.</p>
+              <p className="text-sm text-gray-500 dark:text-white/83">
+                {t("pleaseSelectDate")}.
+              </p>
             )}
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-md p-4 flex-1 flex flex-col items-center justify-center">
-          <h3 className="text-lg font-semibold mb-3">Thống kê theo danh mục</h3>
+        <div className="bg-white rounded-xl shadow-md p-4 flex-1 flex flex-col items-center justify-center dark:bg-[#2E2E33] dark:border dark:border-slate-700">
+          <h3 className="text-lg font-semibold mb-3 dark:text-white/83">
+            {t("statByCat")}
+          </h3>
           {totalBudget > 0 ? (
             <DonutChart
               categoryStats={categoryStats}
               totalBudget={totalBudget}
             />
           ) : (
-            <div className="text-center text-gray-500 flex flex-col items-center gap-2">
+            <div className="text-center text-gray-500 flex flex-col items-center gap-2 dark:text-white/83">
               <div className="text-4xl">💸</div>
-              <p className="text-sm">Chưa có ngân sách cho tháng này</p>
-              <p className="text-xs text-gray-400">
-                Hãy thiết lập ngân sách để xem thống kê
-              </p>
+              <p className="text-sm">{t("noBudget")}</p>
+              <p className="text-xs text-gray-400">{t("pleaseSetBudget")}</p>
             </div>
           )}
         </div>

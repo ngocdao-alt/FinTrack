@@ -6,6 +6,7 @@ import store from "./store.js";
 import { BrowserRouter } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { LoadingProvider } from "./context/LoadingContext.jsx";
+import "./i18n";
 
 createRoot(document.getElementById("root")).render(
   <Provider store={store}>

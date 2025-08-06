@@ -101,6 +101,9 @@ const authSlice = createSlice({
       .addCase(updateUser.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload;
+        console.log(action.payload);
+        
+        localStorage.setItem("user", JSON.stringify(action.payload)); // Cập nhật localStorage
         state.error = null;
       })
       .addCase(updateUser.rejected, (state, action) => {

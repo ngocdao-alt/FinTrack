@@ -36,7 +36,7 @@ export default function Login() {
 
         setIsAppLoading(true);
         setTimeout(() => {
-          if (user.role === "admin") {
+          if (user?.role === "admin") {
             navigate("/admin");
           } else {
             navigate("/dashboard");
@@ -140,7 +140,11 @@ export default function Login() {
       {/* DESKTOP */}
       <div className="hidden lg:flex min-h-screen w-full relative overflow-hidden">
         <div className="absolute top-6 left-6 flex items-center z-20">
-          <img src={LogoF} alt="Logo" className="h-20 rounded-full ml-18 mb-300" />
+          <img
+            src={LogoF}
+            alt="Logo"
+            className="h-20 rounded-full ml-18 mb-300"
+          />
         </div>
         {/* Left Column */}
         <div className="w-1/2 flex flex-col items-center justify-center px-20 bg-white lg:pl-15 lg:pr-0">

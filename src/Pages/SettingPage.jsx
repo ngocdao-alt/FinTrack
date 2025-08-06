@@ -3,23 +3,28 @@ import { Link, useNavigate } from "react-router-dom";
 import {
   FaUser,
   FaCamera,
-  FaSave,
   FaEye,
   FaEyeSlash,
-  FaPen,
   FaGlobe,
   FaImage,
 } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { logout, updateUser } from "../features/authSlice";
 import toast from "react-hot-toast";
-
-// ...imports giữ nguyên
+import { useTheme } from "../context/ThemeContext";
+import { useTranslation } from "react-i18next";
+import EditableField from "../components/EditableField";
 
 const SettingPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
+  const { theme, toggleTheme } = useTheme();
+  const { t, i18n } = useTranslation();
+
+  const [language, setLanguage] = useState(
+    localStorage.getItem("lang") || "vi"
+  );
 
   const [profile, setProfile] = useState({
     name: user.name,
@@ -27,24 +32,22 @@ const SettingPage = () => {
     dob: user.dob,
     address: user.address,
   });
-  const [editing, setEditing] = useState({
-    name: false,
-    phone: false,
-    dob: false,
-    address: false,
-  });
-
-  useEffect(() => {
-    console.log(user);
-  }, []);
+  const initialProfile = useRef(profile);
 
   const [avatarFile, setAvatarFile] = useState(null);
-  const [avatarPreview, setAvatarPreview] = useState(user.avatar);
+  const [avatarPreview, setAvatarPreview] = useState(user.avatarUrl);
   const fileInputRef = useRef(null);
   const [showPassword, setShowPassword] = useState(false);
-  const [theme, setTheme] = useState("light");
-  const [language, setLanguage] = useState("vi");
   const [isHovering, setIsHovering] = useState(false);
+
+  const isDirty =
+    JSON.stringify(profile) !== JSON.stringify(initialProfile.current) ||
+    avatarFile !== null;
+
+  useEffect(() => {
+    i18n.changeLanguage(language);
+    localStorage.setItem("lang", language);
+  }, [language]);
 
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
@@ -54,11 +57,9 @@ const SettingPage = () => {
     }
   };
 
-  const toggleEdit = (field) => {
-    setEditing((prev) => ({ ...prev, [field]: !prev[field] }));
-  };
-
   const handleSaveProfile = () => {
+    if (!isDirty) return;
+
     const formData = new FormData();
     formData.append("name", profile.name);
     formData.append("phone", profile.phone);
@@ -66,12 +67,16 @@ const SettingPage = () => {
     formData.append("address", profile.address);
     if (avatarFile) formData.append("avatar", avatarFile);
 
-    try {
-      dispatch(updateUser(formData));
-      toast.success("Đã lưu thông tin!");
-    } catch (err) {
-      toast.error("Lỗi khi lưu: " + err.message || err);
-    }
+    dispatch(updateUser(formData))
+      .unwrap()
+      .then(() => {
+        toast.success("Đã lưu thông tin!");
+        initialProfile.current = profile;
+        setAvatarFile(null);
+      })
+      .catch((err) => {
+        toast.error("Lỗi khi lưu: " + err.message || err);
+      });
   };
 
   const handleLogout = () => {
@@ -80,42 +85,17 @@ const SettingPage = () => {
     toast("Đã đăng xuất!", { icon: "👋" });
   };
 
-  const EditableField = ({ label, field }) => (
-    <div className="relative">
-      <input
-        type="text"
-        value={profile[field]}
-        readOnly={!editing[field]}
-        onChange={(e) =>
-          setProfile((prev) => ({ ...prev, [field]: e.target.value }))
-        }
-        className={`w-full border-b bg-transparent pr-8 px-2 py-1 ${
-          editing[field]
-            ? "border-indigo-400 focus:outline-[#7E5BEF]"
-            : "border-gray-400 outline-none cursor-not-allowed"
-        }`}
-      />
-      <button
-        className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-600 hover:text-indigo-600"
-        onClick={() => toggleEdit(field)}
-        title={editing[field] ? `Lưu ${label}` : `Chỉnh sửa ${label}`}
-      >
-        {editing[field] ? <FaSave /> : <FaPen />}
-      </button>
-    </div>
-  );
-
   return (
-    <div className="h-fit flex items-start justify-center bg-[#f3f4f6] sm:h-full xl:items-center">
+    <div className="h-fit flex items-start justify-center bg-[#f3f4f6] sm:h-full xl:items-center dark:bg-[#35363A]">
       <main className="flex-1 px-4 sm:px-6 py-6">
-        <div className="w-full max-w-4xl bg-white rounded-xl shadow-lg p-6 mx-auto">
-          <h2 className="text-2xl font-semibold mb-8">Cài đặt</h2>
+        <div className="w-full max-w-4xl bg-white rounded-xl shadow-lg p-6 mx-auto dark:border dark:border-slate-700 dark:bg-[#2E2E33] dark:text-white/83">
+          <h2 className="text-2xl font-semibold mb-8">{t("setting")}</h2>
 
           <div className="flex flex-col md:flex-row gap-10 items-center md:items-start text-center md:text-left">
             {/* === Thông tin người dùng === */}
             <section className="flex-1 w-full sm:px-3">
               <h3 className="w-full text-center text-lg font-semibold mb-4 sm:text-left">
-                Thông tin người dùng
+                {t("userInfo")}
               </h3>
 
               {/* Avatar */}
@@ -127,9 +107,9 @@ const SettingPage = () => {
                   onMouseLeave={() => setIsHovering(false)}
                   title="Đổi ảnh"
                 >
-                  {avatarPreview ? (
+                  {avatarPreview || user.avatarUrl ? (
                     <img
-                      src={avatarPreview}
+                      src={avatarPreview || user.avatarUrl}
                       alt="avatar"
                       className="h-full w-full object-cover rounded-full"
                     />
@@ -157,19 +137,50 @@ const SettingPage = () => {
 
               {/* Các trường chỉnh sửa */}
               <div className="space-y-4">
-                <EditableField label="Tên" field="name" />
-                <EditableField label="SĐT" field="phone" />
-                <EditableField label="Ngày sinh" field="dob" />
-                <EditableField label="Địa chỉ" field="address" />
-
-                <input
-                  type="email"
-                  value={user.email}
-                  readOnly
-                  className="w-full px-2 py-1 border-b border-gray-400 bg-transparent outline-none cursor-not-allowed"
+                <EditableField
+                  label={t("name")}
+                  value={profile.name}
+                  onChange={(e) =>
+                    setProfile((prev) => ({ ...prev, name: e.target.value }))
+                  }
                 />
+                <EditableField
+                  label={t("phone")}
+                  value={profile.phone}
+                  onChange={(e) =>
+                    setProfile((prev) => ({ ...prev, phone: e.target.value }))
+                  }
+                />
+                <EditableField
+                  label={t("dob")}
+                  value={profile.dob}
+                  onChange={(e) =>
+                    setProfile((prev) => ({ ...prev, dob: e.target.value }))
+                  }
+                />
+                <EditableField
+                  label={t("address")}
+                  value={profile.address}
+                  onChange={(e) =>
+                    setProfile((prev) => ({ ...prev, address: e.target.value }))
+                  }
+                />
+                <div>
+                  <label className="text-sm text-gray-500 dark:text-gray-400">
+                    {t("email")}
+                  </label>
+                  <input
+                    type="email"
+                    value={user.email}
+                    readOnly
+                    className="w-full px-2 py-1 border-b border-gray-400 bg-transparent outline-none cursor-not-allowed"
+                  />
+                </div>
 
                 <div className="relative select-none">
+                  <label className="text-sm text-gray-500 dark:text-gray-400">
+                    {t("password")}
+                  </label>
                   <input
                     type={showPassword ? "text" : "password"}
                     value="123456"
@@ -187,9 +198,14 @@ const SettingPage = () => {
 
                 <button
                   onClick={handleSaveProfile}
-                  className="block text-center w-full bg-indigo-500 text-white py-1 rounded-md hover:bg-indigo-600 transition-colors cursor-pointer"
+                  disabled={!isDirty}
+                  className={`block text-center w-full py-2 rounded-md transition-colors ${
+                    isDirty
+                      ? "bg-indigo-500 text-white hover:bg-indigo-600 cursor-pointer"
+                      : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  } dark:bg-indigo-600 dark:hover:bg-indigo-700`}
                 >
-                  Lưu
+                  {t("save")}
                 </button>
               </div>
             </section>
@@ -198,14 +214,14 @@ const SettingPage = () => {
             <div className="hidden md:block w-px bg-gray-300 self-stretch" />
             <section className="w-full my-3 flex-1 md:mt-0">
               <h3 className="text-lg font-semibold mb-4 text-left">
-                Giao diện
+                {t("interface")}
               </h3>
 
               <label className="block mb-2 font-medium text-left w-full">
-                Chủ đề
+                {t("theme")}
               </label>
               <div className="flex space-x-6 mb-6">
-                {["light", "dark", "system"].map((opt) => (
+                {["light", "dark"].map((opt) => (
                   <label
                     key={opt}
                     className="flex items-center space-x-2 cursor-pointer"
@@ -215,23 +231,17 @@ const SettingPage = () => {
                       name="theme"
                       value={opt}
                       checked={theme === opt}
-                      onChange={() => setTheme(opt)}
+                      onChange={toggleTheme}
                       className="accent-purple-500"
                     />
-                    <span>
-                      {opt === "light"
-                        ? "Sáng"
-                        : opt === "dark"
-                        ? "Tối"
-                        : "Hệ thống"}
-                    </span>
+                    <span>{opt === "light" ? t("light") : t("dark")}</span>
                   </label>
                 ))}
               </div>
 
               <div className="mb-6">
                 <label className="flex items-center space-x-2 mb-2 font-medium cursor-pointer">
-                  <span>Ngôn ngữ</span>
+                  <span>{t("language")}</span>
                   <FaGlobe />
                 </label>
                 <select
@@ -239,16 +249,20 @@ const SettingPage = () => {
                   value={language}
                   onChange={(e) => setLanguage(e.target.value)}
                 >
-                  <option value="vi">Tiếng Việt</option>
-                  <option value="en">English</option>
+                  <option className="dark:bg-[#2E2E33]" value="vi">
+                    Tiếng Việt
+                  </option>
+                  <option className="dark:bg-[#2E2E33]" value="en">
+                    English
+                  </option>
                 </select>
               </div>
 
               <button
                 onClick={handleLogout}
-                className="block text-center w-full bg-indigo-500 text-white py-2 rounded-md hover:bg-indigo-600 transition-colors cursor-pointer"
+                className="block text-center w-full bg-indigo-500 text-white py-2 rounded-md hover:bg-indigo-600 transition-colors cursor-pointer dark:bg-indigo-600 dark:hover:bg-indigo-700"
               >
-                Đăng xuất
+                {t("logout")}
               </button>
             </section>
           </div>

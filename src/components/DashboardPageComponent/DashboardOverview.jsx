@@ -4,10 +4,12 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import { useNavigate } from "react-router";
 import OverviewLoading from "../Loading/DashboardLoading/OverviewLoading";
+import { useTranslation } from "react-i18next";
 
 const DashboardOverview = ({ className = "" }) => {
   const BACK_END_URL = import.meta.env.VITE_BACK_END_URL;
   const token = useSelector((state) => state.auth.token);
+  const { t, i18n } = useTranslation();
 
   const navigate = useNavigate();
   const [incomeData, setIncomeData] = useState([]);
@@ -83,15 +85,15 @@ const DashboardOverview = ({ className = "" }) => {
 
   if (!loading && incomeData.length === 0 && expenseData.length === 0)
     return (
-      <div className="w-full h-full p-5 flex justify-center items-center font-semibold 3xl:text-xl">
-        No data to display
+      <div className="w-full h-full p-5 flex justify-center items-center font-semibold 3xl:text-xl dark:bg-[#2E2E33] dark:text-white/90">
+        {t("noData")}
       </div>
     );
 
   return (
     <div
       className={`
-        w-full h-full ${className} flex flex-col mb-3 bg-white rounded-lg border border-slate-200 shadow p-4
+        w-full h-full ${className} flex flex-col mb-3 bg-white rounded-lg border border-slate-200 shadow p-4 dark:bg-[#2E2E33] dark:text-white/90 dark:border-slate-700
         lg:my-0 lg:mb-1
         3xl:p-6
       `}
@@ -102,7 +104,7 @@ const DashboardOverview = ({ className = "" }) => {
           w-fit mb-2 text-xl font-bold hover:scale-105 transition-all cursor-pointer 3xl:text-2xl
       "
       >
-        Overview
+        {t("overview")}
       </h2>
 
       <div className="w-full h-full p-4 flex justify-center items-center sm:p-0">

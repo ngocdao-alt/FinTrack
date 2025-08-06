@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import logo from "../assets/img/logo.webp";
+import logoLight from "../assets/img/logo.webp";
 import { TfiMenuAlt } from "react-icons/tfi";
 import SidebarComponent from "./SideBarComponent";
 import { IoNotifications } from "react-icons/io5";
@@ -11,23 +11,35 @@ import {
 } from "../features/notificationSlice";
 import formatDateToString from "../utils/formatDateToString";
 import gsap from "gsap";
-import adminLogo from "../assets/img/admin_logo.png";
+import adminLogo from "../assets/img/admin_logo.webp";
+import logoDark from "../assets/img/logo_dark.webp";
+import { useTheme } from "../context/ThemeContext";
 
 const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const { theme } = useTheme();
 
   const notifications = useSelector(
     (state) => state.notification.notifications
   );
   const user = useSelector((state) => state.auth.user);
   const loading = useSelector((state) => state.notification.loading);
-
+  const [logo, setLogo] = useState("");
   const [toggleSidebar, setToggleSidebar] = useState(false);
   const [toggleNotification, setToggleNotification] = useState(false);
   const [hasRead, setHasRead] = useState(false);
 
   const notiRef = useRef();
+
+  useEffect(() => {
+    if (theme === "light") {
+      setLogo(logoLight);
+    } else {
+      setLogo(logoDark);
+    }
+  }, [theme]);
 
   useEffect(() => {
     if (toggleNotification) {
@@ -140,19 +152,21 @@ const Header = () => {
   return (
     <div
       className="
-          relative w-full h-20 px-6 flex justify-between items-center border border-slate-300
-          sm:h-25 sm:px-10
+          relative w-full h-20 px-6 flex justify-between items-center border border-slate-300 dark:bg-[#2B2B2F] dark:border-0 
+          sm:h-25 sm:px-10 
           md:px-15
           lg:px-5 lg:h-20 lg:pb-2
     "
     >
       <img
         src={user.role === "admin" ? adminLogo : logo}
-        className="
-          max-w-20
-          sm:max-w-22
-          md:max-w-23
-        "
+        className={`
+          ${
+            user.role === "admin"
+              ? "max-w-30 sm:max-w-32 md:max-w-35"
+              : "max-w-20 sm:max-w-22 md:max-w-23 dark:max-w-32 sm:dark:max-w-35 md:dark:max-w-38"
+          }
+        `}
       />
       <div
         className="
@@ -164,13 +178,15 @@ const Header = () => {
           <div
             onClick={toggleNoti}
             className={`
-              p-2 rounded-full hover:bg-slate-200 cursor-pointer ${
-                toggleNotification ? "bg-slate-200" : "bg-transparent"
+              p-2 rounded-full hover:bg-slate-200 cursor-pointer dark:hover:bg-[#514D73] ${
+                toggleNotification
+                  ? "bg-slate-200 dark:bg-[#514D73]"
+                  : "bg-transparent"
               }
           `}
           >
             <IoNotifications
-              className={`text-xl text-[#514D73] lg:text-2xl 3xl:text-3xl`}
+              className={`text-xl text-[#514D73] lg:text-2xl 3xl:text-3xl dark:text-white/90`}
             />
             {notifications.some((item) => item.isRead === false) && (
               <div className="absolute top-[15%] right-[10%] p-1 rounded-full bg-red-500"></div>
@@ -184,14 +200,15 @@ const Header = () => {
                 md:-right-[110%] md:h-100 md:w-80
                 lg:right-[50%] lg:h-110 lg:w-90
                 3xl:w-100
+                dark:bg-[#2B2B2F] dark:border-slate-700
           "
             >
               <div className="py-2.5 px-4 lg:py-3">
-                <span className="text-[#464646] font-semibold text-sm lg:text-base 3xl:text-lg">
+                <span className="text-[#464646] font-semibold text-sm lg:text-base 3xl:text-lg dark:text-white/90">
                   Notifications
                 </span>
               </div>
-              <hr className="text-slate-300 h-1 w-full" />
+              <hr className="text-slate-300 h-1 w-full dark:text-slate-700" />
               <div className="h-full w-full flex flex-col overflow-y-scroll">
                 {notifications.map((item, index) => (
                   <div
@@ -200,7 +217,7 @@ const Header = () => {
                         w-full flex flex-col 
                     "
                   >
-                    <div className="relative flex flex-col gap-1 px-3 py-2 text-[12px] text-[#464646] md:text-[13px] lg:text-sm 3xl:text-[15px]">
+                    <div className="relative flex flex-col gap-1 px-3 py-2 text-[12px] text-[#464646] md:text-[13px] lg:text-sm 3xl:text-[15px] dark:text-white/90">
                       <p className="font-semibold">
                         {generateNotificationTitle(item.type)}
                         {item.isRead ? "" : "🔹"}
@@ -213,7 +230,7 @@ const Header = () => {
                       </span>
                     </div>
                     {index !== notifications.length - 1 && (
-                      <hr className="text-slate-300 h-0.5 w-full" />
+                      <hr className="text-slate-300 h-0.5 w-full dark:text-slate-700" />
                     )}
                   </div>
                 ))}
@@ -224,7 +241,7 @@ const Header = () => {
         <TfiMenuAlt
           onClick={() => setToggleSidebar(true)}
           className="
-          text-2xl text-[#514D73]
+          text-2xl text-[#514D73] dark:text-white/90
           sm:text-[28px]
           md:text-[30px]
           lg:hidden
