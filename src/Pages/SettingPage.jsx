@@ -109,7 +109,7 @@ const SettingPage = () => {
                 >
                   {avatarPreview || user.avatarUrl ? (
                     <img
-                      src={avatarPreview || user.avatarUrl}
+                      src={user.avatarUrl || avatarPreview}
                       alt="avatar"
                       className="h-full w-full object-cover rounded-full"
                     />
