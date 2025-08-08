@@ -22,8 +22,6 @@ const checkBudgetAlert = async () => {
       date: { $gte: start, $lte: end },
     });
 
-    console.log(`[DEBUG] Giao dịch tháng ${month}/${year} của user ${user}: ${transactions.length} giao dịch`);
-
     // === Tổng ngân sách ===
     const totalSpent = transactions.reduce((sum, tx) => sum + tx.amount, 0);
     const totalPercentUsed = Math.round((totalSpent / totalAmount) * 100);

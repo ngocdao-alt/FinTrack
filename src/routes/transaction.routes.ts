@@ -17,7 +17,7 @@ router.post(
 );
 router.get('/', getTransactions);
 router.get('/by-month', getTransactionsByMonth);
-router.put('/:id', upload.none(), updateTransaction);
+router.put('/:id', upload.array('receiptImages', 5), updateTransaction);
 router.delete('/:id', deleteTransaction);
 router.get('/categories/used', getUsedCategories);
 

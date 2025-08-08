@@ -128,6 +128,7 @@ export const createTransaction = async (req: AuthRequest, res: Response): Promis
 
 // GET ALL
 export const getTransactions = async (req: AuthRequest, res: Response) => {
+  
   try {
     const { page = 1, limit = 10, type, category, keyword, month, year, specificDate } = req.query;
 
@@ -159,9 +160,13 @@ export const getTransactions = async (req: AuthRequest, res: Response) => {
     const skip = (+page - 1) * +limit;
 
     const [transactions, total] = await Promise.all([
-      Transaction.find(filter).sort({ date: -1 }).skip(skip).limit(+limit),
-      Transaction.countDocuments(filter),
-    ]);
+  Transaction.find(filter)
+    .sort({ date: -1 })
+    .skip(skip)
+    .limit(+limit) 
+    .lean(), // ⬅️ ép lấy raw object từ MongoDB
+  Transaction.countDocuments(filter),
+]);
 
     res.json({
       data: transactions,
@@ -213,41 +218,93 @@ export const getTransactionsByMonth = async (req: AuthRequest, res: Response) =>
 
 
 // UPDATE
-export const updateTransaction = async (req: AuthRequest, res: Response) => {
+export const updateTransaction = async (req: AuthRequest, res: Response): Promise<any> => {
+  console.log("req.body", req.body);
+  console.log("req.files", req.files);
+
   try {
     const { id } = req.params;
-    const tx = await Transaction.findOneAndUpdate(
+    const {
+      amount,
+      type,
+      category,
+      note,
+      date,
+      isRecurring,
+      recurringDay,
+      existingImages, // <-- từ frontend gửi lên: ảnh cũ muốn giữ lại
+    } = req.body;
+
+    // Ép existingImages thành mảng URL
+    let keepImages: string[] = [];
+    if (existingImages) {
+      keepImages = Array.isArray(existingImages) ? existingImages : [existingImages];
+    }
+
+    let newUploadedImages: string[] = [];
+
+    // Nếu có file mới được upload
+    if (req.files && Array.isArray(req.files)) {
+      const uploadPromises = (req.files as Express.Multer.File[]).map(file => {
+        const base64 = `data:${file.mimetype};base64,${file.buffer.toString("base64")}`;
+        return cloudinary.uploader.upload(base64, {
+          folder: 'fintrack_receipts',
+          public_id: `receipt-${uuid()}`,
+        });
+      });
+
+      const results = await Promise.all(uploadPromises);
+      newUploadedImages = results.map(result => result.secure_url);
+    }
+
+    const isRecurringBool = isRecurring === "true" || isRecurring === true;
+
+    if (isRecurringBool && (recurringDay < 1 || recurringDay > 31)) {
+      return res.status(400).json({ message: "Ngày định kỳ không hợp lệ" });
+    }
+
+    // Gộp ảnh cũ cần giữ + ảnh mới upload
+    const finalImages = [...keepImages, ...newUploadedImages];
+
+    const updatedTx = await Transaction.findOneAndUpdate(
       { _id: id, user: req.userId },
-      req.body,
+      {
+        amount,
+        type,
+        category,
+        note,
+        date: date ? new Date(date) : undefined,
+        isRecurring: isRecurringBool,
+        recurringDay: isRecurringBool ? recurringDay : undefined,
+        receiptImage: finalImages, // luôn cập nhật ảnh: gộp ảnh cũ + mới
+      },
       { new: true }
     );
 
-    if (!tx) {
-      res.status(404).json({ message: "Giao dịch không tồn tại!" });
-      return;
+    if (!updatedTx) {
+      return res.status(404).json({ message: "Giao dịch không tồn tại!" });
     }
 
     await logAction(req, {
       action: "Update Transaction",
       statusCode: 200,
-      description: `Đã cập nhật giao dịch ID: ${id}`
+      description: `Đã cập nhật giao dịch ID: ${id}`,
     });
 
-    res.json(tx);
+    res.json(updatedTx);
   } catch (error) {
-    console.log(error);
+    console.error("❌ Lỗi khi cập nhật giao dịch:", error);
 
     await logAction(req, {
       action: "Update Transaction",
       statusCode: 500,
       description: "Lỗi khi cập nhật giao dịch",
-      level: "error"
+      level: "error",
     });
 
     res.status(500).json({ message: "Không thể cập nhật!", error });
   }
 };
-
 
 // DELETE
 export const deleteTransaction = async (req: AuthRequest, res: Response) => {
