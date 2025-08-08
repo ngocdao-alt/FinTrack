@@ -33,6 +33,27 @@ export const getTransactions = createAsyncThunk('transaction/getTransactions', a
     }
 });
 
+export const adminGetTransactions = createAsyncThunk('admin/transaction/getTransactions', async (filter, { getState, rejectWithValue }) => {
+    const { token } = getState().auth;
+    try {
+        const { type = '', category = '', keyword = '', startDate = '', endDate = '', page = 1} = filter;
+
+        const res = await axios.get(
+            `${BACK_END_URL}/api/admin/transactions?type=${type}&category=${category}&keyword=${keyword}&startDate=${startDate}&endDate=${endDate}&page=${page}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            }, 
+        );
+        return res.data;
+    } catch (error) {
+        console.log(error);
+        return rejectWithValue(error.response?.data?.message || error.message);
+    }
+});
+
+
 export const getTransactionsByMonth = createAsyncThunk('transaction/getTransactionsByMonth', async (date, { getState, rejectWithValue }) => {
     const { token } = getState().auth;
     try {
@@ -46,8 +67,6 @@ export const getTransactionsByMonth = createAsyncThunk('transaction/getTransacti
                 }
             }, 
         );
-        console.log(res.data);
-        
         return res.data;
     } catch (error) {
         console.log(error);
@@ -55,79 +74,98 @@ export const getTransactionsByMonth = createAsyncThunk('transaction/getTransacti
     }
 });
 
-export const createTransaction = createAsyncThunk('transaction/createTransaction', async (fields, { getState, rejectWithValue }) => {
+export const createTransaction = createAsyncThunk(
+  'transaction/createTransaction',
+  async (formData, { getState, rejectWithValue }) => {
     try {
-        const { token }= getState().auth;
-        const { type, amount, category, note, date, receiptImages, isRecurring } = fields;
+      const { token } = getState().auth;
 
-        const formData = new FormData();
-        formData.append("type", type);
-        formData.append("amount", String(amount));
-        formData.append("category", category);
-        formData.append("note", note);
-        formData.append("date", date);
-        formData.append("isRecurring", isRecurring ? "true" : "false");
+      const res = await axios.post(
+        `${BACK_END_URL}/api/transaction`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
 
-        receiptImages.forEach(file => {
-            formData.append('receiptImages', file);
-        });
-
-        const res = await axios.post(
-            `${BACK_END_URL}/api/transaction`, 
-            formData,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'multipart/form-data'
-                }
-            },    
-        )
-
-        return res.data.transaction
+      return res.data.transaction;
     } catch (error) {
-        return rejectWithValue(error.response?.data?.message || error.message);
+      return rejectWithValue(error.response?.data?.message || error.message);
     }
-});
+  }
+);
 
-export const updateTransaction = createAsyncThunk('transaction/updateTransaction', async ({ id ,fields } , { getState, rejectWithValue}) => {
+export const updateTransaction = createAsyncThunk(
+  'transaction/updateTransaction',
+  async ({ id, fields }, { getState, rejectWithValue }) => { // 👈 đổi `formData` => `fields`
     try {
-        const { token }= getState().auth;
-        const { type, amount, category, note, date, receiptImages, isRecurring } = fields;
+      const { token } = getState().auth;
 
-        const formData = new FormData();
-        formData.append("type", type);
-        formData.append("amount", String(amount));
-        formData.append("category", category);
-        formData.append("note", note);
-        formData.append("date", date);
-        formData.append("isRecurring", isRecurring ? "true" : "false");
+      const res = await axios.put(
+        `${BACK_END_URL}/api/transaction/${id}`,
+        fields, 
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-        receiptImages.forEach(file => {
-            formData.append('receiptImages', file);
-        });
+      return res.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
+export const adminUpdateTransaction = createAsyncThunk(
+    'admin/transaction/adminUpdateTransaction', async ({ id, fields }, { getState, rejectWithValue }) => {
+    try {
+        const { token } = getState().auth;
 
         const res = await axios.put(
-            `${BACK_END_URL}/api/transaction/${id}`, 
-            formData,
+            `${BACK_END_URL}/api/admin/transactions/${id}`,
+            fields, 
             {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'multipart/form-data'
-                }
-            },    
-        )
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+            }
+        );
 
         return res.data;
     } catch (error) {
         return rejectWithValue(error.response?.data?.message || error.message);
     }
-})
+    }
+)
 
 export const deleteTransaction = createAsyncThunk('transaction/deleteTransaction', async (id, { getState, rejectWithValue}) => {
     try {
         const { token } = getState().auth;
         await axios.delete(
             `${BACK_END_URL}/api/transaction/${id}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            }, 
+        );
+
+        return id;       
+    } catch (error) {
+        return rejectWithValue(error.response?.data?.message || error.message);
+    }
+});
+
+export const adminDeleteTransaction = createAsyncThunk('admin/transaction/adminDeleteTransaction', async (id, { getState, rejectWithValue}) => {
+    try {
+        const { token } = getState().auth;
+        await axios.delete(
+            `${BACK_END_URL}/api/admin/transactions/${id}`,
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -160,9 +198,6 @@ const transactionSlice = createSlice({
                 state.loading = false;
 
                 const { data, total, page, totalPages } = action.payload;
-
-                console.log(page);
-                
 
                 if (page === 1) {
                     state.transactions = data;
@@ -250,6 +285,51 @@ const transactionSlice = createSlice({
                 state.transactions = state.transactions.filter(tx => tx._id !== action.payload);
             })
             .addCase(deleteTransaction.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(adminGetTransactions.pending, state => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(adminGetTransactions.fulfilled, (state, action) => {
+                state.loading = false;
+                state.transactions = action.payload.data;
+                state.page = action.payload.page;
+                state.total = action.payload.total;
+                state.totalPages = action.payload.totalPages;
+            })
+            .addCase(adminGetTransactions.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })  
+            .addCase(adminDeleteTransaction.pending, state => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(adminDeleteTransaction.fulfilled, (state, action) => {
+                state.loading = false;
+                state.transactions = state.transactions.filter(tx => tx._id !== action.payload);
+            })
+            .addCase(adminDeleteTransaction.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+             .addCase(adminUpdateTransaction.pending, state => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(adminUpdateTransaction.fulfilled, (state, action) => {
+                console.log(action.payload);
+                
+                state.loading = false;
+                const updated = action.payload;
+                const index = state.transactions.findIndex(tx => tx._id === updated._id);
+                if (index !== -1){
+                    state.transactions[index] = updated;
+                }
+            })
+            .addCase(adminUpdateTransaction.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             })  

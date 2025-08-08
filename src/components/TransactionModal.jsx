@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  adminUpdateTransaction,
   createTransaction,
   updateTransaction,
 } from "../features/transactionSlice";
@@ -21,21 +22,30 @@ const initialState = {
 };
 
 const TransactionModal = ({ visible, onClose, transaction, categoryList }) => {
+  const user = useSelector((state) => state.auth.user);
   const { t, i18n } = useTranslation();
   const dispatch = useDispatch();
   const [formData, setFormData] = useState(initialState);
+  const [existingImages, setExistingImages] = useState([]);
 
   useEffect(() => {
     if (transaction) {
       setFormData({
         ...transaction,
         date: transaction.date ? transaction.date.slice(0, 10) : "",
-        receiptImages: [],
+        receiptImages: [], // reset ảnh mới
       });
+
+      setExistingImages(transaction.receiptImage || []); // ảnh đã có (URL)
     } else {
       setFormData(initialState);
+      setExistingImages([]);
     }
   }, [transaction]);
+
+  useEffect(() => {
+    console.log(transaction);
+  }, []);
 
   const handleChange = (e) => {
     const { name, value, type, checked, files } = e.target;
@@ -57,37 +67,86 @@ const TransactionModal = ({ visible, onClose, transaction, categoryList }) => {
         return;
       }
 
-      setFormData((prev) => ({ ...prev, receiptImages: uniqueFiles }));
+      setFormData((prev) => {
+        const updated = { ...prev, receiptImages: uniqueFiles };
+        console.log("Ảnh mới:", updated.receiptImages);
+        return updated;
+      });
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
+  };
+
+  const handleRemoveExistingImage = (index) => {
+    setExistingImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleRemoveNewImage = (indexToRemove) => {
+    setFormData((prev) => ({
+      ...prev,
+      receiptImages: prev.receiptImages.filter((_, i) => i !== indexToRemove),
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const dataToSubmit = { ...formData };
-      if (!dataToSubmit.isRecurring) delete dataToSubmit.recurringDay;
+      const formPayload = new FormData();
+
+      formPayload.append("type", formData.type);
+      formPayload.append("amount", String(formData.amount));
+      formPayload.append("category", formData.category);
+      formPayload.append("note", formData.note);
+      formPayload.append("date", formData.date);
+      formPayload.append(
+        "isRecurring",
+        formData.isRecurring ? "true" : "false"
+      );
+
+      if (formData.isRecurring) {
+        formPayload.append("recurringDay", formData.recurringDay || "1");
+      }
+
+      // Thêm các file mới (File)
+      (formData.receiptImages || []).forEach((file) => {
+        if (file instanceof File) {
+          formPayload.append("receiptImages", file);
+        }
+      });
+
+      // Gửi thêm mảng ảnh cũ (URL) nếu cần giữ lại ở backend
+      if (existingImages.length > 0) {
+        existingImages?.forEach((url) => {
+          formPayload.append("existingImages", url); // backend cần hỗ trợ
+        });
+      }
 
       if (transaction) {
-        await dispatch(
-          updateTransaction({ id: transaction._id, fields: dataToSubmit })
-        ).unwrap();
-        toast.success("Updated successfully!");
+        if (user.role === "admin") {
+          await dispatch(
+            adminUpdateTransaction({ id: transaction._id, fields: formPayload })
+          ).unwrap();
+        } else {
+          await dispatch(
+            updateTransaction({ id: transaction._id, fields: formPayload })
+          ).unwrap();
+        }
+        toast.success("Cập nhật thành công!");
       } else {
-        await dispatch(createTransaction(dataToSubmit)).unwrap();
-        toast.success("Transaction created successfully!");
+        await dispatch(createTransaction(formPayload)).unwrap(); // tương tự
+        toast.success("Tạo giao dịch thành công!");
       }
 
       onClose();
     } catch (err) {
-      toast.error(err || "An error occurred!");
+      toast.error(err?.message || "Đã xảy ra lỗi!");
+      console.log(err);
     }
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-[2px] bg-black/30">
+    <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-[2px] bg-black/20">
       <div className="bg-white p-6 rounded shadow-lg w-[90%] max-w-lg relative z-50 animate-fadeIn dark:bg-[#2E2E33] dark:text-white/83 dark:border dark:border-slate-700">
         <h2 className="text-xl font-semibold mb-4">
           {transaction ? t("addTransaction") : t("editTransaction")}
@@ -197,7 +256,7 @@ const TransactionModal = ({ visible, onClose, transaction, categoryList }) => {
                 name="recurringDay"
                 min={1}
                 max={31}
-                value={formData.recurringDay}
+                value={formData.recurringDay ?? 0}
                 onChange={handleChange}
                 className="w-full border px-3 py-2 rounded"
               />
@@ -218,18 +277,61 @@ const TransactionModal = ({ visible, onClose, transaction, categoryList }) => {
               <input
                 id="file-upload"
                 type="file"
+                name="receiptImages" // ✅ Bổ sung dòng này
                 multiple
                 onChange={handleChange}
                 className="hidden"
               />
             </div>
 
-            {formData.receiptImages.length > 0 && (
-              <ul className="mt-2 text-sm text-gray-700 list-disc list-inside">
-                {formData.receiptImages.map((file, idx) => (
-                  <li key={idx}>{file.name}</li>
+            {/* Render receipt's images */}
+            {/* Ảnh hóa đơn cũ từ backend */}
+            {existingImages.length > 0 && (
+              <div className="mt-4 grid grid-cols-2 gap-2">
+                {existingImages.map((url, idx) => (
+                  <div key={`existing-${idx}`} className="relative group">
+                    <img
+                      src={url}
+                      alt={`Receipt ${idx + 1}`}
+                      className="rounded border max-h-32 w-full object-contain"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveExistingImage(idx)}
+                      className="absolute top-1 right-1 bg-red-500 text-white text-xs rounded-full px-1 opacity-100 transition-opacity"
+                      title="Xóa ảnh cũ"
+                    >
+                      ✕
+                    </button>
+                  </div>
                 ))}
-              </ul>
+              </div>
+            )}
+
+            {/* Ảnh hóa đơn mới vừa chọn (từ File) */}
+            {formData.receiptImages.length > 0 && (
+              <div className="mt-4 grid grid-cols-2 gap-2">
+                {formData.receiptImages.map((file, idx) => {
+                  const objectUrl = URL.createObjectURL(file);
+                  return (
+                    <div key={`new-${idx}`} className="relative group">
+                      <img
+                        src={objectUrl}
+                        alt={file.name}
+                        className="rounded border max-h-32 w-full object-contain"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveNewImage(idx)}
+                        className="absolute top-1 right-1 bg-red-500 text-white text-xs rounded-full px-1 opacity-100 transition-opacity"
+                        title="Xóa ảnh mới"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
             )}
           </div>
 

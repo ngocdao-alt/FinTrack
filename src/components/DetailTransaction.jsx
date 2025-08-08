@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import formatCurrency from "../utils/formatCurrency";
 
@@ -8,7 +8,7 @@ const DetailTransaction = ({ transaction, onClose }) => {
   const { t, i18n } = useTranslation();
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm">
+    <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/20 backdrop-blur-sm">
       <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-lg relative z-50 animate-fadeIn dark:bg-[#2E2E33] dark:text-white/83 dark:border dark:border-slate-700">
         <h2 className="text-xl font-semibold mb-4">{t("transactionDetail")}</h2>
 
@@ -21,7 +21,10 @@ const DetailTransaction = ({ transaction, onClose }) => {
             label={t("amount")}
             value={formatCurrency(transaction.amount) + " đ"}
           />
-          <Info label={t("categoriesLabel")} value={transaction.category} />
+          <Info
+            label={t("categoriesLabel")}
+            value={t(`categories.${transaction.category}`)}
+          />
           <Info label={t("note")} value={transaction.note || "-"} />
           <Info
             label={t("date")}
@@ -38,7 +41,7 @@ const DetailTransaction = ({ transaction, onClose }) => {
               <label className="block text-sm font-medium mb-1">
                 {t("receiptImages")}
               </label>
-              <div className="grid grid-cols-2 gap-2 ">
+              <div className="flex flex-grow gap-2 ">
                 {transaction.receiptImage.map((url, i) => (
                   <img
                     onClick={() => window.open(url)}

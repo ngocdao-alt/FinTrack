@@ -1,87 +1,127 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Search, Calendar, Edit, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useState, useRef, useEffect, useMemo } from "react";
+import {
+  Search,
+  Calendar,
+  Edit,
+  Trash2,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { debounce } from "lodash";
+import Pagination from "../../components/Pagination";
+import { FaEdit } from "react-icons/fa";
+import toast from "react-hot-toast";
+import { FaRegTrashAlt } from "react-icons/fa";
+import {
+  adminDeleteTransaction,
+  adminGetTransactions,
+} from "../../features/transactionSlice";
+import { useTranslation } from "react-i18next";
+import formatDateToString from "../../utils/formatDateToString";
+import TransactionModal from "../../components/TransactionModal";
+import DetailTransaction from "../../components/DetailTransaction";
 
 const AdminTransaction = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
-  const [startDate, setStartDate] = useState(new Date(2024, 0, 1)); // 01/01/2024
-  const [endDate, setEndDate] = useState(new Date(2024, 7, 3)); // 03/08/2024
+  const { t, i18n } = useTranslation();
+
+  const [category, setCategory] = useState("");
+  const [type, setType] = useState("");
+  const [startDate, setStartDate] = useState(new Date(2025, 7, 1));
+  const [endDate, setEndDate] = useState(new Date(2025, 7, 31));
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [selectingStartDate, setSelectingStartDate] = useState(true);
-  
+
   const datePickerRef = useRef(null);
 
-  const transactions = [
-    {
-      id: 1,
-      userName: 'Mã Gia Bảo',
-      category: 'Ăn uống',
-      amount: 500000,
-      type: 'income',
-      note: 'gbchvajcbsajdk',
-      date: '03/08/2024',
-    },
-    {
-      id: 2,
-      userName: 'Lê Tấn Đạt',
-      category: 'Bán hàng',
-      amount: 500000,
-      type: 'income',
-      note: '',
-      date: '03/08/2024',
-    },
-    {
-      id: 3,
-      userName: 'Hồng Hiếu Thiên',
-      category: 'Di chuyển',
-      amount: 500000,
-      type: 'expense',
-      note: '',
-      date: '03/08/2024',
-    },
-    {
-      id: 4,
-      userName: 'Nguyễn Ngọc Đạo',
-      category: 'Mua sắm',
-      amount: 500000,
-      type: 'expense',
-      note: '',
-      date: '03/08/2024',
-    },
-    {
-      id: 5,
-      userName: 'Ngô Quang Vũ',
-      category: 'Nhà cửa',
-      amount: 500000,
-      type: 'expense',
-      note: '',
-      date: '03/08/2024',
-    },
-    {
-      id: 6,
-      userName: 'Đặng Quốc Thành',
-      category: 'Giáo dục',
-      amount: 500000,
-      type: 'expense',
-      note: '',
-      date: '03/08/2024',
-    }
-  ];
+  const transactions = useSelector((state) => state.transaction.transactions);
+  const totalPages = useSelector((state) => state.transaction.totalPages);
+  const dispatch = useDispatch();
 
-  const categories = ['All', 'Ăn uống', 'Bán hàng', 'Di chuyển', 'Mua sắm', 'Nhà cửa', 'Giáo dục'];
+  const [page, setPage] = useState(1);
 
-  const formatAmount = (amount, type) => {
-    const formatted = amount.toLocaleString();
-    return type === 'income' ? `+${formatted} đ` : `-${formatted} đ`;
+  const [selectedTransaction, setSelectedTransaction] = useState();
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
+
+  const handleDetail = (tx) => {
+    setSelectedTransaction(tx);
+    setIsDetailOpen(true);
   };
 
+  const handleEdit = (tx) => {
+    setSelectedTransaction(tx);
+    setIsEditOpen(true);
+  };
+
+  const formatToYYYYMMDD = (date) => {
+    const d = new Date(date); // đảm bảo là kiểu Date
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0"); // Tháng bắt đầu từ 0
+    const day = String(d.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  };
+
+  useEffect(() => {
+    dispatch(
+      adminGetTransactions({
+        category,
+        type,
+        startDate,
+        endDate,
+        page: 1,
+      })
+    );
+  }, [dispatch, category, type, endDate]);
+
+  useEffect(() => {
+    dispatch(
+      adminGetTransactions({
+        category,
+        type,
+        startDate: formatToYYYYMMDD(startDate),
+        endDate: formatToYYYYMMDD(endDate),
+        page,
+      })
+    );
+  }, [page]);
+
+  const handleDelete = async (e, id) => {
+    e.stopPropagation();
+    try {
+      await dispatch(adminDeleteTransaction(id));
+      toast("Đã xóa giao dịch.", {
+        icon: "🗑️",
+      });
+    } catch (error) {
+      toast.error("Có lỗi xảy ra.");
+      console.log(error);
+    }
+  };
+
+  const categoryList = [
+    { key: "sales", icon: "🛍️", color: "#f87171" }, // đỏ hồng
+    { key: "transportation", icon: "🚗", color: "#60a5fa" }, // xanh dương nhạt
+    { key: "education", icon: "📚", color: "#fbbf24" }, // vàng
+    { key: "entertainment", icon: "🎮", color: "#a78bfa" }, // tím nhạt
+    { key: "shopping", icon: "🛒", color: "#fb923c" }, // cam sáng
+    { key: "housing", icon: "🏠", color: "#34d399" }, // xanh lá nhạt
+    { key: "health", icon: "🩺", color: "#ef4444" }, // đỏ
+    { key: "rent", icon: "🏘️", color: "#4ade80" }, // xanh lá sáng
+    { key: "bonus", icon: "🎁", color: "#facc15" }, // vàng sáng
+    { key: "salary", icon: "💰", color: "#22c55e" }, // xanh lá cây
+    { key: "food", icon: "🍽️", color: "#c084fc" }, // tím
+    { key: "investment", icon: "📈", color: "#0ea5e9" }, // xanh cyan
+  ];
+
   const formatDate = (date) => {
-    return date.toLocaleDateString('vi-VN', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
+    return date.toLocaleDateString("vi-VN", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
     });
   };
 
@@ -98,15 +138,25 @@ const AdminTransaction = () => {
   };
 
   const monthNames = [
-    'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6',
-    'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'
+    "Tháng 1",
+    "Tháng 2",
+    "Tháng 3",
+    "Tháng 4",
+    "Tháng 5",
+    "Tháng 6",
+    "Tháng 7",
+    "Tháng 8",
+    "Tháng 9",
+    "Tháng 10",
+    "Tháng 11",
+    "Tháng 12",
   ];
 
-  const dayNames = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+  const dayNames = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
 
   const handleDateClick = (day) => {
     const selectedDate = new Date(currentYear, currentMonth, day);
-    
+
     if (selectingStartDate) {
       setStartDate(selectedDate);
       setSelectingStartDate(false);
@@ -126,7 +176,7 @@ const AdminTransaction = () => {
   };
 
   const navigateMonth = (direction) => {
-    if (direction === 'prev') {
+    if (direction === "prev") {
       if (currentMonth === 0) {
         setCurrentMonth(11);
         setCurrentYear(currentYear - 1);
@@ -150,7 +200,10 @@ const AdminTransaction = () => {
 
   const isDateSelected = (day) => {
     const date = new Date(currentYear, currentMonth, day);
-    return date.getTime() === startDate.getTime() || date.getTime() === endDate.getTime();
+    return (
+      date.getTime() === startDate.getTime() ||
+      date.getTime() === endDate.getTime()
+    );
   };
 
   const renderCalendar = () => {
@@ -167,7 +220,9 @@ const AdminTransaction = () => {
     for (let day = 1; day <= daysInMonth; day++) {
       const isSelected = isDateSelected(day);
       const isInRange = isDateInRange(day);
-      const isToday = new Date().toDateString() === new Date(currentYear, currentMonth, day).toDateString();
+      const isToday =
+        new Date().toDateString() ===
+        new Date(currentYear, currentMonth, day).toDateString();
 
       days.push(
         <button
@@ -175,12 +230,12 @@ const AdminTransaction = () => {
           onClick={() => handleDateClick(day)}
           className={`w-8 h-8 text-sm rounded-full flex items-center justify-center transition-colors ${
             isSelected
-              ? 'bg-blue-500 text-white font-semibold'
+              ? "bg-blue-500 text-white font-semibold"
               : isInRange
-              ? 'bg-blue-100 text-blue-700'
+              ? "bg-blue-100 text-blue-700"
               : isToday
-              ? 'bg-gray-200 text-gray-900 font-semibold'
-              : 'text-gray-700 hover:bg-gray-100'
+              ? "bg-gray-200 text-gray-900 font-semibold"
+              : "text-gray-700 hover:bg-gray-100"
           }`}
         >
           {day}
@@ -194,214 +249,222 @@ const AdminTransaction = () => {
   // Close date picker when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (datePickerRef.current && !datePickerRef.current.contains(event.target)) {
+      if (
+        datePickerRef.current &&
+        !datePickerRef.current.contains(event.target)
+      ) {
         setShowDatePicker(false);
         setSelectingStartDate(true);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#EDF6FC]">
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
-        {/* Filters */}
-        <div className="bg-white rounded-xl shadow-sm p-4 lg:p-6 mb-6">
-          <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
-            {/* Search */}
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <input
-                type="text"
-                placeholder="Tìm theo tên"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm lg:text-base"
-              />
-            </div>
+    <div className="p-4 sm:p-6 bg-blue-50 min-h-screen">
+      {/* Ẩn hoàn toàn trên điện thoại */}
+      <div className="sm:hidden text-center text-gray-600 mt-10">
+        Trang quản lý người dùng chỉ khả dụng trên máy tính hoặc máy tính bảng.
+      </div>
 
-            {/* Date Range */}
-            <div className="flex-1 lg:max-w-xs relative" ref={datePickerRef}>
-              <button
-                onClick={() => setShowDatePicker(!showDatePicker)}
-                className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm lg:text-base text-left bg-white"
-              >
-                {getDateRange()}
-              </button>
-              <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 pointer-events-none" />
-              
-              {/* Date Picker Dropdown */}
-              {showDatePicker && (
-                <div className="absolute top-full mt-2 bg-white border border-gray-300 rounded-lg shadow-lg z-50 p-4 w-80">
-                  <div className="mb-4">
-                    <p className="text-sm text-gray-600 mb-2">
-                      {selectingStartDate ? 'Chọn ngày bắt đầu' : 'Chọn ngày kết thúc'}
-                    </p>
-                    <div className="flex items-center justify-between mb-4">
-                      <button
-                        onClick={() => navigateMonth('prev')}
-                        className="p-1 hover:bg-gray-100 rounded"
-                      >
-                        <ChevronLeft className="w-4 h-4" />
-                      </button>
-                      <h3 className="text-lg font-semibold">
-                        {monthNames[currentMonth]} {currentYear}
-                      </h3>
-                      <button
-                        onClick={() => navigateMonth('next')}
-                        className="p-1 hover:bg-gray-100 rounded"
-                      >
-                        <ChevronRight className="w-4 h-4" />
-                      </button>
-                    </div>
-                    
-                    {/* Day headers */}
-                    <div className="grid grid-cols-7 gap-1 mb-2">
-                      {dayNames.map((day) => (
-                        <div key={day} className="w-8 h-8 flex items-center justify-center text-xs font-medium text-gray-500">
-                          {day}
-                        </div>
-                      ))}
-                    </div>
-                    
-                    {/* Calendar grid */}
-                    <div className="grid grid-cols-7 gap-1">
-                      {renderCalendar()}
-                    </div>
-                  </div>
-                  
-                  <div className="flex justify-between items-center pt-3 border-t">
-                    <div className="text-xs text-gray-500">
-                      Đã chọn: {getDateRange()}
-                    </div>
+      <div className="hidden sm:block">
+        {/* Bộ lọc */}
+        <div className="flex flex-wrap gap-4 mb-6">
+          <select
+            value={type}
+            onChange={(e) => {
+              e.target.value === "All" ? setType("") : setType(e.target.value);
+            }}
+            className="border border-slate-300 bg-white cursor-pointer px-4 py-2 rounded shadow-sm focus:outline-none
+          "
+          >
+            <option value="all">Loại</option>
+            <option value="income">Thu</option>
+            <option value="expense">Chi</option>
+          </select>
+          <select
+            value={category}
+            onChange={(e) => {
+              e.target.value === "All"
+                ? setCategory("")
+                : setCategory(e.target.value);
+            }}
+            className="border border-slate-300 bg-white cursor-pointer px-4 py-2 rounded shadow-sm focus:outline-none
+          "
+          >
+            <option value="all">Danh mục</option>
+            {categoryList.map((item) => (
+              <option value={item.key}>{t(`categories.${item.key}`)}</option>
+            ))}
+          </select>
+
+          <div className="flex-1 lg:max-w-xs relative" ref={datePickerRef}>
+            <button
+              onClick={() => setShowDatePicker(!showDatePicker)}
+              className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm lg:text-base text-left bg-white"
+            >
+              {getDateRange()}
+            </button>
+            <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 pointer-events-none" />
+
+            {/* Date Picker Dropdown */}
+            {showDatePicker && (
+              <div className="absolute top-full mt-2 bg-white border border-gray-300 rounded-lg shadow-lg z-50 p-4 w-80">
+                <div className="mb-4">
+                  <p className="text-sm text-gray-600 mb-2">
+                    {selectingStartDate
+                      ? "Chọn ngày bắt đầu"
+                      : "Chọn ngày kết thúc"}
+                  </p>
+                  <div className="flex items-center justify-between mb-4">
                     <button
-                      onClick={() => {
-                        setShowDatePicker(false);
-                        setSelectingStartDate(true);
-                      }}
-                      className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"
+                      onClick={() => navigateMonth("prev")}
+                      className="p-1 hover:bg-gray-100 rounded"
                     >
-                      Xong
+                      <ChevronLeft className="w-4 h-4" />
+                    </button>
+                    <h3 className="text-lg font-semibold">
+                      {monthNames[currentMonth]} {currentYear}
+                    </h3>
+                    <button
+                      onClick={() => navigateMonth("next")}
+                      className="p-1 hover:bg-gray-100 rounded"
+                    >
+                      <ChevronRight className="w-4 h-4" />
                     </button>
                   </div>
-                </div>
-              )}
-            </div>
 
-            {/* Category Filter */}
-            <div className="flex-1 lg:max-w-xs">
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm lg:text-base"
-              >
-                <option value="">Danh mục</option>
-                {categories.map((category) => (
-                  <option key={category} value={category}>
-                    {category}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-        </div>
-
-        {/* Transactions Table */}
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-          {/* Mobile Cards View */}
-          <div className="lg:hidden">
-            {transactions.map((transaction) => (
-              <div key={transaction.id} className="border-b border-gray-200 p-4">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1">
-                    <h3 className="font-medium text-gray-900 mb-1">{transaction.userName}</h3>
-                    <div className="flex items-center space-x-2 mb-2">
-                      <span className="px-2 py-1 rounded-full text-xs font-medium">
-                        {transaction.category}
-                      </span>
-                    </div>
-                    {transaction.note && (
-                      <p className="text-sm text-gray-500 mb-2">{transaction.note}</p>
-                    )}
-                    <p className="text-sm text-gray-500">{transaction.date}</p>
+                  {/* Day headers */}
+                  <div className="grid grid-cols-7 gap-1 mb-2">
+                    {dayNames.map((day) => (
+                      <div
+                        key={day}
+                        className="w-8 h-8 flex items-center justify-center text-xs font-medium text-gray-500"
+                      >
+                        {day}
+                      </div>
+                    ))}
                   </div>
-                  <div className="flex items-center space-x-2 ml-4">
-                    <span className="font-semibold">
-                      {formatAmount(transaction.amount, transaction.type)}
-                    </span>
+
+                  {/* Calendar grid */}
+                  <div className="grid grid-cols-7 gap-1">
+                    {renderCalendar()}
                   </div>
                 </div>
-                <div className="flex items-center justify-end space-x-2">
-                  <button className="p-1.5 text-blue-600 hover:bg-blue-50 rounded">
-                    <Edit className="w-4 h-4" />
-                  </button>
-                  <button className="p-1.5 text-red-600 hover:bg-red-50 rounded">
-                    <Trash2 className="w-4 h-4" />
+
+                <div className="flex justify-between items-center pt-3 border-t">
+                  <div className="text-xs text-gray-500">
+                    Đã chọn: {getDateRange()}
+                  </div>
+                  <button
+                    onClick={() => {
+                      setShowDatePicker(false);
+                      setSelectingStartDate(true);
+                    }}
+                    className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"
+                  >
+                    Xong
                   </button>
                 </div>
               </div>
-            ))}
-          </div>
-
-          {/* Desktop Table View */}
-          <div className="hidden lg:block overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">User Name</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Category</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Amount</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Note</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Date</th>
-                  <th className="px-6 py-4 text-right text-sm font-semibold text-gray-900">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {transactions.map((transaction) => (
-                  <tr key={transaction.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{transaction.userName}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="px-3 py-1 rounded-full text-sm font-medium">
-                        {transaction.category}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm font-semibold">
-                        {formatAmount(transaction.amount, transaction.type)}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm text-gray-500 max-w-xs truncate">
-                        {transaction.note || '-'}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-500">{transaction.date}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right">
-                      <div className="flex items-center justify-end space-x-2">
-                        <button className="px-3 py-1 text-blue-600 hover:bg-blue-50 rounded text-sm font-medium border border-blue-200">
-                          Edit
-                        </button>
-                        <button className="p-1.5 text-red-600 hover:bg-red-50 rounded">
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            )}
           </div>
         </div>
-      </main>
+
+        {isDetailOpen && (
+          <DetailTransaction
+            transaction={selectedTransaction}
+            onClose={() => {
+              setIsDetailOpen(false);
+              setSelectedTransaction(null);
+            }}
+          />
+        )}
+        {isEditOpen && (
+          <TransactionModal
+            categoryList={categoryList}
+            onClose={() => {
+              setIsEditOpen(false);
+              setSelectedTransaction(null);
+            }}
+            transaction={selectedTransaction}
+          />
+        )}
+
+        {/* Bảng người dùng */}
+        <div className="overflow-x-auto bg-white border-slate-300 rounded shadow-lg">
+          <table className="min-w-full text-sm text-left">
+            <thead className="bg-blue-100">
+              <tr className="3xl:text-base">
+                <th className="p-3">Tên</th>
+                <th className="p-3 hidden lg:table-cell">Email</th>
+                <th className="p-3 ">Loại</th>
+                <th className="p-3">Số tiền</th>
+                <th className="p-3 hidden lg:table-cell">Danh mục</th>
+                <th className="p-3 ">Ngày</th>
+                <th className="p-3">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody>
+              {transactions.map((tx, idx) => (
+                <tr
+                  key={idx}
+                  onClick={() => handleDetail(tx)}
+                  className="border-t hover:bg-gray-50 transition-all cursor-pointer"
+                >
+                  <td className="p-3 font-semibold">{tx.user.name}</td>
+                  <td className="p-3 hidden lg:table-cell">{tx.user.email}</td>
+                  <td className="p-3">{t(tx.type)}</td>
+                  <td className="p-3">
+                    <span
+                      className={`
+                        px-3 py-1 rounded-full text-xs 
+                      `}
+                    >
+                      {tx.amount}
+                    </span>
+                  </td>
+                  <td className="p-3 ">
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs hidden lg:table-cell`}
+                    >
+                      {t(`categories.${tx.category}`)}
+                    </span>
+                  </td>
+                  <td className="p-3 ">{formatDateToString(tx.date)}</td>
+                  <td className="p-3 flex gap-2">
+                    <button
+                      onClick={() => handleEdit(tx)}
+                      className="
+                        p-1 text-blue-500 hover:bg-blue-100 cursor-pointer transition-all border border-blue-300 rounded lg:text-base 3xl:text-base
+                    "
+                    >
+                      <FaEdit />
+                    </button>
+                    <button
+                      onClick={(e) => handleDelete(e, tx._id)}
+                      className="
+                        p-1 text-red-500 hover:bg-red-100 cursor-pointer transition-all border border-red-300 rounded lg:text-base 3xl:text-base
+                    "
+                    >
+                      <FaRegTrashAlt />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <Pagination
+          page={page}
+          totalPages={totalPages}
+          onPageChange={(newPage) => setPage(newPage)}
+        />
+      </div>
     </div>
   );
 };

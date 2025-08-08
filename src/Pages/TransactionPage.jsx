@@ -37,6 +37,7 @@ const TransactionPage = () => {
     { key: "food", icon: "🍽️", color: "#c084fc" }, // tím
     { key: "investment", icon: "📈", color: "#0ea5e9" }, // xanh cyan
   ];
+
   const categoryOptions = [
     { value: "", label: t("all") }, // All
     ...categoryList.map((cat) => ({

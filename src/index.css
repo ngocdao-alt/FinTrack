@@ -65,3 +65,22 @@ body {
   font-family: 'Roboto Mono', monospace;
 }
 
+
+.color-empty {
+  fill: #ebf0fa;
+}
+.color-scale-1 {
+  fill: #90caf9;
+}
+.color-scale-2 {
+  fill: #42a5f5;
+}
+.color-scale-3 {
+  fill: #1e88e5;
+}
+
+/* Giảm font của chữ thứ/ngày */
+.react-calendar-heatmap text {
+  font-size: 10px;
+  fill: #555;
+}
