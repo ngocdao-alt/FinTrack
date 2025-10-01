@@ -1,0 +1,86 @@
+@import "tailwindcss";
+@import "tailwindcss/utilities";
+@custom-variant dark (&:where(.dark, .dark *));
+/* Thêm font nếu muốn */
+
+@theme {
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+  --breakpoint-3xl: 1800px;
+}
+
+@layer utilities {
+  .shimmer {
+    @apply relative overflow-hidden bg-slate-200 dark:bg-[#2E2E33];
+  }
+}
+
+/* Không để trong @layer, dùng CSS gốc để hỗ trợ ::after và dark mode */
+.shimmer::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -150%;
+  height: 100%;
+  width: 150%;
+  background-image: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: shimmer-slide 1.5s infinite;
+}
+
+.dark .shimmer::after {
+  background-image: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.08),
+    transparent
+  );
+}
+
+@keyframes shimmer-slide {
+  0% {
+    left: -150%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+@layer base {
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
+
+body {
+  font-family: 'Roboto Mono', monospace;
+}
+
+
+.color-empty {
+  fill: #ebf0fa;
+}
+.color-scale-1 {
+  fill: #90caf9;
+}
+.color-scale-2 {
+  fill: #42a5f5;
+}
+.color-scale-3 {
+  fill: #1e88e5;
+}
+
+/* Giảm font của chữ thứ/ngày */
+.react-calendar-heatmap text {
+  font-size: 10px;
+  fill: #555;
+}
